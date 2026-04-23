@@ -1,6 +1,7 @@
 import pygame
 
 from pages.Variables import Variables
+from pages.radar.Drawer import Drawer
 
 
 class Main:
@@ -21,13 +22,13 @@ class Main:
     def __init__(self, v: Variables) -> None:
         self.main_running = True
         self.main_counter = 0
-        self.main_surface = None
         self.variables = v
+        self.main_surface = pygame.display.set_mode((self.variables.display_width, self.variables.display_height))
+        self.drawer = Drawer(self.main_surface)
         self.init()
 
     def init(self) -> None:
         pygame.init()
-        self.main_surface = pygame.display.set_mode((self.variables.display_width, self.variables.display_height))
         pygame.display.set_caption(self.variables.game_caption)
         self.test_init()
 
@@ -47,18 +48,19 @@ class Main:
             ((255, 0, 255), (10, 10, 60, 70)),
             ((0, 255, 255), (100, 140, 200, 70)),
             ((255, 255, 0), (35, 35, 600, 10)),
-            ((255, 50, 50), (70, 80, 30, 30))
+            ((255, 50, 50), (70, 80, 30, 30)),
+            ((255, 255, 255), ((1280 // 2) - 5, (720 //2) - 5, 10, 10))
         )
         for item in items:
-            pygame.draw.rect(
-                self.main_surface,
+            self.drawer.draw_rect(
+                item[1][0],
+                item[1][1],
+                item[1][2],
+                item[1][3],
                 item[0],
-                (
-                    item[1][0] * self.zoom + self.cam_offset_x,
-                    item[1][1] * self.zoom + self.cam_offset_y,
-                    item[1][2] * self.zoom,
-                    item[1][3] * self.zoom
-                )
+                self.cam_offset_x,
+                self.cam_offset_y,
+                self.zoom,
             )
 
     def run(self) -> None:
