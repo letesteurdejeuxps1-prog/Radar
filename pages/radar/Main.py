@@ -16,8 +16,10 @@ class Main:
     radar_color_bg: tuple[int, int, int] = (0, 0, 0)
 
     zoom: int|float = 1
-    cam_offset_x: int = 0
-    cam_offset_y: int = 0
+    zoom_increment: float = 0.05
+    cam_offset_x: int|float = 0
+    cam_offset_y: int|float = 0
+    cam_offset_increment: int = 10
 
     def __init__(self, v: Variables) -> None:
         self.main_running = True
@@ -70,8 +72,12 @@ class Main:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self.main_running = False
-                if event.type == pygame.KEYDOWN:
+                elif event.type == pygame.KEYDOWN:
                     self.handle_event_key_down(event.key)
+                elif event.type == pygame.MOUSEWHEEL:
+                    self.handle_event_mousewheel(event)
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    self.handle_event_mouseclick(event)
 
             # TODO REMOVE TEST FUNCTION
             self.test()
@@ -81,25 +87,45 @@ class Main:
 
         pygame.quit()
 
+    def handle_event_mousewheel(self, event):
+        if event.y == 1:
+            self.zoom += self.zoom_increment
+        elif event.y == -1:
+            self.zoom -= self.zoom_increment
+
+
+    def handle_event_mouseclick(self, event):
+        pos = pygame.mouse.get_pos()
+        if event.button == 1:
+            # Left click
+            print("Left click")
+        if event.button == 2:
+            # Middle click
+            print("Middle click")
+        if event.button == 3:
+            # Right click
+            print("Right click")
+
+
+
+
     def handle_event_key_down(self, key_pressed):
         if key_pressed == pygame.K_KP_PLUS:
-            self.zoom += 0.2
-            print("Zoom OUT TO {}".format(self.zoom))
+            self.zoom += self.zoom_increment
         elif key_pressed == pygame.K_KP_MINUS:
-            self.zoom -= 0.2
-            print("Zoom OUT TO {}".format(self.zoom))
+            self.zoom -= self.zoom_increment
         elif key_pressed == pygame.K_DOWN:
-            print("DOWN")
-            self.cam_offset_y -= 10
+            self.cam_offset_y -= self.cam_offset_increment
         elif key_pressed == pygame.K_UP:
-            print("UP")
-            self.cam_offset_y += 10
+            self.cam_offset_y += self.cam_offset_increment
         elif key_pressed == pygame.K_LEFT:
-            print("LEFT")
-            self.cam_offset_x -= 10
+            self.cam_offset_x -= self.cam_offset_increment
         elif key_pressed == pygame.K_RIGHT:
-            print("RIGHT")
-            self.cam_offset_x += 10
+            self.cam_offset_x += self.cam_offset_increment
+        elif key_pressed == pygame.K_c:
+            self.cam_offset_x = 0
+            self.cam_offset_y = 0
+            self.zoom = 1
 
 
     def update_counter(self) -> None:
