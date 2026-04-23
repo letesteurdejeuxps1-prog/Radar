@@ -5,7 +5,6 @@ from pages.radar.Drawer import Drawer
 
 
 class Main:
-
     game_acft_id_counter: int = 1
     game_acft_selected_id: int = 0
 
@@ -15,10 +14,10 @@ class Main:
 
     radar_color_bg: tuple[int, int, int] = (0, 0, 0)
 
-    zoom: int|float = 1
+    zoom: int | float = 1
     zoom_increment: float = 0.05
-    cam_offset_x: int|float = 0
-    cam_offset_y: int|float = 0
+    cam_offset_x: int | float = 0
+    cam_offset_y: int | float = 0
     cam_offset_increment: int = 10
 
     def __init__(self, v: Variables) -> None:
@@ -44,14 +43,13 @@ class Main:
         # Adapt tests to zoom
         self.test_draw()
 
-
     def test_draw(self):
         items = (
             ((255, 0, 255), (10, 10, 60, 70)),
             ((0, 255, 255), (100, 140, 200, 70)),
             ((255, 255, 0), (35, 35, 600, 10)),
             ((255, 50, 50), (70, 80, 30, 30)),
-            ((255, 255, 255), ((1280 // 2) - 5, (720 //2) - 5, 10, 10))
+            ((255, 255, 255), ((1280 // 2) - 5, (720 // 2) - 5, 10, 10))
         )
         for item in items:
             self.drawer.draw_rect(
@@ -93,7 +91,6 @@ class Main:
         elif event.y == -1:
             self.zoom -= self.zoom_increment
 
-
     def handle_event_mouseclick(self, event):
         pos = pygame.mouse.get_pos()
         if event.button == 1:
@@ -105,9 +102,6 @@ class Main:
         if event.button == 3:
             # Right click
             print("Right click")
-
-
-
 
     def handle_event_key_down(self, key_pressed):
         if key_pressed == pygame.K_KP_PLUS:
@@ -127,10 +121,8 @@ class Main:
             self.cam_offset_y = 0
             self.zoom = 1
 
-
     def update_counter(self) -> None:
         self.main_second_counter += 1
         # TODO : REMOVE AFTER DEBUG, ENABLE PLANE TO MOVE EVERY TICK AND NOT ONCE PER SEC
         if self.main_second_counter >= self.variables.display_fps // 6:
             self.main_second_counter = 0
-
