@@ -13,6 +13,8 @@ class Main:
     main_running: bool = False
     main_second_counter: int = 1
 
+    middle_click_on: bool = False
+
     radar_color_bg: tuple[int, int, int] = (0, 0, 0)
 
     zoom: int | float = 1
@@ -78,6 +80,10 @@ class Main:
                     self.handle_event_mousewheel(event)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self.handle_event_mouseclick(event)
+                elif event.type == pygame.MOUSEMOTION and self.middle_click_on:
+                    self.handle_event_mouse_middle_click_drag(event)
+                elif event.type == pygame.MOUSEBUTTONUP:
+                    self.handle_event_mouseclick_off()
 
             # TODO REMOVE TEST FUNCTION
             self.test()
@@ -90,22 +96,27 @@ class Main:
     def handle_event_mousewheel(self, event):
         if event.y == 1:
             self.zoom += self.zoom_increment
-            self.cam_offset_x = self.cam_offset_x * self.zoom
-            self.cam_offset_y = self.cam_offset_y * self.zoom
         elif event.y == -1:
             self.zoom -= self.zoom_increment
 
     def handle_event_mouseclick(self, event):
-        pos = pygame.mouse.get_pos()
         if event.button == 1:
             # Left click
             print("Left click")
         if event.button == 2:
             # Middle click
-            print("Middle click")
+            self.middle_click_on = True
         if event.button == 3:
             # Right click
             print("Right click")
+
+    def handle_event_mouseclick_off(self):
+        self.middle_click_on = False
+
+    def handle_event_mouse_middle_click_drag(self, event):
+        if isinstance(event.rel, tuple) and len(event.rel) == 2:
+            self.cam_offset_x += event.rel[0]
+            self.cam_offset_y += event.rel[1]
 
     def handle_event_key_down(self, key_pressed):
         if key_pressed == pygame.K_KP_PLUS:
