@@ -88,6 +88,8 @@ class Main:
     def handle_event_mousewheel(self, event):
         if event.y == 1:
             self.zoom += self.zoom_increment
+            self.cam_offset_x = self.cam_offset_x * self.zoom
+            self.cam_offset_y = self.cam_offset_y * self.zoom
         elif event.y == -1:
             self.zoom -= self.zoom_increment
 
