@@ -1,6 +1,7 @@
 import pygame
 
 from pages.Variables import Variables
+from pages.radar.Airspace import Airspace
 from pages.radar.Drawer import Drawer
 
 
@@ -26,6 +27,7 @@ class Main:
         self.variables = v
         self.main_surface = pygame.display.set_mode((self.variables.display_width, self.variables.display_height))
         self.drawer = Drawer(self.main_surface)
+        self.airspace = Airspace()
         self.init()
 
     def init(self) -> None:
