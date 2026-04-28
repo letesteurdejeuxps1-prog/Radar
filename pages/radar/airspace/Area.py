@@ -10,7 +10,7 @@ class Area:
         lowest_alt: int
     ):
         self.coordinates = coordinates
-        limit_low: int = limit_low
-        limit_high: int = limit_high
-        highest_alt: int = highest_alt
-        lowest_alt: int = lowest_alt
+        self.limit_low = limit_low
+        self.limit_high = limit_high
+        self.highest_alt = highest_alt
+        self.lowest_alt = lowest_alt

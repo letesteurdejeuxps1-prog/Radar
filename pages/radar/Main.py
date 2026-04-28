@@ -1,3 +1,4 @@
+import pathlib
 import pygame
 
 from pages.Variables import Variables
@@ -6,6 +7,7 @@ from pages.radar.Drawer import Drawer
 
 
 class Main:
+
     game_acft_id_counter: int = 1
     game_acft_selected_id: int = 0
 
@@ -14,6 +16,10 @@ class Main:
     main_second_counter: int = 1
 
     middle_click_on: bool = False
+
+    path_airspace_file: str = 'test.json'
+    path_airspace_folder: str = 'airspaces'
+    path_root: str = ''
 
     radar_color_bg: tuple[int, int, int] = (0, 0, 0)
 
@@ -30,11 +36,17 @@ class Main:
         self.main_surface = pygame.display.set_mode((self.variables.display_width, self.variables.display_height))
         self.drawer = Drawer(self.main_surface)
         self.airspace = Airspace()
+        self.path_root = str(pathlib.Path().resolve())
         self.init()
 
     def init(self) -> None:
         pygame.init()
         pygame.display.set_caption(self.variables.game_caption)
+        self.airspace.load("{}\\{}\\{}".format(
+            self.path_root,
+            self.path_airspace_folder,
+            self.path_airspace_file
+        ))
         self.test_init()
 
     def test_init(self):
