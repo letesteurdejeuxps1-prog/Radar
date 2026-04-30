@@ -17,14 +17,14 @@ class Main:
 
     middle_click_on: bool = False
 
-    path_airspace_file: str = 'test.json'
+    path_airspace_file: str = 'horn.json'
     path_airspace_folder: str = 'airspaces'
     path_root: str = ''
 
     radar_color_bg: tuple[int, int, int] = (0, 0, 0)
 
     zoom: int | float = 1
-    zoom_increment: float = 0.05
+    zoom_increment: float = 0.1
     cam_offset_x: int | float = 0
     cam_offset_y: int | float = 0
     cam_offset_increment: int = 10
@@ -53,11 +53,72 @@ class Main:
         pass
 
     def test(self):
-        pass
+        pygame.draw.line(
+            self.main_surface,
+            (255, 0, 0),
+            (0, 0),
+            (
+                (self.airspace.points[0].pos_x * self.zoom) + self.cam_offset_x,
+                (self.airspace.points[0].pos_y * self.zoom) + self.cam_offset_y
+            )
+        )
+        pygame.draw.line(
+            self.main_surface,
+            (255, 0, 0),
+            (self.variables.display_width, self.variables.display_height),
+            (
+                (self.airspace.points[0].pos_x * self.zoom) + self.cam_offset_x,
+                (self.airspace.points[0].pos_y * self.zoom) + self.cam_offset_y
+            )
+        )
 
     def draw(self):
-        # Adapt tests to zoom
-        self.test_draw()
+        self.draw_airspace()
+
+    def draw_airspace(self):
+        for area in self.airspace.areas:
+            origin = None
+            old_coord = ()
+            new_coord = ()
+            origin = ()
+            for coord in area.coordinates_converted:
+                if len(old_coord) == 0:
+                    origin = coord
+                    old_coord = coord
+                else:
+                    new_coord = coord
+                    self.drawer.draw_line(
+                        old_coord[0],
+                        old_coord[1],
+                        new_coord[0],
+                        new_coord[1],
+                        (155, 155, 155),
+                        self.cam_offset_x,
+                        self.cam_offset_y,
+                        self.zoom
+                    )
+                    old_coord = new_coord
+            self.drawer.draw_line(
+                origin[0],
+                origin[1],
+                new_coord[0],
+                new_coord[1],
+                (155, 155, 155),
+                self.cam_offset_x,
+                self.cam_offset_y,
+                self.zoom
+            )
+
+        for point in self.airspace.points:
+            self.drawer.draw_circle(
+                point.pos_x,
+                point.pos_y,
+                (255, 255, 255),
+                5,
+                self.cam_offset_x,
+                self.cam_offset_y,
+                self.zoom
+            )
 
     def test_draw(self):
         items = (
@@ -99,7 +160,8 @@ class Main:
 
             # TODO REMOVE TEST FUNCTION
             self.test()
-            self.test_draw()
+            # self.test_draw()
+            self.draw()
             pygame.display.flip()
             self.main_clock.tick(self.variables.display_fps)
 
@@ -115,6 +177,11 @@ class Main:
         if event.button == 1:
             # Left click
             print("Left click")
+            print(
+                "Pos: {}\nOffest => \n\tX: {}\n\tY: {}\nZoom: {}".format(
+                    pygame.mouse.get_pos(), self.cam_offset_x, self.cam_offset_y, self.zoom
+                )
+            )
         if event.button == 2:
             # Middle click
             self.middle_click_on = True

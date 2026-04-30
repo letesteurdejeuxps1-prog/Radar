@@ -10,64 +10,28 @@
     "HORN": {
       "ABBR": "HRN",
       "TYPE": "VOR",
-      "pos_x": "50°25'33''N",
-      "pos_y": "50°30'44''N"
+      "pos_x": "40°00'00''E",
+      "pos_y": "40°00'00''N"
     },
     "FOO": {
       "ABBR": "FOO",
       "TYPE": "VOR_DME",
-      "pos_x": "47°25'33''N",
-      "pos_y": "50°30'44''N"
+      "pos_x": "50°00'00''E",
+      "pos_y": "50°00'00''N"
     },
     "BAR": {
       "ABBR": "BAR",
       "TYPE": "DME",
-      "pos_x": "54°25'33''N",
-      "pos_y": "51°30'44''N"
-    },
-    "FOOBAR": {
-      "ABBR": "FBR",
-      "TYPE": "GNSS",
-      "pos_x": "49°25'33''N",
-      "pos_y": "49°30'44''N"
-    },
-    "LOCATOR": {
-      "ABBR": "LOC",
-      "TYPE": "NDB",
-      "pos_x": "54°25'33''N",
-      "pos_y": "51°30'44''N"
+      "pos_x": "40°00'00''E",
+      "pos_y": "60°00'00''N"
     }
   },
   "areas": {
     "area_1": {
       "coord": [
-        "45°N,45°E",
-        "45°N,50°E",
-        "50°N,50°E",
-        "50°N,45°E"
-      ],
-      "limit_low": "4500ft",
-      "limit_high": "FL205",
-      "lowest_alt": "5000ft",
-      "highest_alt": "FL200"
-    },
-    "area_2": {
-      "coord": [
-        "45°N,50°E",
-        "45°N,55°E",
-        "50°N,55°E",
-        "50°N,50°E"
-      ],
-      "limit_low": "FL65",
-      "limit_high": "FL655",
-      "lowest_alt": "FL70",
-      "highest_alt": "FL660"
-    },
-    "area_3": {
-      "coord": [
-        "50°N,45°E",
-        "53°N,48°E",
-        "45°N,55°E"
+        "40°00'00N''|40°00'00''E",
+        "50°00'00N''|50°00'00''E",
+        "40°00'00N''|60°00'00''E"
       ],
       "limit_low": "4500ft",
       "limit_high": "FL205",

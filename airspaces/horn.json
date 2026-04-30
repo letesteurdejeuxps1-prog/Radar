@@ -1,0 +1,125 @@
+{
+  "name": "Test",
+  "center": "57°52'24''N|15°56'03''N",
+  "points": {
+    "Horn":   {"ABBR":"HRN",    "TYPE": "GNSS",   "coord": "57°52'24''N|15°56'03''E"},
+    "Stabbi": {"ABBR":"STA",    "TYPE": "GNSS",   "coord": "58°28'34''N|15°31'06''E"},
+    "Crona":  {"ABBR":"CRONA",  "TYPE": "GNSS",   "coord": "58°31'55''N|15°46'04''E"},
+    "Marco":  {"ABBR":"MARCO",  "TYPE": "GNSS",   "coord": "58°34'46''N|15°58'45''E"},
+    "Hoffa":  {"ABBR":"HOFFA",  "TYPE": "GNSS",   "coord": "58°32'05''N|16°14'44''E"},
+    "Harbo":  {"ABBR":"HARBO",  "TYPE": "GNSS",   "coord": "58°29'11''N|16°22'18''E"},
+    "Stege":  {"ABBR":"STEGE",  "TYPE": "GNSS",   "coord": "58°25'18''N|16°32'26''E"},
+    "Roxen":  {"ABBR":"ROX",    "TYPE": "GNSS",   "coord": "58°26'13''N|16°00'56''E"},
+    "Idun":   {"ABBR":"IDN",    "TYPE": "GNSS",   "coord": "58°09'19''N|16°16'59''E"},
+    "Malma":  {"ABBR":"MAL",    "TYPE": "GNSS",   "coord": "58°03'39''N|15°36'19''E"},
+    "Tompa":  {"ABBR":"TOMPA",  "TYPE": "GNSS",   "coord": "58°02'00''N|15°57'59''E"},
+    "Torro":  {"ABBR":"TOR",    "TYPE": "GNSS",   "coord": "57°48'51''N|16°40'53''E"},
+    "Ester":  {"ABBR":"ESTER",  "TYPE": "GNSS",   "coord": "57°45'00''N|17°21'38''E"},
+    "Hakar":  {"ABBR":"HAKAR",  "TYPE": "GNSS",   "coord": "57°48'01''N|14°21'25''E"},
+    "Asker":  {"ABBR":"ASK",    "TYPE": "GNSS",   "coord": "57°47'59''N|15°00'06''E"},
+    "Andie":  {"ABBR":"ANDIE",  "TYPE": "GNSS",   "coord": "57°42'06''N|15°57'50''E"},
+    "Bello":  {"ABBR":"BELLO",  "TYPE": "GNSS",   "coord": "57°40'00''N|15°24'00''E"},
+    "Petak":  {"ABBR":"PETAK",  "TYPE": "GNSS",   "coord": "57°34'45''N|14°10'24''E"},
+    "Remox":  {"ABBR":"REMOX",  "TYPE": "GNSS",   "coord": "57°26'36''N|14°23'50''E"},
+    "Disla":  {"ABBR":"DISLA",  "TYPE": "GNSS",   "coord": "57°25'45''N|14°25'41''E"},
+    "Vetta":  {"ABBR":"VET",    "TYPE": "GNSS",   "coord": "57°34'00''N|14°39'59''E"},
+    "Paddi":  {"ABBR":"PADDI",  "TYPE": "GNSS",   "coord": "57°18'13''N|15°01'03''E"},
+    "Skiro":  {"ABBR":"SKI",    "TYPE": "GNSS",   "coord": "57°14'12''N|15°24'09''E"},
+    "Pelle":  {"ABBR":"PELLE",  "TYPE": "GNSS",   "coord": "57°12'10''N|15°57'24''E"},
+    "Virum":  {"ABBR":"VRM",    "TYPE": "GNSS",   "coord": "57°28'43''N|16°26'02''E"}
+  },
+  "areas": {
+    "area_1": {
+      "coord": [
+        "58°24'45''N|15°24'00''E",
+        "58°33'30''N|15°59'45''E",
+        "58°23'30''N|16°27'00''E"
+      ],
+      "limit_low": "4500ft",
+      "limit_high": "FL205",
+      "lowest_alt": "5000ft",
+      "highest_alt": "FL200"
+    },
+    "area_2": {
+      "coord": [
+        "58°24'45''N|15°24'00''E",
+        "58°23'30''N|16°27'00''E",
+        "57°58'15''N|16°43'00''E",
+        "57°46'00''N|16°35'00''E",
+        "58°09'55''N|16°29'00''E",
+        "58°13'30''N|15°16'30''E"
+      ],
+      "limit_low": "4500ft",
+      "limit_high": "FL205",
+      "lowest_alt": "5000ft",
+      "highest_alt": "FL200"
+    },
+    "area_3": {
+      "coord": [
+        "58°13'30''N|15°16'30''E",
+        "58°09'55''N|16°29'00''E",
+        "57°46'00''N|16°35'00''E",
+        "57°31'30''N|15°51'30''E",
+        "57°46'00''N|15°00'50''E",
+        "57°50'45''N|15°01'30''E"
+      ],
+      "limit_low": "4500ft",
+      "limit_high": "FL205",
+      "lowest_alt": "5000ft",
+      "highest_alt": "FL200"
+    },
+    "area_4": {
+      "coord": [
+        "57°58'15''N|16°43'00''E",
+        "57°53'00''N|17°22'00''E",
+        "57°43'00''N|17°12'30''E",
+        "57°46'00''N|16°35'00''E"
+      ],
+      "limit_low": "4500ft",
+      "limit_high": "FL205",
+      "lowest_alt": "5000ft",
+      "highest_alt": "FL200"
+    },
+    "area_5": {
+      "coord": [
+        "57°50'30''N|14°25'30''E",
+        "57°50'45''N|15°01'30''E",
+        "57°46'00''N|15°00'50''E",
+        "57°19'30''N|14°55'00''E",
+        "57°23'15''N|14°32'00''E",
+        "57°34'00''N|14°12'00''E"
+      ],
+      "limit_low": "4500ft",
+      "limit_high": "FL205",
+      "lowest_alt": "5000ft",
+      "highest_alt": "FL200"
+    },
+    "area_6": {
+      "coord": [
+        "57°46'00''N|15°00'50''E",
+        "57°31'30''N|15°31'30''E",
+        "57°12'30''N|15°51'40''E",
+        "57°13'30''N|15°31'00''E",
+        "57°19'30''N|14°55'00''E"
+      ],
+      "limit_low": "4500ft",
+      "limit_high": "FL205",
+      "lowest_alt": "5000ft",
+      "highest_alt": "FL200"
+    },
+    "area_7": {
+      "coord": [
+        "57°46'00''N|16°35'00''E",
+        "57°43'00''N|17°12'30''E",
+        "57°12'30''N|16°45'00''E",
+        "57°13'15''N|15°51'40''E",
+        "57°31'30''N|15°51'30''E"
+      ],
+      "limit_low": "4500ft",
+      "limit_high": "FL205",
+      "lowest_alt": "5000ft",
+      "highest_alt": "FL200"
+    }
+  }
+}
+

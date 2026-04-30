@@ -33,8 +33,12 @@ class Drawer:
         pos_y: int|float,
         width: int|float,
         height: int|float,
-        color: tuple[int, int, int]
+        color: tuple[int, int, int],
+        offset_x: int | float = 0,
+        offset_y: int | float = 0,
+        zoom: int | float = 0,
     ):
+        print("TODO : update this function (Drawer draw_rect_centered to take zoom and offset into account")
         self.draw_rect(
             pos_x - width/2,
             pos_y - height/2,
@@ -49,14 +53,20 @@ class Drawer:
         pos_y: int|float,
         color: tuple[int, int, int],
         radius: int|float,
+        offset_x: int | float = 0,
+        offset_y: int | float = 0,
+        zoom: int | float = 0,
         width: int = 3
     ):
         pygame.draw.circle(
             self.surface,
             color,
-            (pos_x, pos_y),
+            (
+                (pos_x * zoom) + offset_x,
+                (pos_y * zoom) + offset_y
+            ),
             radius,
-            width
+            int(width * zoom)
         )
 
     def draw_line(
@@ -66,13 +76,20 @@ class Drawer:
             end_x: int|float,
             end_y: int|float,
             color: tuple[int, int, int],
+            offset_x: int | float = 0,
+            offset_y: int | float = 0,
+            zoom: int | float = 0,
             width: int = 2
     ):
+        sx = (start_x * zoom) + offset_x
+        sy = (start_y * zoom) + offset_y
+        ex = (end_x * zoom) + offset_x
+        ey = (end_y * zoom) + offset_y
         pygame.draw.line(
             self.surface,
             color,
-            (start_x, end_x),
-            (start_y, end_y),
+            (sx, sy),
+            (ex, ey),
             width
         )
 

@@ -11,8 +11,7 @@ class Airspace:
     aerodrome: list[Aerodrome]
     points: list[Point]
 
-    center_x: int|float
-    center_y: int|float
+    center: int|float
     limit_w: int|float
     limit_e: int|float
     limit_n: int|float
@@ -30,30 +29,31 @@ class Airspace:
             data = json.load(raw_data)
             try:
                 self.name = data['name']
-                self.center_x = data['center_x']
-                self.center_y = data['center_y']
-                self.limit_w = data['limit_w']
-                self.limit_e = data['limit_e']
-                self.limit_n = data['limit_n']
-                self.limit_s = data['limit_s']
-
+                self.center = data['center']
                 points = []
                 for point in data['points']:
                     pt = data['points'][point]
+                    coord_converted = convert_lat_long_to_nmbr(pt.get('coord'))
                     new_point = Point(
                         point,
                         pt.get('ABBR'),
                         pt.get('type'),
-                        convert_lat_long_to_nmbr(pt.get('pos_x')),
-                        convert_lat_long_to_nmbr(pt.get('pos_y'))
+                        coord_converted[0],
+                        coord_converted[1]
                     )
                     points.append(new_point)
                 self.points = points
                 areas = []
                 for area in data['areas']:
                     area = data['areas'][area]
+                    coordinates = []
+                    for item in area.get('coord'):
+                        coordinates.append(
+                            convert_lat_long_to_nmbr(item)
+                        )
                     new_area = Area(
                         area.get('coord'),
+                        coordinates,
                         area.get('limit_low'),
                         area.get('limit_high'),
                         area.get('highest_alt'),
@@ -61,6 +61,7 @@ class Airspace:
                     )
                     areas.append(new_area)
                 self.areas = areas
+                print(len(self.areas))
             except KeyError as e:
                 print("Could not load airspace. Key {} does not exist or is incorrect".format(e.args[0]))
 

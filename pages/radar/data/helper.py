@@ -1,4 +1,5 @@
 import math
+from pages.radar.data.immovable_variable import scale_NM_to_su
 
 
 def get_rad_angle(angle: int) -> float:
@@ -37,41 +38,71 @@ def can_be_converted_to_nmbr(value):
         return False
 
 def convert_lat_long_to_nmbr(data: str):
-    # TODO : Handle N, S, W, E coordinates
-    if data.endswith('N'):
-        data = data.removesuffix('N')
-    elif data.endswith('S'):
-        data = data.removesuffix('S')
-    elif data.endswith('W'):
-        data = data.removesuffix('W')
-    elif data.endswith('E'):
-        data = data.removesuffix('E')
     try:
-        if 'Â°' in data:
-            first_split = data.split('Â°')
-        elif 'Â' in data:
-            first_split = data.split('Â')
-        elif '°' in data:
-            first_split = data.split('°')
-        else:
-            raise ValueError("Unable to convert {}".format(data))
-        second_split = first_split[-1].split("'")
-        degree = int(first_split[0])
-        if second_split[0] != '':
-            minutes = int(second_split[0])
-            if minutes >  60:
-                raise ValueError(" Invalid value for seconds, got {}".format(minutes))
-        else:
-            minutes = 0
-        if len (second_split) == 2 and second_split[1] != '':
-            seconds = int(second_split[1].removesuffix("''"))
-            if seconds > 60:
-                raise ValueError(" Invalid value for seconds, got {}".format(seconds))
-        else:
-            seconds = 0
-        return degree + minutes / 60 + seconds / 60
-    except ValueError as e:
-        print("Error in the conversion of lat/long to decimal.{}".format(e))
-        return False
+        data = data.split('|')
+        if len(data) != 2:
+            raise ValueError
+    except ValueError:
+        print("More than 2 coordiantes passed to helper.convert_lat_long_to_nmbr function. Data was : {}".format(data))
 
+    converted_coordinates = [None, None]
+    for coord in data:
+        is_north = False
+        is_south = False
+        is_east = False
+        is_west = False
+        # TODO : Handle N, S, W, E coordinates
+        if coord.endswith('N'):
+            coord = coord.removesuffix('N')
+            is_north = True
+        elif coord.endswith('S'):
+            coord = coord.removesuffix('S')
+            is_south = True
+        elif coord.endswith('W'):
+            coord = coord.removesuffix('W')
+            is_west = True
+        elif coord.endswith('E'):
+            coord = coord.removesuffix('E')
+            is_east = True
+        try:
+            if 'Â°' in coord:
+                first_split = coord.split('Â°')
+            elif 'Â' in coord:
+                first_split = coord.split('Â')
+            elif '°' in coord:
+                first_split = coord.split('°')
+            else:
+                raise ValueError("Unable to convert {}".format(coord))
+            second_split = first_split[-1].split("'")
+            degree = int(first_split[0])
+            if second_split[0] != '':
+                minutes = int(second_split[0])
+                if minutes >  60:
+                    raise ValueError(" Invalid value for seconds, got {}".format(minutes))
+            else:
+                minutes = 0
+            if len (second_split) == 2 and second_split[1] != '':
+                seconds = int(second_split[1].removesuffix("''"))
+                if seconds > 60:
+                    raise ValueError(" Invalid value for seconds, got {}".format(seconds))
+            else:
+                seconds = 0
 
+            foo = "{} {} {}".format(degree, minutes, seconds)
+
+            if is_east:
+                return_value = -1 * (degree + minutes / 60 + seconds / 60)
+            else:
+                return_value = degree + minutes / 60 + seconds / 3600
+
+            if is_north or is_south:
+                return_value = return_value * -1
+                converted_coordinates[1] = return_value * scale_NM_to_su
+            elif is_east or is_west:
+                converted_coordinates[0] = return_value * scale_NM_to_su
+
+        except ValueError as e:
+            print("Error in the conversion of lat/long to decimal.{}".format(e))
+            return False
+
+    return converted_coordinates
