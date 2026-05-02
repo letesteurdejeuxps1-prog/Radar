@@ -61,7 +61,6 @@ class Airspace:
                     )
                     areas.append(new_area)
                 self.areas = areas
-                print(len(self.areas))
             except KeyError as e:
                 print("Could not load airspace. Key {} does not exist or is incorrect".format(e.args[0]))
 

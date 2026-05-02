@@ -3,7 +3,7 @@ import pygame
 class Area:
     def __init__(
         self,
-        coordinates: tuple[int, ...],
+        coordinates: tuple,
         coordinates_converted: list,
         limit_low: int,
         limit_high: int,
