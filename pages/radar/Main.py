@@ -23,10 +23,13 @@ class Main:
 
     radar_color_bg: tuple[int, int, int] = (0, 0, 0)
 
+    default_zoom: int | float = 1
     zoom: int | float = 1
     zoom_increment: float = 0.1
     cam_offset_x: int | float = 0
     cam_offset_y: int | float = 0
+    cam_center_x: int | float = 0
+    cam_center_y: int | float = 0
     cam_offset_increment: int = 10
 
     def __init__(self, v: Variables) -> None:
@@ -38,6 +41,7 @@ class Main:
         self.airspace = Airspace()
         self.path_root = str(pathlib.Path().resolve())
         self.init()
+        self.after_init()
 
     def init(self) -> None:
         pygame.init()
@@ -47,12 +51,30 @@ class Main:
             self.path_airspace_folder,
             self.path_airspace_file
         ))
+        self.variables.display_width_half = self.variables.display_width // 2
+        self.variables.display_height_half = self.variables.display_height // 2
         self.test_init()
+
+    def after_init(self):
+        match_center: tuple[int|float, int|float]|bool = False
+        search_data = str(self.airspace.center)
+        for point in self.airspace.points:
+            if search_data.lower() == point.name.lower() or search_data.lower() == point.abbreviation.lower():
+                match_center = (point.pos_x, point.pos_y)
+        if match_center != False:
+            self.cam_center_x = - match_center[0] + self.variables.display_width // 2
+            self.cam_center_y = - match_center[1] + self.variables.display_height // 2
+            self.zoom = self.default_zoom
+        else:
+            self.cam_offset_x = 0
+            self.cam_offset_y = 0
+            self.zoom = self.default_zoom
 
     def test_init(self):
         pass
 
     def test(self):
+        """
         pygame.draw.line(
             self.main_surface,
             (255, 0, 0),
@@ -66,6 +88,16 @@ class Main:
             self.main_surface,
             (255, 0, 0),
             (self.variables.display_width, self.variables.display_height),
+            (
+                (self.airspace.points[0].pos_x * self.zoom) + self.cam_offset_x,
+                (self.airspace.points[0].pos_y * self.zoom) + self.cam_offset_y
+            )
+        )
+        """
+        pygame.draw.line(
+            self.main_surface,
+            (255, 0, 0),
+            (640, 360),
             (
                 (self.airspace.points[0].pos_x * self.zoom) + self.cam_offset_x,
                 (self.airspace.points[0].pos_y * self.zoom) + self.cam_offset_y
@@ -160,7 +192,7 @@ class Main:
 
             # TODO REMOVE TEST FUNCTION
             self.test()
-            # self.test_draw()
+            self.test_draw()
             self.draw()
             pygame.display.flip()
             self.main_clock.tick(self.variables.display_fps)
@@ -177,11 +209,6 @@ class Main:
         if event.button == 1:
             # Left click
             print("Left click")
-            print(
-                "Pos: {}\nOffest => \n\tX: {}\n\tY: {}\nZoom: {}".format(
-                    pygame.mouse.get_pos(), self.cam_offset_x, self.cam_offset_y, self.zoom
-                )
-            )
         if event.button == 2:
             # Middle click
             self.middle_click_on = True
@@ -211,9 +238,9 @@ class Main:
         elif key_pressed == pygame.K_RIGHT:
             self.cam_offset_x += self.cam_offset_increment
         elif key_pressed == pygame.K_c:
-            self.cam_offset_x = 0
-            self.cam_offset_y = 0
-            self.zoom = 1
+            self.zoom = self.default_zoom
+            self.cam_offset_x = self.cam_center_x
+            self.cam_offset_y = self.cam_center_y
 
     def update_counter(self) -> None:
         self.main_second_counter += 1
