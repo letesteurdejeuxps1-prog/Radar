@@ -1,3 +1,4 @@
+import math
 import pathlib
 import pygame
 
@@ -204,6 +205,8 @@ class Main:
             self.zoom += self.zoom_increment
         elif event.y == -1:
             self.zoom -= self.zoom_increment
+        self.cam_offset_x = self.cam_center_x * self.zoom
+        self.cam_offset_y = self.cam_center_y * self.zoom
 
     def handle_event_mouseclick(self, event):
         if event.button == 1:
@@ -238,9 +241,12 @@ class Main:
         elif key_pressed == pygame.K_RIGHT:
             self.cam_offset_x += self.cam_offset_increment
         elif key_pressed == pygame.K_c:
-            self.zoom = self.default_zoom
-            self.cam_offset_x = self.cam_center_x
-            self.cam_offset_y = self.cam_center_y
+            self.reset_camera()
+
+    def reset_camera(self):
+        self.zoom = self.default_zoom
+        self.cam_offset_x = self.cam_center_x
+        self.cam_offset_y = self.cam_center_y
 
     def update_counter(self) -> None:
         self.main_second_counter += 1
