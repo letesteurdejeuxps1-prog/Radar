@@ -15,7 +15,9 @@ class Main:
     main_running: bool = False
     main_second_counter: int = 1
 
+    left_click_on: bool = False
     middle_click_on: bool = False
+    right_click_on: bool = False
 
     path_airspace_file: str = 'horn.json'
     path_airspace_folder: str = 'airspaces'
@@ -141,8 +143,9 @@ class Main:
                     self.handle_event_scroll(event)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self.handle_event_mouseclick(event)
-                elif event.type == pygame.MOUSEMOTION and self.middle_click_on:
-                    self.handle_event_mouse_middle_click_drag(event)
+                elif event.type == pygame.MOUSEMOTION:
+                    if self.middle_click_on or self.right_click_on:
+                        self.handle_event_mouse_middle_click_drag(event)
                 elif event.type == pygame.MOUSEBUTTONUP:
                     self.handle_event_mouseclick_off()
 
@@ -178,16 +181,19 @@ class Main:
         if event.button == 1:
             # Left click
             print("Left click")
+            self.left_click_on = True
         if event.button == 2:
             # Middle click
             self.middle_click_on = True
         if event.button == 3:
             # Right click
             print("Right click")
-            print(self.zoom)
+            self.right_click_on = True
 
     def handle_event_mouseclick_off(self):
+        self.left_click_on = False
         self.middle_click_on = False
+        self.right_click_on = False
 
     def handle_event_mouse_middle_click_drag(self, event):
         if isinstance(event.rel, tuple) and len(event.rel) == 2:
