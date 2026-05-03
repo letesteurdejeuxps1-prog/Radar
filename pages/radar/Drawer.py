@@ -122,18 +122,7 @@ class Drawer:
             )
 
         if isinstance(point.pygame_img, pygame.Surface):
-            pos_x = (point.pos_x * zoom) - offset_x
-            pos_y = (point.pos_y * zoom) - offset_y
-            self.surface.blit(point.pygame_img, (pos_x, pos_y))
-
-
-
-        self.draw_circle(
-            point.pos_x,
-            point.pos_y,
-            (255, 255, 255),
-            5,
-            offset_x,
-            offset_y,
-            zoom
-        )
+            pos_x = world_to_screen(point.pos_x, offset_x, zoom)
+            pos_y = world_to_screen(point.pos_y, offset_y, zoom)
+            rect = point.pygame_img.get_rect(center=(pos_x, pos_y))
+            self.surface.blit(point.pygame_img, rect)

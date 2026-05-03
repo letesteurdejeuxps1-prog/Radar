@@ -123,15 +123,6 @@ class Main:
                 self.cam_offset_y,
                 self.zoom
             )
-            # self.drawer.draw_circle(
-            #     point.pos_x,
-            #     point.pos_y,
-            #     (255, 255, 255),
-            #     5,
-            #     self.cam_offset_x,
-            #     self.cam_offset_y,
-            #     self.zoom
-            # )
 
     def test_draw(self):
         pass
