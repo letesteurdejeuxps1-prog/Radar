@@ -83,3 +83,6 @@ def convert_lat_long_to_nmbr(data: str):
             return False
 
     return converted_coordinates
+
+def world_to_screen(pos, offset, zoom):
+    return (pos * zoom) - offset

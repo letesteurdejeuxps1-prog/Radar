@@ -1,6 +1,7 @@
 import pygame
 
 from pages.radar.airspace.Point import Point
+from pages.radar.data.helper import world_to_screen
 
 
 class Drawer:
@@ -37,8 +38,8 @@ class Drawer:
             self.surface,
             color,
             (
-                (pos_x * zoom) - offset_x,
-                (pos_y * zoom) - offset_y,
+                world_to_screen(pos_x, offset_x, zoom),
+                world_to_screen(pos_y, offset_y, zoom),
                 width * zoom,
                 height * zoom
             )
@@ -79,8 +80,8 @@ class Drawer:
             self.surface,
             color,
             (
-                (pos_x * zoom) - offset_x,
-                (pos_y * zoom) - offset_y
+                world_to_screen(pos_x, offset_x, zoom),
+                world_to_screen(pos_y, offset_y, zoom)
             ),
             radius,
             int(width * zoom)
@@ -98,10 +99,11 @@ class Drawer:
             zoom: int | float = 0,
             width: int = 2
     ):
-        sx = (start_x * zoom) - offset_x
-        sy = (start_y * zoom) - offset_y
-        ex = (end_x * zoom) - offset_x
-        ey = (end_y * zoom) - offset_y
+        sx = world_to_screen(start_x, offset_x, zoom)
+        sy = world_to_screen(start_y, offset_y, zoom)
+        ex = world_to_screen(end_x, offset_x, zoom)
+        ey = world_to_screen(end_y, offset_y, zoom)
+
         pygame.draw.line(
             self.surface,
             color,
