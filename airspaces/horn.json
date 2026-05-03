@@ -1,6 +1,7 @@
 {
   "name": "Test",
   "center": "Horn",
+  "default_zoom": 300,
   "points": {
     "Horn":   {"ABBR":"HRN",    "TYPE": "VOR/DME",    "coord": "57°52'24''N|15°56'03''E"},
     "Stabbi": {"ABBR":"STA",    "TYPE": "GNSS",       "coord": "58°28'34''N|15°31'06''E"},

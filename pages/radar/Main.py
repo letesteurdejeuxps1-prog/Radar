@@ -1,4 +1,3 @@
-import math
 import pathlib
 import pygame
 
@@ -18,7 +17,7 @@ class Main:
 
     middle_click_on: bool = False
 
-    path_airspace_file: str = 'test.json'
+    path_airspace_file: str = 'horn.json'
     path_airspace_folder: str = 'airspaces'
     path_root: str = ''
 
@@ -62,9 +61,10 @@ class Main:
         for point in self.airspace.points:
             if search_data.lower() == point.name.lower() or search_data.lower() == point.abbreviation.lower():
                 match_center = (point.pos_x, point.pos_y)
-        if match_center != False:
+        if isinstance(match_center, tuple):
             self.cam_center_x = match_center[0]
             self.cam_center_y = match_center[1]
+            self.default_zoom = self.airspace.default_zoom
             self.zoom = self.default_zoom
         else:
             self.cam_offset_x = 0
@@ -76,42 +76,13 @@ class Main:
         pass
 
     def test(self):
-        """
-        pygame.draw.line(
-            self.main_surface,
-            (255, 0, 0),
-            (0, 0),
-            (
-                (self.airspace.points[0].pos_x * self.zoom) + self.cam_offset_x,
-                (self.airspace.points[0].pos_y * self.zoom) + self.cam_offset_y
-            )
-        )
-        pygame.draw.line(
-            self.main_surface,
-            (255, 0, 0),
-            (self.variables.display_width, self.variables.display_height),
-            (
-                (self.airspace.points[0].pos_x * self.zoom) + self.cam_offset_x,
-                (self.airspace.points[0].pos_y * self.zoom) + self.cam_offset_y
-            )
-        )
-        """
-        pygame.draw.line(
-            self.main_surface,
-            (255, 0, 0),
-            (640, 360),
-            (
-                (self.airspace.points[0].pos_x * self.zoom) + self.cam_offset_x,
-                (self.airspace.points[0].pos_y * self.zoom) + self.cam_offset_y
-            )
-        )
+        pass
 
     def draw(self):
         self.draw_airspace()
 
     def draw_airspace(self):
         for area in self.airspace.areas:
-            origin = None
             old_coord = ()
             new_coord = ()
             origin = ()
@@ -155,24 +126,7 @@ class Main:
             )
 
     def test_draw(self):
-        items = (
-            ((255, 0, 255), (10, 10, 60, 70)),
-            ((0, 255, 255), (100, 140, 200, 70)),
-            ((255, 255, 0), (35, 35, 600, 10)),
-            ((255, 50, 50), (70, 80, 30, 30)),
-            ((255, 255, 255), ((1280 // 2) - 5, (720 // 2) - 5, 10, 10))
-        )
-        for item in items:
-            self.drawer.draw_rect(
-                item[1][0],
-                item[1][1],
-                item[1][2],
-                item[1][3],
-                item[0],
-                self.cam_offset_x,
-                self.cam_offset_y,
-                self.zoom,
-            )
+        pass
 
     def run(self) -> None:
         while self.main_running:
@@ -184,7 +138,7 @@ class Main:
                 elif event.type == pygame.KEYDOWN:
                     self.handle_event_key_down(event.key)
                 elif event.type == pygame.MOUSEWHEEL:
-                    self.handle_event_mousewheel(event)
+                    self.handle_event_scroll(event)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self.handle_event_mouseclick(event)
                 elif event.type == pygame.MOUSEMOTION and self.middle_click_on:
@@ -201,7 +155,7 @@ class Main:
 
         pygame.quit()
 
-    def handle_event_mousewheel(self, event):
+    def handle_event_scroll(self, event):
 
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
@@ -214,7 +168,7 @@ class Main:
         self.zoom *= zoom_factor
 
         # Optional: clamp zoom
-        self.zoom = max(0.1, min(self.zoom, 10))
+        self.zoom = max(0.1, min(self.zoom, 1000))
 
         # 4. Recalculate offset so the world point stays under the mouse
         self.cam_offset_x = world_x * self.zoom - mouse_x
@@ -230,6 +184,7 @@ class Main:
         if event.button == 3:
             # Right click
             print("Right click")
+            print(self.zoom)
 
     def handle_event_mouseclick_off(self):
         self.middle_click_on = False

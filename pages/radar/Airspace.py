@@ -12,6 +12,7 @@ class Airspace:
     points: list[Point]
 
     center: int|float
+    default_zoom: int|float
     limit_w: int|float
     limit_e: int|float
     limit_n: int|float
@@ -30,6 +31,7 @@ class Airspace:
             try:
                 self.name = data['name']
                 self.center = data['center']
+                self.default_zoom = data['default_zoom']
                 points = []
                 for point in data['points']:
                     pt = data['points'][point]
