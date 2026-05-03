@@ -43,11 +43,14 @@ class Main:
         self.main_running = True
         self.main_counter = 0
         self.variables = v
-        self.main_surface = pygame.display.set_mode((self.variables.display_width, self.variables.display_height))
-        self.drawer = Drawer(self.main_surface, self.root_directory)
         self.airspace = Airspace()
         self.path_root = str(pathlib.Path().resolve())
         self.init()
+        info = pygame.display.Info()
+        self.variables.display_width = info.current_w
+        self.variables.display_height = info.current_h
+        self.main_surface = pygame.display.set_mode((self.variables.display_width, self.variables.display_height))
+        self.drawer = Drawer(self.main_surface, self.root_directory)
         self.after_init()
 
     def init(self) -> None:
@@ -213,7 +216,9 @@ class Main:
             self.cam_offset_y -= event.rel[1]
 
     def handle_event_key_down(self, key_pressed):
-        if key_pressed == pygame.K_KP_PLUS:
+        if key_pressed == pygame.K_q:
+            self.main_running = False
+        elif key_pressed == pygame.K_KP_PLUS:
             self.zoom += self.zoom_increment
         elif key_pressed == pygame.K_KP_MINUS:
             self.zoom -= self.zoom_increment
