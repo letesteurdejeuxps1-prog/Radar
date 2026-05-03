@@ -7,6 +7,9 @@ from pages.radar.Drawer import Drawer
 
 
 class Main:
+
+    font = None
+
     game_acft_id_counter: int = 1
     game_acft_selected_id: int = 0
 
@@ -23,6 +26,8 @@ class Main:
     path_root: str = ''
 
     radar_color_bg: tuple[int, int, int] = (0, 0, 0)
+
+    radar_show_navaids_name: bool = True
 
     default_zoom: int | float = 1
     zoom: int | float = 1
@@ -55,6 +60,7 @@ class Main:
         ))
         self.variables.display_width_half = self.variables.display_width // 2
         self.variables.display_height_half = self.variables.display_height // 2
+        self.font = pygame.font.SysFont("consolas", 14)
         self.test_init()
 
     def after_init(self):
@@ -123,6 +129,15 @@ class Main:
                 self.cam_offset_y,
                 self.zoom
             )
+            if self.radar_show_navaids_name:
+                self.drawer.write_navaids_name(
+                    point,
+                    self.cam_offset_x,
+                    self.cam_offset_y,
+                    self.zoom,
+                    self.font
+                )
+
 
     def test_draw(self):
         pass
