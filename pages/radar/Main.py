@@ -202,16 +202,23 @@ class Main:
         pygame.quit()
 
     def handle_event_mousewheel(self, event):
-        if event.y == 1:
-            self.zoom += self.zoom_increment
-        elif event.y == -1:
-            self.zoom -= self.zoom_increment
-        if self.zoom <= 0:
-            self.zoom = self.zoom_increment
-        correction_x = self.variables.display_width_half * (self.zoom / 2)
-        correction_y = self.variables.display_height_half * (self.zoom / 2)
-        self.cam_offset_x = (self.cam_center_x * self.zoom) - correction_x
-        self.cam_offset_y = (self.cam_center_y * self.zoom) - correction_y
+
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+
+        # 2. Convert mouse position to world coordinates BEFORE zoom
+        world_x = (mouse_x + self.cam_offset_x) / self.zoom
+        world_y = (mouse_y + self.cam_offset_y) / self.zoom
+
+        # 3. Apply zoom
+        zoom_factor = 1.1 if event.y > 0 else 0.9
+        self.zoom *= zoom_factor
+
+        # Optional: clamp zoom
+        self.zoom = max(0.1, min(self.zoom, 10))
+
+        # 4. Recalculate offset so the world point stays under the mouse
+        self.cam_offset_x = world_x * self.zoom - mouse_x
+        self.cam_offset_y = world_y * self.zoom - mouse_y
 
     def handle_event_mouseclick(self, event):
         if event.button == 1:
