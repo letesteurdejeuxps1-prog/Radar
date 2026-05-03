@@ -3,7 +3,7 @@
   "center": "HRN",
   "default_zoom": 300,
   "points": {
-    "HORN": {"ABBR": "HRN","TYPE": "DME","coord": "12°30'00''N|12°30'00''E"},
+    "HORN": {"ABBR":"HRN",    "TYPE": "DME",        "coord": "12°30'00''N|12°30'00''E"},
     "FOO": {"ABBR": "FOO","TYPE": "GNSS","coord": "12°30'00''N|11°30'00''E"},
     "BAR": {"ABBR": "BAR","TYPE": "VORDME","coord": "12°30'00''N|13°30'00''E"}
   },

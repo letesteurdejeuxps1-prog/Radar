@@ -39,7 +39,7 @@ class Main:
         self.main_counter = 0
         self.variables = v
         self.main_surface = pygame.display.set_mode((self.variables.display_width, self.variables.display_height))
-        self.drawer = Drawer(self.main_surface)
+        self.drawer = Drawer(self.main_surface, self.root_directory)
         self.airspace = Airspace()
         self.path_root = str(pathlib.Path().resolve())
         self.init()
@@ -117,15 +117,21 @@ class Main:
             )
 
         for point in self.airspace.points:
-            self.drawer.draw_circle(
-                point.pos_x,
-                point.pos_y,
-                (255, 255, 255),
-                5,
+            self.drawer.draw_icon(
+                point,
                 self.cam_offset_x,
                 self.cam_offset_y,
                 self.zoom
             )
+            # self.drawer.draw_circle(
+            #     point.pos_x,
+            #     point.pos_y,
+            #     (255, 255, 255),
+            #     5,
+            #     self.cam_offset_x,
+            #     self.cam_offset_y,
+            #     self.zoom
+            # )
 
     def test_draw(self):
         pass
