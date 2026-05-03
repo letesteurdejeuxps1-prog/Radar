@@ -38,7 +38,7 @@ class Airspace:
                     new_point = Point(
                         point,
                         pt.get('ABBR'),
-                        pt.get('type'),
+                        pt.get('TYPE'),
                         coord_converted[0],
                         coord_converted[1]
                     )
