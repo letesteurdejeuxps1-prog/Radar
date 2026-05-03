@@ -7,7 +7,6 @@ from pages.radar.Drawer import Drawer
 
 
 class Main:
-
     game_acft_id_counter: int = 1
     game_acft_selected_id: int = 0
 
@@ -34,7 +33,8 @@ class Main:
     cam_center_y: int | float = 0
     cam_offset_increment: int = 10
 
-    def __init__(self, v: Variables) -> None:
+    def __init__(self, v: Variables, working_dir: str) -> None:
+        self.root_directory = working_dir
         self.main_running = True
         self.main_counter = 0
         self.variables = v
@@ -58,7 +58,7 @@ class Main:
         self.test_init()
 
     def after_init(self):
-        match_center: tuple[int|float, int|float]|bool = False
+        match_center: tuple[int | float, int | float] | bool = False
         search_data = str(self.airspace.center)
         for point in self.airspace.points:
             if search_data.lower() == point.name.lower() or search_data.lower() == point.abbreviation.lower():

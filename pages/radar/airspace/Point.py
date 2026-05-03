@@ -1,12 +1,12 @@
 class Point:
 
     def __init__(
-        self,
-        name: str,
-        abbreviation: str,
-        type_of_point: str,
-        pos_x: int|float = 0,
-        pos_y: int|float = 0,
+            self,
+            name: str,
+            abbreviation: str,
+            type_of_point: str,
+            pos_x: int | float = 0,
+            pos_y: int | float = 0,
     ):
         self.name = name
         self.abbreviation = abbreviation

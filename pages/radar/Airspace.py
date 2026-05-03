@@ -6,22 +6,21 @@ from pages.radar.data.helper import convert_lat_long_to_nmbr
 
 
 class Airspace:
-
     areas: list[Area]
     aerodrome: list[Aerodrome]
     points: list[Point]
 
-    center: int|float
-    default_zoom: int|float
-    limit_w: int|float
-    limit_e: int|float
-    limit_n: int|float
-    limit_s: int|float
+    center: int | float
+    default_zoom: int | float
+    limit_w: int | float
+    limit_e: int | float
+    limit_n: int | float
+    limit_s: int | float
     name: str
 
     def __init__(
-        self,
-        file: str = ""
+            self,
+            file: str = ""
     ):
         self.file = file
 
@@ -65,4 +64,3 @@ class Airspace:
                 self.areas = areas
             except KeyError as e:
                 print("Could not load airspace. Key {} does not exist or is incorrect".format(e.args[0]))
-

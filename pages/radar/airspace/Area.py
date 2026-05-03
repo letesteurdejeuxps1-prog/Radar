@@ -1,14 +1,15 @@
 import pygame
 
+
 class Area:
     def __init__(
-        self,
-        coordinates: tuple,
-        coordinates_converted: list,
-        limit_low: int,
-        limit_high: int,
-        highest_alt: int,
-        lowest_alt: int
+            self,
+            coordinates: tuple,
+            coordinates_converted: list,
+            limit_low: int,
+            limit_high: int,
+            highest_alt: int,
+            lowest_alt: int
     ):
         self.coordinates = coordinates
         self.coordinates_converted = coordinates_converted

@@ -1,5 +1,4 @@
 class Variables:
-
     display_width: int = 1280
     display_height: int = 720
     display_width_half: int = 0

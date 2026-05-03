@@ -3,7 +3,6 @@ from pages.radar.data.immovable_variable import scale_NM_to_su
 
 
 class Acft:
-
     d_acft_width: int = 11
     d_acft_height: int = 11
     d_acft_color_ident: tuple[int, int, int] = (255, 255, 255)

@@ -1,13 +1,13 @@
+import os
 import pages.radar.Main as RadarMain
-import pages.Variables as vars
-
+import pages.Variables as Vars
 
 
 def main():
-    v = vars.Variables()
-    rm = RadarMain.Main(v)
+    v = Vars.Variables()
+    rm = RadarMain.Main(v, os.getcwd())
     rm.run()
+
 
 if __name__ == '__main__':
     main()
-

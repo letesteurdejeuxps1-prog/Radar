@@ -4,11 +4,14 @@ import math
 def get_rad_angle(angle: int) -> float:
     return math.radians(angle - 90)
 
+
 def get_cos_angle(angle: float) -> float:
     return math.cos(angle)
 
+
 def get_sin_angle(angle: float) -> float:
     return math.sin(angle)
+
 
 def convert_lat_long_to_nmbr(data: str):
     # TODO : improve the code of this function
@@ -53,11 +56,11 @@ def convert_lat_long_to_nmbr(data: str):
             degree = int(first_split[0])
             if second_split[0] != '':
                 minutes = int(second_split[0])
-                if minutes >  60:
+                if minutes > 60:
                     raise ValueError(f"Invalid value for seconds, got {minutes}")
             else:
                 minutes = 0
-            if len (second_split) == 2 and second_split[1] != '':
+            if len(second_split) == 2 and second_split[1] != '':
                 seconds = int(second_split[1].removesuffix("''"))
                 if seconds > 60:
                     raise ValueError(f"Invalid value for seconds, got {seconds}")
