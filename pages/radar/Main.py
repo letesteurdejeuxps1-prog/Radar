@@ -171,7 +171,7 @@ class Main:
         self.zoom *= zoom_factor
 
         # Optional: clamp zoom
-        self.zoom = max(0.1, min(self.zoom, 1000))
+        self.zoom = max(0.1, min(self.zoom, 600000000))
 
         # 4. Recalculate offset so the world point stays under the mouse
         self.cam_offset_x = world_x * self.zoom - mouse_x
