@@ -63,8 +63,8 @@ class Main:
             if search_data.lower() == point.name.lower() or search_data.lower() == point.abbreviation.lower():
                 match_center = (point.pos_x, point.pos_y)
         if match_center != False:
-            self.cam_center_x = - match_center[0] + self.variables.display_width // 2
-            self.cam_center_y = - match_center[1] + self.variables.display_height // 2
+            self.cam_center_x = match_center[0]
+            self.cam_center_y = match_center[1]
             self.zoom = self.default_zoom
         else:
             self.cam_offset_x = 0
@@ -236,8 +236,8 @@ class Main:
 
     def handle_event_mouse_middle_click_drag(self, event):
         if isinstance(event.rel, tuple) and len(event.rel) == 2:
-            self.cam_offset_x += event.rel[0]
-            self.cam_offset_y += event.rel[1]
+            self.cam_offset_x -= event.rel[0]
+            self.cam_offset_y -= event.rel[1]
 
     def handle_event_key_down(self, key_pressed):
         if key_pressed == pygame.K_KP_PLUS:
@@ -257,8 +257,8 @@ class Main:
 
     def reset_camera(self):
         self.zoom = self.default_zoom
-        self.cam_offset_x = self.cam_center_x
-        self.cam_offset_y = self.cam_center_y
+        self.cam_offset_x = self.cam_center_x * self.zoom - self.variables.display_width_half
+        self.cam_offset_y = self.cam_center_y * self.zoom - self.variables.display_height_half
 
     def update_counter(self) -> None:
         self.main_second_counter += 1

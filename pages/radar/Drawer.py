@@ -20,8 +20,8 @@ class Drawer:
             self.surface,
             color,
             (
-                (pos_x * zoom) + offset_x,
-                (pos_y * zoom) + offset_y,
+                (pos_x * zoom) - offset_x,
+                (pos_y * zoom) - offset_y,
                 width * zoom,
                 height * zoom
             )
@@ -62,8 +62,8 @@ class Drawer:
             self.surface,
             color,
             (
-                (pos_x * zoom) + offset_x,
-                (pos_y * zoom) + offset_y
+                (pos_x * zoom) - offset_x,
+                (pos_y * zoom) - offset_y
             ),
             radius,
             int(width * zoom)
@@ -81,10 +81,10 @@ class Drawer:
             zoom: int | float = 0,
             width: int = 2
     ):
-        sx = (start_x * zoom) + offset_x
-        sy = (start_y * zoom) + offset_y
-        ex = (end_x * zoom) + offset_x
-        ey = (end_y * zoom) + offset_y
+        sx = (start_x * zoom) - offset_x
+        sy = (start_y * zoom) - offset_y
+        ex = (end_x * zoom) - offset_x
+        ey = (end_y * zoom) - offset_y
         pygame.draw.line(
             self.surface,
             color,
