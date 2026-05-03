@@ -1,12 +1,16 @@
+import json
 import pathlib
 import pygame
 
 from pages.Variables import Variables
+from pages.radar.Acft import Acft
 from pages.radar.Airspace import Airspace
 from pages.radar.Drawer import Drawer
 
 
 class Main:
+
+    acft_list: list[Acft] = []
 
     font = None
 
@@ -84,13 +88,41 @@ class Main:
         self.reset_camera()
 
     def test_init(self):
-        pass
+        file = "{}\\airspaces\\test_acft_loader.json".format(self.root_directory)
+        with open(file, 'r') as raw_data:
+            data = json.load(raw_data)
+            for acft in data["acft"]:
+                new_acft = Acft(
+                    acft['identity'],
+                    acft['cs'],
+                    acft['pos_x'],
+                    acft['pos_y'],
+                    acft['heading_act'],
+                    acft['heading_req'],
+                    acft['heading_turn'],
+                    acft['altitude_act'],
+                    acft['altitude_req'],
+                    acft['req_speed_kts'],
+                    acft['act_speed_kts'],
+                    acft['speed_increment'],
+                    acft['ssr'],
+                    acft['route'],
+                    (acft['color'], acft['color'], acft['color']),
+                    acft['color_selected_radius'],
+                    acft['color_wake_radius'],
+                    acft['wtc'],
+                    acft['selected_radius'],
+                    acft['is_clicked'],
+                )
+                self.acft_list.append(new_acft)
+
 
     def test(self):
         pass
 
     def draw(self):
         self.draw_airspace()
+        self.draw_acft()
 
     def draw_airspace(self):
         for area in self.airspace.areas:
@@ -141,6 +173,14 @@ class Main:
                     self.font
                 )
 
+    def draw_acft(self):
+        for acft in self.acft_list:
+            self.drawer.draw_acft(
+                acft,
+                self.cam_offset_x,
+                self.cam_offset_y,
+                self.zoom
+            )
 
     def test_draw(self):
         pass
@@ -167,6 +207,7 @@ class Main:
             # TODO REMOVE TEST FUNCTION
             self.test()
             self.test_draw()
+            self.move_acft()
             self.draw()
             pygame.display.flip()
             self.main_clock.tick(self.variables.display_fps)
@@ -243,3 +284,7 @@ class Main:
         # TODO : REMOVE AFTER DEBUG, ENABLE PLANE TO MOVE EVERY TICK AND NOT ONCE PER SEC
         if self.main_second_counter >= self.variables.display_fps // 6:
             self.main_second_counter = 0
+
+    def move_acft(self):
+        for acft in self.acft_list:
+            acft.tick()

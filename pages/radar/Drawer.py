@@ -1,12 +1,12 @@
 import pygame
 
+from pages.radar.Acft import Acft
 from pages.radar.airspace.Point import Point
-from pages.radar.data.helper import world_to_screen
+from pages.radar.data.helper import world_to_screen, convert_lat_long_to_nmbr
 
 
 class Drawer:
-
-    point_color:str = "W"
+    point_color: str = "W"
 
     color_default: tuple[int, int, int] = (255, 255, 255)
 
@@ -38,15 +38,12 @@ class Drawer:
             offset_y: int | float = 0,
             zoom: int | float = 0,
     ):
+        start_x = int(world_to_screen(pos_x, offset_x, zoom))
+        start_y = int(world_to_screen(pos_y, offset_y, zoom))
         pygame.draw.rect(
             self.surface,
             color,
-            (
-                int(world_to_screen(pos_x, offset_x, zoom)),
-                int(world_to_screen(pos_y, offset_y, zoom)),
-                width * zoom,
-                height * zoom
-            )
+            (start_x, start_y, width, height)
         )
 
     def draw_rect_centered(
@@ -59,14 +56,18 @@ class Drawer:
             offset_x: int | float = 0,
             offset_y: int | float = 0,
             zoom: int | float = 0,
+            border: int = 1
     ):
-        print("TODO : update this function (Drawer draw_rect_centered to take zoom and offset into account")
-        self.draw_rect(
-            pos_x - width / 2,
-            pos_y - height / 2,
-            width,
-            height,
-            color
+        start_x = int(world_to_screen(pos_x, offset_x, zoom))
+        start_y = int(world_to_screen(pos_y, offset_y, zoom))
+
+        rect = pygame.Rect(0, 0, width, height)
+        rect.center = start_x, start_y
+        pygame.draw.rect(
+            self.surface,
+            color,
+            rect,
+            border
         )
 
     def draw_circle(
@@ -147,3 +148,18 @@ class Drawer:
         txt_rect.top = pos_y + point.pygame_img.get_height() // 2 + self.label_offset_y
 
         self.surface.blit(txt_surface, txt_rect)
+
+    def draw_acft(self, acft: Acft, offset_x: int | float, offset_y: int | float, zoom: int | float):
+        # TODO : Change this conversion function because it's a really stupid way to make it work
+        pos = convert_lat_long_to_nmbr("{}|{}".format(acft.pos_x, acft.pos_y))
+
+        self.draw_rect_centered(
+            pos[0],
+            pos[1],
+            acft.d_acft_width,
+            acft.d_acft_height,
+            acft.color,
+            offset_x,
+            offset_y,
+            zoom
+        )

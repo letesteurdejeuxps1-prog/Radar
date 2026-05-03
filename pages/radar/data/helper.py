@@ -23,7 +23,7 @@ def convert_lat_long_to_nmbr(data: str):
         if len(data) != 2:
             raise ValueError
     except ValueError:
-        print("More than 2 coordiantes passed to helper.convert_lat_long_to_nmbr function. Data was : {}".format(data))
+        print("More than 2 coordinates passed to helper.convert_lat_long_to_nmbr function. Data was : {}".format(data))
 
     converted_coordinates = [None, None]
     for coord in data:

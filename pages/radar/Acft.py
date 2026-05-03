@@ -41,7 +41,6 @@ class Acft:
             wtc: str = 'M',
             selected_radius: float = 1.5,
             is_clicked: bool = False,
-            draw_wtc_circle: bool = False
     ) -> None:
         self.identity = identity
         self.cs = cs
@@ -63,19 +62,24 @@ class Acft:
         self.wtc = wtc
         self.selected_radius = selected_radius * scale_NM_to_su
         self.is_clicked = is_clicked
-        self.draw_wtc_circle = draw_wtc_circle
 
-    def get_next_pos(self, amount_of_sec: int = 1):
-        r_angle = get_rad_angle(self.heading_act)
-        return self.next_pos(r_angle, amount_of_sec)
+    def tick(self):
+        self.check_heading()
+        self.move_logic()
 
-    def get_speed_per_sec(self) -> float:
-        return self.act_speed_kts / 3600
-
-    def next_pos(self, r_angle, amount_of_sec):
-        next_x = self.pos_x + get_cos_angle(r_angle) * self.get_speed_per_sec() * amount_of_sec * scale_NM_to_su
-        next_y = self.pos_y + get_sin_angle(r_angle) * self.get_speed_per_sec() * amount_of_sec * scale_NM_to_su
-        return next_x, next_y
+    def check_heading(self):
+        if self.heading_act > 360:
+            self.heading_act = self.heading_act - 360
+            self.check_heading()
+        if self.heading_act < 0:
+            self.heading_act = self.heading_act + 360
+            self.check_heading()
+        if self.heading_req > 360:
+            self.heading_req = self.heading_req - 360
+            self.check_heading()
+        if self.heading_req < 0:
+            self.heading_req = self.heading_req + 360
+            self.check_heading()
 
     def move_logic(self):
         self.move_logic_heading()
@@ -98,37 +102,3 @@ class Acft:
                 self.act_speed_kts += self.speed_increment
             else:
                 self.act_speed_kts -= self.speed_increment
-
-    def check_is_selected(self, ident: int):
-        if self.identity == ident:
-            self.is_clicked = True
-        else:
-            self.is_clicked = False
-
-    def move_acft(self):
-        self.check_heading()
-        self.move_logic()
-        pos = self.next_pos(get_rad_angle(self.heading_act), 1)
-        self.pos_x = pos[0]
-        self.pos_y = pos[1]
-
-    def check_heading(self):
-        if self.heading_act > 360:
-            self.heading_act = self.heading_act - 360
-            self.check_heading()
-        if self.heading_act < 0:
-            self.heading_act = self.heading_act + 360
-            self.check_heading()
-        if self.heading_req > 360:
-            self.heading_req = self.heading_req - 360
-            self.check_heading()
-        if self.heading_req < 0:
-            self.heading_req = self.heading_req + 360
-            self.check_heading()
-
-    def set_requested_heading(self, heading: int):
-        while heading < 0:
-            heading = heading + 360
-        while heading > 360:
-            heading = heading - 360
-        self.heading_req = heading
