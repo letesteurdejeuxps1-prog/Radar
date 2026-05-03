@@ -4,7 +4,7 @@ import pygame
 class Point:
     pygame_img = None
 
-    icon_size = (50, 50)
+    icon_size = (30, 30)
 
     default_icon: str = 'UNKNOWN'
 
