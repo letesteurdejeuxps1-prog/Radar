@@ -70,6 +70,7 @@ class Main:
             self.cam_offset_x = 0
             self.cam_offset_y = 0
             self.zoom = self.default_zoom
+        self.reset_camera()
 
     def test_init(self):
         pass
@@ -205,8 +206,12 @@ class Main:
             self.zoom += self.zoom_increment
         elif event.y == -1:
             self.zoom -= self.zoom_increment
-        self.cam_offset_x = self.cam_center_x * self.zoom
-        self.cam_offset_y = self.cam_center_y * self.zoom
+        if self.zoom <= 0:
+            self.zoom = self.zoom_increment
+        correction_x = self.variables.display_width_half * (self.zoom / 2)
+        correction_y = self.variables.display_height_half * (self.zoom / 2)
+        self.cam_offset_x = (self.cam_center_x * self.zoom) - correction_x
+        self.cam_offset_y = (self.cam_center_y * self.zoom) - correction_y
 
     def handle_event_mouseclick(self, event):
         if event.button == 1:
