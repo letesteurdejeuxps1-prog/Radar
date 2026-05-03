@@ -18,7 +18,7 @@ class Main:
     middle_click_on: bool = False
     right_click_on: bool = False
 
-    path_airspace_file: str = 'horn.json'
+    path_airspace_file: str = 'test.json'
     path_airspace_folder: str = 'airspaces'
     path_root: str = ''
 
