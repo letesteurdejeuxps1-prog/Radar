@@ -1,4 +1,4 @@
-from pages.radar.data.helper import convert_lat_and_long_to_radar
+from pages.radar.data.helper import convert_lat_and_long_to_radar, get_rad_angle, get_cos_angle, get_sin_angle
 from pages.radar.data.immovable_variable import scale_NM_to_su
 
 
@@ -9,7 +9,7 @@ class Acft:
     d_acft_color_conflict: tuple[int, int, int] = (255, 255, 255)
     d_prl_color: tuple[int, int, int] = (255, 255, 255)
     d_prl_width: int = 1
-    d_prl_length: int = 60
+    d_prl_length_in_sec: int = 60
 
     pos_x: int | float = 0
     pos_y: int | float = 0
@@ -115,3 +115,14 @@ class Acft:
             else:
                 self.act_speed_ias -= self.speed_increment
 
+    def get_speed_per_sec(self) -> float:
+        return self.act_speed_ias / 3600
+
+    def next_pos(self, r_angle, amount_of_sec):
+        next_x = self.pos_x + get_cos_angle(r_angle) * self.get_speed_per_sec() * amount_of_sec
+        next_y = self.pos_y + get_sin_angle(r_angle) * self.get_speed_per_sec() * amount_of_sec
+        return next_x, next_y
+
+    def get_next_pos(self, amount_of_sec: int = 1):
+        r_angle = get_rad_angle(self.heading_act)
+        return self.next_pos(r_angle, amount_of_sec)

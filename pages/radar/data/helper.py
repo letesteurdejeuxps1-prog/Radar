@@ -2,7 +2,7 @@ import math
 
 
 def get_rad_angle(angle: int) -> float:
-    return math.radians(angle - 90)
+    return math.radians(90 - angle)
 
 
 def get_cos_angle(angle: float) -> float:
