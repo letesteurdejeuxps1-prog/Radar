@@ -9,7 +9,6 @@ from pages.radar.Drawer import Drawer
 
 
 class Main:
-
     acft_list: list[Acft] = []
 
     font = None
@@ -115,7 +114,6 @@ class Main:
                     acft['is_clicked'],
                 )
                 self.acft_list.append(new_acft)
-
 
     def test(self):
         pass

@@ -68,7 +68,7 @@ class Acft:
         self.after_load()
 
     def after_load(self):
-        lon, lat =  convert_lat_and_long_to_radar(f"{self.coord_x}|{self.coord_y}")
+        lon, lat = convert_lat_and_long_to_radar(f"{self.coord_x}|{self.coord_y}")
         self.pos_x = lon
         self.pos_y = lat
 

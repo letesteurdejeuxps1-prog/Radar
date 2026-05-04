@@ -95,9 +95,9 @@ def convert_lat_and_long_to_radar(data: str) -> tuple[float, float]:
     return lon, lat
 
 
-
 def world_to_screen_x(pos, offset, zoom):
     return (pos * zoom) - offset
+
 
 def world_to_screen_y(pos, offset, zoom):
     return (-pos * zoom) - offset
