@@ -13,76 +13,91 @@ def get_sin_angle(angle: float) -> float:
     return math.sin(angle)
 
 
-def convert_lat_long_to_nmbr(data: str):
-    # TODO : improve the code of this function
-    # This function should be improved. It does way too much, and is probably error-prone.
-    # It flips value all the time but it works so far
-    # Might be better to split it in different parts and make sure those part are simple
-    try:
-        data = data.split('|')
-        if len(data) != 2:
-            raise ValueError
-    except ValueError:
-        print("More than 2 coordinates passed to helper.convert_lat_long_to_nmbr function. Data was : {}".format(data))
+def split_lat_long_to_single_coordinate(data: str) -> list:
+    if '|' in data:
+        return_data = data.split('|')
+    else:
+        return_data = [data]
+    if len(return_data) > 2:
+        raise ValueError(f"Too many info passed to get_single_coordinates: {data}")
+    return return_data
 
-    converted_coordinates = [None, None]
-    for coord in data:
-        is_north = False
-        is_south = False
-        is_east = False
-        is_west = False
-        # TODO : Handle N, S, W, E coordinates
-        if coord.endswith('N'):
-            coord = coord.removesuffix('N')
-            is_north = True
-        elif coord.endswith('S'):
-            coord = coord.removesuffix('S')
-            is_south = True
-        elif coord.endswith('W'):
-            coord = coord.removesuffix('W')
-            is_west = True
-        elif coord.endswith('E'):
-            coord = coord.removesuffix('E')
-            is_east = True
-        else:
-            raise ValueError(f"Missing direction in {coord}")
-        try:
-            coord = coord.replace("Â", "")
-            if '°' in coord:
-                first_split = coord.split('°')
-            else:
-                raise ValueError(f"Unable to convert {coord}")
-            second_split = first_split[-1].split("'")
-            degree = int(first_split[0])
-            if second_split[0] != '':
-                minutes = int(second_split[0])
-                if minutes > 60:
-                    raise ValueError(f"Invalid value for seconds, got {minutes}")
-            else:
-                minutes = 0
-            if len(second_split) == 2 and second_split[1] != '':
-                seconds = int(second_split[1].removesuffix("''"))
-                if seconds > 60:
-                    raise ValueError(f"Invalid value for seconds, got {seconds}")
-            else:
-                seconds = 0
 
-            if is_east:
-                return_value = -1 * (degree + minutes / 60 + seconds / 3600)
-            else:
-                return_value = degree + minutes / 60 + seconds / 3600
+def separate_axis_from_coord(coord: str) -> tuple['str', 'str']:
+    if coord.endswith('N'):
+        coord = coord.removesuffix('N')
+        direction = 'N'
+    elif coord.endswith('S'):
+        coord = coord.removesuffix('S')
+        direction = 'S'
+    elif coord.endswith('W'):
+        coord = coord.removesuffix('W')
+        direction = 'W'
+    elif coord.endswith('E'):
+        coord = coord.removesuffix('E')
+        direction = 'E'
+    else:
+        raise ValueError(f"Missing direction in {coord}")
+    return (coord, direction)
 
-            if is_north or is_south:
-                return_value = return_value * -1
-                converted_coordinates[1] = return_value
-            elif is_east or is_west:
-                converted_coordinates[0] = return_value
 
-        except ValueError as e:
-            print(f"Error in the conversion of lat/long to decimal.{e}")
-            return False
+def extract_deg_min_sec_from_str(coord: str) -> tuple[int, int, int]:
+    coord = coord.replace("Â", "")
+    if '°' in coord:
+        first_split = coord.split('°')
+    else:
+        raise ValueError(f"Unable to convert {coord}")
 
-    return converted_coordinates
+    second_split = first_split[-1].split("'")
+    degree = int(first_split[0])
+    if second_split[0] != '':
+        minutes = int(second_split[0])
+        if minutes > 60:
+            raise ValueError(f"Invalid value for seconds, got {minutes}")
+    else:
+        minutes = 0
+    if len(second_split) == 2 and second_split[1] != '':
+        seconds = int(second_split[1].removesuffix("''"))
+        if seconds > 60:
+            raise ValueError(f"Invalid value for seconds, got {seconds}")
+    else:
+        seconds = 0
 
-def world_to_screen(pos, offset, zoom):
+    return (degree, minutes, seconds)
+
+
+def convert_deg_min_sec_to_sim(data: tuple[int, int, int], axis: str):
+    value = data[0] + data[1] / 60 + data[2] / 3600
+    if axis == 'W' or axis == 'S':
+        value *= -1
+    return value
+
+
+def convert_lat_and_long_to_radar(data: str) -> tuple[float, float]:
+    lat = None
+    lon = None
+
+    coordinates = split_lat_long_to_single_coordinate(data)
+
+    for coord in coordinates:
+        coord_val, direction = separate_axis_from_coord(coord)
+        deg_min_sec = extract_deg_min_sec_from_str(coord_val)
+        value = convert_deg_min_sec_to_sim(deg_min_sec, direction)
+
+        if direction in ('N', 'S'):
+            lat = value
+        elif direction in ('E', 'W'):
+            lon = value
+
+    if lat is None or lon is None:
+        raise ValueError("Missing lat or lon")
+
+    return lon, lat
+
+
+
+def world_to_screen_x(pos, offset, zoom):
     return (pos * zoom) - offset
+
+def world_to_screen_y(pos, offset, zoom):
+    return (-pos * zoom) - offset

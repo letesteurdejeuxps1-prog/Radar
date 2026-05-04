@@ -2,7 +2,7 @@ import json
 from pages.radar.airspace.Area import Area
 from pages.radar.airspace.Aerodrome import Aerodrome
 from pages.radar.airspace.Point import Point
-from pages.radar.data.helper import convert_lat_long_to_nmbr
+from pages.radar.data.helper import convert_lat_and_long_to_radar
 
 
 class Airspace:
@@ -34,7 +34,7 @@ class Airspace:
                 points = []
                 for point in data['points']:
                     pt = data['points'][point]
-                    coord_converted = convert_lat_long_to_nmbr(pt.get('coord'))
+                    coord_converted = convert_lat_and_long_to_radar(pt.get('coord'))
                     new_point = Point(
                         point,
                         pt.get('ABBR'),
@@ -50,7 +50,7 @@ class Airspace:
                     coordinates = []
                     for item in area.get('coord'):
                         coordinates.append(
-                            convert_lat_long_to_nmbr(item)
+                            convert_lat_and_long_to_radar(item)
                         )
                     new_area = Area(
                         area.get('coord'),

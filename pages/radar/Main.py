@@ -95,8 +95,8 @@ class Main:
                 new_acft = Acft(
                     acft['identity'],
                     acft['cs'],
-                    acft['pos_x'],
-                    acft['pos_y'],
+                    acft['coord_x'],
+                    acft['coord_y'],
                     acft['heading_act'],
                     acft['heading_req'],
                     acft['heading_turn'],
@@ -175,6 +175,7 @@ class Main:
 
     def draw_acft(self):
         for acft in self.acft_list:
+            print(acft.pos_x, acft.pos_y)
             self.drawer.draw_acft(
                 acft,
                 self.cam_offset_x,
@@ -277,7 +278,7 @@ class Main:
     def reset_camera(self):
         self.zoom = self.default_zoom
         self.cam_offset_x = self.cam_center_x * self.zoom - self.variables.display_width_half
-        self.cam_offset_y = self.cam_center_y * self.zoom - self.variables.display_height_half
+        self.cam_offset_y = -self.cam_center_y * self.zoom - self.variables.display_height_half
 
     def update_counter(self) -> None:
         self.main_second_counter += 1

@@ -1,4 +1,4 @@
-from pages.radar.data.helper import get_rad_angle, get_cos_angle, get_sin_angle
+from pages.radar.data.helper import convert_lat_and_long_to_radar
 from pages.radar.data.immovable_variable import scale_NM_to_su
 
 
@@ -11,14 +11,17 @@ class Acft:
     d_prl_width: int = 1
     d_prl_length: int = 60
 
+    pos_x: int | float = 0
+    pos_y: int | float = 0
+
     turn_by_sec: int = 3
 
     def __init__(
             self,
             identity: int,
             cs: str = '',
-            pos_x: int = 0,
-            pos_y: int = 0,
+            coord_x: str = '',
+            coord_y: str = '',
 
             heading_act: int = 0,
             heading_req: int = 0,
@@ -44,8 +47,8 @@ class Acft:
     ) -> None:
         self.identity = identity
         self.cs = cs
-        self.pos_x = pos_x
-        self.pos_y = pos_y
+        self.coord_x = coord_x
+        self.coord_y = coord_y
         self.heading_act = heading_act
         self.heading_req = heading_req
         self.heading_turn = heading_turn
@@ -62,43 +65,26 @@ class Acft:
         self.wtc = wtc
         self.selected_radius = selected_radius * scale_NM_to_su
         self.is_clicked = is_clicked
+        self.after_load()
+
+    def after_load(self):
+        lon, lat =  convert_lat_and_long_to_radar(f"{self.coord_x}|{self.coord_y}")
+        self.pos_x = lon
+        self.pos_y = lat
 
     def tick(self):
         self.check_heading()
         self.move_logic()
 
     def check_heading(self):
-        if self.heading_act > 360:
-            self.heading_act = self.heading_act - 360
-            self.check_heading()
-        if self.heading_act < 0:
-            self.heading_act = self.heading_act + 360
-            self.check_heading()
-        if self.heading_req > 360:
-            self.heading_req = self.heading_req - 360
-            self.check_heading()
-        if self.heading_req < 0:
-            self.heading_req = self.heading_req + 360
-            self.check_heading()
+        pass
 
     def move_logic(self):
         self.move_logic_heading()
         self.move_logic_speed()
 
     def move_logic_heading(self):
-        if self.heading_act != self.heading_turn:
-            diff_of_degree = self.heading_req - self.heading_act
-            if -3 <= diff_of_degree <= 3:
-                self.heading_act = self.heading_req
-            else:
-                if self.heading_turn == 'r':
-                    self.heading_act += self.turn_by_sec
-                if self.heading_turn == 'l':
-                    self.heading_act -= self.turn_by_sec
+        pass
 
     def move_logic_speed(self):
-        if self.req_speed_kts != self.act_speed_kts:
-            if self.req_speed_kts > self.act_speed_kts:
-                self.act_speed_kts += self.speed_increment
-            else:
-                self.act_speed_kts -= self.speed_increment
+        pass

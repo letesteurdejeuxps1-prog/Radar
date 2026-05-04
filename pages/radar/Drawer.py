@@ -2,7 +2,7 @@ import pygame
 
 from pages.radar.Acft import Acft
 from pages.radar.airspace.Point import Point
-from pages.radar.data.helper import world_to_screen, convert_lat_long_to_nmbr
+from pages.radar.data.helper import world_to_screen_x, world_to_screen_y, convert_lat_and_long_to_radar
 
 
 class Drawer:
@@ -38,8 +38,8 @@ class Drawer:
             offset_y: int | float = 0,
             zoom: int | float = 0,
     ):
-        start_x = int(world_to_screen(pos_x, offset_x, zoom))
-        start_y = int(world_to_screen(pos_y, offset_y, zoom))
+        start_x = int(world_to_screen_x(pos_x, offset_x, zoom))
+        start_y = int(world_to_screen_y(pos_y, offset_y, zoom))
         pygame.draw.rect(
             self.surface,
             color,
@@ -58,8 +58,8 @@ class Drawer:
             zoom: int | float = 0,
             border: int = 1
     ):
-        start_x = int(world_to_screen(pos_x, offset_x, zoom))
-        start_y = int(world_to_screen(pos_y, offset_y, zoom))
+        start_x = int(world_to_screen_x(pos_x, offset_x, zoom))
+        start_y = int(world_to_screen_y(pos_y, offset_y, zoom))
 
         rect = pygame.Rect(0, 0, width, height)
         rect.center = start_x, start_y
@@ -85,8 +85,8 @@ class Drawer:
             self.surface,
             color,
             (
-                int(world_to_screen(pos_x, offset_x, zoom)),
-                int(world_to_screen(pos_y, offset_y, zoom))
+                int(world_to_screen_x(pos_x, offset_x, zoom)),
+                int(world_to_screen_y(pos_y, offset_y, zoom))
             ),
             radius,
             int(width * zoom)
@@ -104,10 +104,10 @@ class Drawer:
             zoom: int | float = 0,
             width: int = 2
     ):
-        sx = int(world_to_screen(start_x, offset_x, zoom))
-        sy = int(world_to_screen(start_y, offset_y, zoom))
-        ex = int(world_to_screen(end_x, offset_x, zoom))
-        ey = int(world_to_screen(end_y, offset_y, zoom))
+        sx = int(world_to_screen_x(start_x, offset_x, zoom))
+        sy = int(world_to_screen_y(start_y, offset_y, zoom))
+        ex = int(world_to_screen_x(end_x, offset_x, zoom))
+        ey = int(world_to_screen_y(end_y, offset_y, zoom))
 
         pygame.draw.line(
             self.surface,
@@ -127,8 +127,8 @@ class Drawer:
             )
 
         if isinstance(point.pygame_img, pygame.Surface):
-            pos_x = int(world_to_screen(point.pos_x, offset_x, zoom))
-            pos_y = int(world_to_screen(point.pos_y, offset_y, zoom))
+            pos_x = int(world_to_screen_x(point.pos_x, offset_x, zoom))
+            pos_y = int(world_to_screen_y(point.pos_y, offset_y, zoom))
             rect = point.pygame_img.get_rect(center=(pos_x, pos_y))
             self.surface.blit(point.pygame_img, rect)
 
@@ -140,8 +140,8 @@ class Drawer:
             color = (0, 0, 0)
         else:
             color = self.color_default
-        pos_x = int(world_to_screen(point.pos_x, offset_x, zoom))
-        pos_y = int(world_to_screen(point.pos_y, offset_y, zoom))
+        pos_x = int(world_to_screen_x(point.pos_x, offset_x, zoom))
+        pos_y = int(world_to_screen_y(point.pos_y, offset_y, zoom))
         txt_surface = font.render(txt, True, color)
         txt_rect = txt_surface.get_rect()
         txt_rect.centerx = pos_x
@@ -150,12 +150,10 @@ class Drawer:
         self.surface.blit(txt_surface, txt_rect)
 
     def draw_acft(self, acft: Acft, offset_x: int | float, offset_y: int | float, zoom: int | float):
-        # TODO : Change this conversion function because it's a really stupid way to make it work
-        pos = convert_lat_long_to_nmbr("{}|{}".format(acft.pos_x, acft.pos_y))
 
         self.draw_rect_centered(
-            pos[0],
-            pos[1],
+            acft.pos_x,
+            acft.pos_y,
             acft.d_acft_width,
             acft.d_acft_height,
             acft.color,
