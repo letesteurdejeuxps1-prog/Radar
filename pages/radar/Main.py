@@ -98,7 +98,7 @@ class Main:
                     acft['coord_y'],
                     acft['heading_act'],
                     acft['heading_req'],
-                    acft['heading_turn'],
+                    acft['turn_direction'],
                     acft['altitude_act'],
                     acft['altitude_req'],
                     acft['req_speed_kts'],
@@ -173,7 +173,6 @@ class Main:
 
     def draw_acft(self):
         for acft in self.acft_list:
-            print(acft.pos_x, acft.pos_y)
             self.drawer.draw_acft(
                 acft,
                 self.cam_offset_x,

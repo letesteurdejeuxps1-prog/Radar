@@ -14,7 +14,8 @@ class Acft:
     pos_x: int | float = 0
     pos_y: int | float = 0
 
-    turn_by_sec: int = 3
+    default_rate_of_turn: int = 3
+    rate_of_turn: int = 3
 
     def __init__(
             self,
@@ -25,7 +26,8 @@ class Acft:
 
             heading_act: int = 0,
             heading_req: int = 0,
-            heading_turn: str = '',
+            turn_direction: int = 1,
+
 
             altitude_act: int = 0,
             altitude_req: int = 0,
@@ -51,11 +53,11 @@ class Acft:
         self.coord_y = coord_y
         self.heading_act = heading_act
         self.heading_req = heading_req
-        self.heading_turn = heading_turn
+        self.turn_direction = turn_direction
         self.altitude_act = altitude_act
         self.altitude_req = altitude_req
-        self.req_speed_kts = req_speed_ias
-        self.act_speed_kts = act_speed_ias
+        self.req_speed_ias = req_speed_ias
+        self.act_speed_ias = act_speed_ias
         self.speed_increment = speed_increment
         self.ssr = ssr
         self.route = route
@@ -75,16 +77,41 @@ class Acft:
     def tick(self):
         self.check_heading()
         self.move_logic()
+        self.check_heading()
 
     def check_heading(self):
-        pass
+        if self.heading_act <= 0:
+            self.heading_act += 360
+            self.check_heading()
+        elif self.heading_act > 360:
+            self.heading_act -= 360
+            self.check_heading()
+        elif self.heading_req <= 0:
+            self.heading_req += 360
+            self.check_heading()
+        elif self.heading_req > 360:
+            self.heading_req -= 360
+            self.check_heading()
+
 
     def move_logic(self):
         self.move_logic_heading()
         self.move_logic_speed()
 
     def move_logic_heading(self):
-        pass
+        if self.turn_direction == 1 or self.turn_direction == -1:
+            if self.heading_act != self.heading_req:
+                next_move_p = self.heading_act + 3
+                next_move_m = self.heading_act - 3
+                if next_move_m <= self.heading_req < next_move_p:
+                    self.heading_act = self.heading_req
+                else:
+                    self.heading_act += self.turn_direction * self.rate_of_turn
 
     def move_logic_speed(self):
-        pass
+        if self.req_speed_ias != self.act_speed_ias:
+            if self.act_speed_ias - self.req_speed_ias > 0:
+                self.act_speed_ias += self.speed_increment
+            else:
+                self.act_speed_ias -= self.speed_increment
+
