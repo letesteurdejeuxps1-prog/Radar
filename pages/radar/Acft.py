@@ -28,7 +28,6 @@ class Acft:
             heading_req: int = 0,
             turn_direction: int = 1,
 
-
             altitude_act: int = 0,
             altitude_req: int = 0,
 
@@ -93,7 +92,6 @@ class Acft:
             self.heading_req -= 360
             self.check_heading()
 
-
     def move_logic(self):
         self.move_logic_heading()
         self.move_logic_speed()
@@ -109,18 +107,19 @@ class Acft:
                     self.heading_act += self.turn_direction * self.rate_of_turn
 
     def move_logic_speed(self):
-        if self.req_speed_ias != self.act_speed_ias:
-            if self.act_speed_ias - self.req_speed_ias > 0:
-                self.act_speed_ias += self.speed_increment
-            else:
-                self.act_speed_ias -= self.speed_increment
+        diff = self.req_speed_ias - self.act_speed_ias
+        if diff == 0:
+            return
+        step = self.speed_increment if abs(diff) > self.speed_increment else abs(diff)
+
+        self.act_speed_ias += step if diff > 0 else -step
 
     def get_speed_per_sec(self) -> float:
         return self.act_speed_ias / 3600
 
     def next_pos(self, r_angle, amount_of_sec):
-        next_x = self.pos_x + get_cos_angle(r_angle) * self.get_speed_per_sec() * amount_of_sec
-        next_y = self.pos_y + get_sin_angle(r_angle) * self.get_speed_per_sec() * amount_of_sec
+        next_x = self.pos_x + get_cos_angle(r_angle) * self.get_speed_per_sec() * amount_of_sec / 60
+        next_y = self.pos_y + get_sin_angle(r_angle) * self.get_speed_per_sec() * amount_of_sec / 60
         return next_x, next_y
 
     def get_next_pos(self, amount_of_sec: int = 1):
