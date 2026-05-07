@@ -18,7 +18,7 @@ class Main:
 
     main_clock: pygame.time.Clock = pygame.time.Clock()
     main_running: bool = False
-    main_second_counter: int = 1
+    radar_acft_refresh_rate_counter: int = 1
 
     left_click_on: bool = False
     middle_click_on: bool = False
@@ -33,6 +33,7 @@ class Main:
     radar_center_lat: int|float = 0
 
     radar_show_navaids_name: bool = True
+    radar_refresh_rate: int = 5
 
     default_zoom: int | float = 1
     zoom: int | float = 1
@@ -211,7 +212,8 @@ class Main:
             # TODO REMOVE TEST FUNCTION
             self.test()
             self.test_draw()
-            self.move_acft()
+            if self.radar_acft_refresh_rate_counter == 0:
+                self.move_acft()
             self.draw()
             pygame.display.flip()
             self.main_clock.tick(self.variables.display_fps)
@@ -284,10 +286,10 @@ class Main:
         self.cam_offset_y = -self.cam_center_y * self.zoom - self.variables.display_height_half
 
     def update_counter(self) -> None:
-        self.main_second_counter += 1
-        # TODO : REMOVE AFTER DEBUG, ENABLE PLANE TO MOVE EVERY TICK AND NOT ONCE PER SEC
-        if self.main_second_counter >= self.variables.display_fps // 6:
-            self.main_second_counter = 0
+        self.radar_acft_refresh_rate_counter += 1
+        # TODO remove to prevent update on every tick
+        if True: #self.main_second_counter >= self.variables.display_fps * self.radar_refresh_rate:
+            self.radar_acft_refresh_rate_counter = 0
 
     def move_acft(self):
         for acft in self.acft_list:
