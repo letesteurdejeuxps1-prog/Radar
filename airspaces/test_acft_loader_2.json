@@ -1,0 +1,52 @@
+{
+  "acft": [
+    {
+      "identity": 1,
+      "cs": "SAS101",
+      "coord_x": "57°18'22''N",
+      "coord_y": "14°45'10''E",
+      "pos_x": 120,
+      "pos_y": 340,
+      "heading_act": 180,
+      "heading_req": 180,
+      "turn_direction": 1,
+      "altitude_act": 20000,
+      "altitude_req": 20000,
+      "req_speed_kts": 240,
+      "act_speed_kts": 230,
+      "speed_increment": 1,
+      "ssr": 1201,
+      "route": "",
+      "color": 255,
+      "color_selected_radius": 255,
+      "color_wake_radius": 255,
+      "wtc": "M",
+      "selected_radius": 2,
+      "is_clicked": false
+    },
+    {
+      "identity": 2,
+      "cs": "FIN202",
+      "coord_x": "57°18'00''N",
+      "coord_y": "14°50'10''E",
+      "pos_x": 410,
+      "pos_y": 180,
+      "heading_act": 180,
+      "heading_req": 180,
+      "turn_direction": -1,
+      "altitude_act": 1000,
+      "altitude_req": 1000,
+      "req_speed_kts": 260,
+      "act_speed_kts": 260,
+      "speed_increment": 1,
+      "ssr": 1202,
+      "route": "",
+      "color": 200,
+      "color_selected_radius": 255,
+      "color_wake_radius": 255,
+      "wtc": "M",
+      "selected_radius": 2,
+      "is_clicked": false
+    }
+  ]
+}

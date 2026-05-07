@@ -4,6 +4,9 @@ from pages.radar.data.immovable_variable import scale_NM_to_su
 
 
 class Acft:
+    act_speed_tas: int = 0,
+    act_speed_gs: int = 0,
+
     d_acft_width: int = 11
     d_acft_height: int = 11
     d_acft_color_ident: tuple[int, int, int] = (255, 255, 255)
@@ -108,6 +111,8 @@ class Acft:
     def move_logic(self):
         self.move_logic_heading()
         self.move_logic_speed()
+        self.move_logic_alt()
+        self.move_acft()
 
     def move_logic_heading(self):
         if self.turn_direction == 1 or self.turn_direction == -1:
@@ -126,6 +131,19 @@ class Acft:
         step = self.speed_increment if abs(diff) > self.speed_increment else abs(diff)
 
         self.act_speed_ias += step if diff > 0 else -step
+
+        self.act_speed_tas = self.act_speed_ias + (self.act_speed_ias * 0.02 * self.altitude_req / 1000)
+
+        # TODO calculate gs when wind is implemented
+        self.act_speed_gs = self.act_speed_tas
+
+    def move_logic_alt(self):
+        pass
+
+    def move_acft(self):
+        next_x, next_y = self.next_pos(get_rad_angle(self.heading_act), 1)
+        self.pos_x = next_x
+        self.pos_y = next_y
 
     def get_speed_per_sec(self) -> float:
         return self.act_speed_ias / 3600

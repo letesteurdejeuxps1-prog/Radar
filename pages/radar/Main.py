@@ -91,7 +91,7 @@ class Main:
         self.reset_camera()
 
     def test_init(self):
-        file = "{}\\airspaces\\test_acft_loader.json".format(self.root_directory)
+        file = "{}\\airspaces\\test_acft_loader_2.json".format(self.root_directory)
         with open(file, 'r') as raw_data:
             data = json.load(raw_data)
             for acft in data["acft"]:
