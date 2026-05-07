@@ -29,6 +29,8 @@ class Main:
     path_root: str = ''
 
     radar_color_bg: tuple[int, int, int] = (0, 0, 0)
+    radar_center_lon: int|float = 0
+    radar_center_lat: int|float = 0
 
     radar_show_navaids_name: bool = True
 
@@ -59,11 +61,13 @@ class Main:
     def init(self) -> None:
         pygame.init()
         pygame.display.set_caption(self.variables.game_caption)
-        self.airspace.load("{}\\{}\\{}".format(
+        center = self.airspace.load("{}\\{}\\{}".format(
             self.path_root,
             self.path_airspace_folder,
             self.path_airspace_file
         ))
+        self.radar_center_lon = center[0]
+        self.radar_center_lat = center[1]
         self.variables.display_width_half = self.variables.display_width // 2
         self.variables.display_height_half = self.variables.display_height // 2
         self.font = pygame.font.SysFont("consolas", 14)
@@ -92,6 +96,8 @@ class Main:
             data = json.load(raw_data)
             for acft in data["acft"]:
                 new_acft = Acft(
+                    self.radar_center_lon,
+                    self.radar_center_lat,
                     acft['identity'],
                     acft['cs'],
                     acft['coord_x'],

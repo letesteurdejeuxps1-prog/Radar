@@ -1,4 +1,5 @@
-from pages.radar.data.helper import convert_lat_and_long_to_radar, get_rad_angle, get_cos_angle, get_sin_angle
+from pages.radar.data.helper import convert_lat_and_long_to_radar, get_rad_angle, get_cos_angle, get_sin_angle, \
+    latlon_to_world
 from pages.radar.data.immovable_variable import scale_NM_to_su
 
 
@@ -13,12 +14,16 @@ class Acft:
 
     pos_x: int | float = 0
     pos_y: int | float = 0
+    lat: int | float = 0
+    lon: int | float = 0
 
     default_rate_of_turn: int = 3
     rate_of_turn: int = 3
 
     def __init__(
             self,
+            airspace_center_lon: int | float,
+            airspace_center_lat: int | float,
             identity: int,
             cs: str = '',
             coord_x: str = '',
@@ -66,12 +71,20 @@ class Acft:
         self.wtc = wtc
         self.selected_radius = selected_radius * scale_NM_to_su
         self.is_clicked = is_clicked
+        self.airspace_center_lon = airspace_center_lon
+        self.airspace_center_lat = airspace_center_lat
         self.after_load()
 
     def after_load(self):
         lon, lat = convert_lat_and_long_to_radar(f"{self.coord_x}|{self.coord_y}")
-        self.pos_x = lon
-        self.pos_y = lat
+        self.lon = lon
+        self.lat = lat
+        self.pos_x, self.pos_y = latlon_to_world(
+            lat,
+            lon,
+            self.airspace_center_lat,
+            self.airspace_center_lon
+        )
 
     def tick(self):
         self.check_heading()
@@ -118,8 +131,8 @@ class Acft:
         return self.act_speed_ias / 3600
 
     def next_pos(self, r_angle, amount_of_sec):
-        next_x = self.pos_x + get_cos_angle(r_angle) * self.get_speed_per_sec() * amount_of_sec / 60
-        next_y = self.pos_y + get_sin_angle(r_angle) * self.get_speed_per_sec() * amount_of_sec / 60
+        next_x = self.pos_x + get_cos_angle(r_angle) * self.get_speed_per_sec() * amount_of_sec
+        next_y = self.pos_y + get_sin_angle(r_angle) * self.get_speed_per_sec() * amount_of_sec
         return next_x, next_y
 
     def get_next_pos(self, amount_of_sec: int = 1):

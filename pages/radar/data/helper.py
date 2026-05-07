@@ -101,3 +101,8 @@ def world_to_screen_x(pos, offset, zoom):
 
 def world_to_screen_y(pos, offset, zoom):
     return (-pos * zoom) - offset
+
+def latlon_to_world(lat, lon, origin_lat, origin_lon):
+    x = (lon - origin_lon) * 60 * math.cos(math.radians(origin_lat))
+    y = (lat - origin_lat) * 60
+    return x, y
