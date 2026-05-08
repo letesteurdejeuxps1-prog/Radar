@@ -1,11 +1,10 @@
 from pages.radar.data.helper import convert_lat_and_long_to_radar, get_rad_angle, get_cos_angle, get_sin_angle, \
     latlon_to_world
-from pages.radar.data.immovable_variable import scale_NM_to_su
 
 
 class Acft:
-    act_speed_tas: int | float = 0,
-    act_speed_gs: int | float = 0,
+    act_speed_tas: int | float = 0
+    act_speed_gs: int | float = 0
 
     d_acft_width: int = 11
     d_acft_height: int = 11
@@ -51,7 +50,7 @@ class Acft:
             color_wake_radius: tuple[int, int, int] = (255, 150, 150),
 
             wtc: str = 'M',
-            selected_radius: float = 1.5,
+            selected_radius: int | float = 50,
             is_clicked: bool = False,
     ) -> None:
         self.identity = identity
@@ -72,7 +71,7 @@ class Acft:
         self.color_selected_radius = color_selected_radius
         self.color_wake_radius = color_wake_radius
         self.wtc = wtc
-        self.selected_radius = selected_radius * scale_NM_to_su
+        self.selected_radius = selected_radius
         self.is_clicked = is_clicked
         self.airspace_center_lon = airspace_center_lon
         self.airspace_center_lat = airspace_center_lat
@@ -89,7 +88,9 @@ class Acft:
             self.airspace_center_lon
         )
 
-    def tick(self):
+    def tick(self, identity: int|float):
+        if self.identity != identity:
+            self.is_clicked = False
         self.check_heading()
         self.move_logic()
         self.check_heading()

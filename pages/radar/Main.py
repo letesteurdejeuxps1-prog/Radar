@@ -6,10 +6,12 @@ from pages.Variables import Variables
 from pages.radar.Acft import Acft
 from pages.radar.Airspace import Airspace
 from pages.radar.Drawer import Drawer
+from pages.radar.data.helper import world_to_screen_x, world_to_screen_y
 
 
 class Main:
     acft_list: list[Acft] = []
+    acft_detect_buffer: int = 20
 
     font = None
 
@@ -34,6 +36,7 @@ class Main:
 
     radar_show_navaids_name: bool = True
     radar_refresh_rate: int = 5
+    radar_selected_id: int | None = 0
 
     default_zoom: int | float = 1
     zoom: int | float = 1
@@ -114,7 +117,7 @@ class Main:
                     acft['ssr'],
                     acft['route'],
                     (acft['color'], acft['color'], acft['color']),
-                    acft['color_selected_radius'],
+                    (acft['color_selected_radius'], acft['color_selected_radius'], acft['color_selected_radius']),
                     acft['color_wake_radius'],
                     acft['wtc'],
                     acft['selected_radius'],
@@ -242,8 +245,28 @@ class Main:
     def handle_event_mouseclick(self, event):
         if event.button == 1:
             # Left click
-            print("Left click")
             self.left_click_on = True
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+
+            matches = []
+
+            for acft in self.acft_list:
+
+                screen_x = world_to_screen_x(acft.pos_x, self.cam_offset_x, self.zoom)
+
+                screen_y = world_to_screen_y(acft.pos_y, self.cam_offset_y, self.zoom)
+
+                if screen_x - self.acft_detect_buffer <= mouse_x <= screen_x + self.acft_detect_buffer:
+                    if screen_y - self.acft_detect_buffer <= mouse_y <= screen_y + self.acft_detect_buffer:
+                        matches.append(acft)
+                        break
+
+            if len(matches) == 0:
+                self.radar_selected_id = None
+            elif len(matches) == 1 and isinstance(matches[0], Acft):
+                self.radar_selected_id = matches[0].identity
+                matches[0].is_clicked = True
+
         if event.button == 2:
             # Middle click
             self.middle_click_on = True
@@ -293,4 +316,4 @@ class Main:
 
     def move_acft(self):
         for acft in self.acft_list:
-            acft.tick()
+            acft.tick(self.radar_selected_id)

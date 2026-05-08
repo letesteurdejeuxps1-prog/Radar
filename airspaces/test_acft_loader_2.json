@@ -21,7 +21,7 @@
       "color_selected_radius": 255,
       "color_wake_radius": 255,
       "wtc": "M",
-      "selected_radius": 2,
+      "selected_radius": 20,
       "is_clicked": false
     },
     {
@@ -45,8 +45,8 @@
       "color_selected_radius": 255,
       "color_wake_radius": 255,
       "wtc": "M",
-      "selected_radius": 2,
-      "is_clicked": false
+      "selected_radius": 20,
+      "is_clicked": true
     }
   ]
 }

@@ -70,7 +70,7 @@ class Drawer:
             border
         )
 
-    def draw_circle(
+    def draw_circle_no_scale(
             self,
             pos_x: int | float,
             pos_y: int | float,
@@ -88,8 +88,8 @@ class Drawer:
                 int(world_to_screen_x(pos_x, offset_x, zoom)),
                 int(world_to_screen_y(pos_y, offset_y, zoom))
             ),
-            radius,
-            int(width * zoom)
+            int(radius),
+            width
         )
 
     def draw_line(
@@ -161,6 +161,18 @@ class Drawer:
             offset_y,
             zoom
         )
+
+        if acft.is_clicked:
+            self.draw_circle_no_scale(
+                acft.pos_x,
+                acft.pos_y,
+                acft.color_selected_radius,
+                acft.selected_radius,
+                offset_x,
+                offset_y,
+                zoom
+            )
+
         prl_end_x, prl_end_y = acft.get_next_pos(acft.d_prl_length_in_sec)
         self.draw_line(
             acft.pos_x,
