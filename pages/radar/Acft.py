@@ -4,8 +4,8 @@ from pages.radar.data.immovable_variable import scale_NM_to_su
 
 
 class Acft:
-    act_speed_tas: int = 0,
-    act_speed_gs: int = 0,
+    act_speed_tas: int | float = 0,
+    act_speed_gs: int | float = 0,
 
     d_acft_width: int = 11
     d_acft_height: int = 11
@@ -126,14 +126,11 @@ class Acft:
 
     def move_logic_speed(self):
         diff = self.req_speed_ias - self.act_speed_ias
-        if diff == 0:
-            return
-        step = self.speed_increment if abs(diff) > self.speed_increment else abs(diff)
-
-        self.act_speed_ias += step if diff > 0 else -step
+        if diff != 0:
+            step = self.speed_increment if abs(diff) > self.speed_increment else abs(diff)
+            self.act_speed_ias += step if diff > 0 else -step
 
         self.act_speed_tas = self.act_speed_ias + (self.act_speed_ias * 0.02 * self.altitude_req / 1000)
-
         # TODO calculate gs when wind is implemented
         self.act_speed_gs = self.act_speed_tas
 
@@ -145,12 +142,12 @@ class Acft:
         self.pos_x = next_x
         self.pos_y = next_y
 
-    def get_speed_per_sec(self) -> float:
-        return self.act_speed_ias / 3600
+    def get_gs_speed_per_sec(self) -> float:
+        return self.act_speed_gs / 3600
 
     def next_pos(self, r_angle, amount_of_sec):
-        next_x = self.pos_x + get_cos_angle(r_angle) * self.get_speed_per_sec() * amount_of_sec
-        next_y = self.pos_y + get_sin_angle(r_angle) * self.get_speed_per_sec() * amount_of_sec
+        next_x = self.pos_x + get_cos_angle(r_angle) * self.get_gs_speed_per_sec() * amount_of_sec
+        next_y = self.pos_y + get_sin_angle(r_angle) * self.get_gs_speed_per_sec() * amount_of_sec
         return next_x, next_y
 
     def get_next_pos(self, amount_of_sec: int = 1):
