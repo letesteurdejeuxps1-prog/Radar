@@ -22,9 +22,11 @@ class Main:
     game_acft_id_counter: int = 1
     game_acft_selected_id: int = 0
 
+    last_acft_update_time: int = 0
+    acft_update_interval_ms: int = 1500
+
     main_clock: pygame.time.Clock = pygame.time.Clock()
     main_running: bool = False
-    radar_acft_refresh_rate_counter: int = 1
 
     left_click_on: bool = False
     middle_click_on: bool = False
@@ -205,7 +207,6 @@ class Main:
 
     def run(self) -> None:
         while self.main_running:
-            self.update_counter()
             self.main_surface.fill(self.radar_color_bg)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -230,8 +231,10 @@ class Main:
             # TODO REMOVE TEST FUNCTION
             self.test()
             self.test_draw()
-            if self.radar_acft_refresh_rate_counter == 0:
+            ct = pygame.time.get_ticks()
+            if ct - self.last_acft_update_time >= self.acft_update_interval_ms:
                 self.move_acft()
+                self.last_acft_update_time = ct
             self.draw()
             pygame.display.flip()
             self.main_clock.tick(self.variables.display_fps)
@@ -351,12 +354,6 @@ class Main:
         self.zoom = self.default_zoom
         self.cam_offset_x = self.cam_center_x * self.zoom - self.variables.display_width_half
         self.cam_offset_y = -self.cam_center_y * self.zoom - self.variables.display_height_half
-
-    def update_counter(self) -> None:
-        self.radar_acft_refresh_rate_counter += 1
-        # TODO remove to prevent update on every tick
-        if True: #self.main_second_counter >= self.variables.display_fps * self.radar_refresh_rate:
-            self.radar_acft_refresh_rate_counter = 0
 
     def move_acft(self):
         if self.radar_selected is not None:
