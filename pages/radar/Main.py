@@ -1,4 +1,5 @@
 import json
+import math
 import pathlib
 import pygame
 
@@ -36,7 +37,7 @@ class Main:
 
     radar_show_navaids_name: bool = True
     radar_refresh_rate: int = 5
-    radar_selected_id: int | None = 0
+    radar_selected: Acft | None = None
 
     default_zoom: int | float = 1
     zoom: int | float = 1
@@ -258,14 +259,23 @@ class Main:
 
                 if screen_x - self.acft_detect_buffer <= mouse_x <= screen_x + self.acft_detect_buffer:
                     if screen_y - self.acft_detect_buffer <= mouse_y <= screen_y + self.acft_detect_buffer:
-                        matches.append(acft)
-                        break
+                        matches.append((acft, screen_x, screen_y))
 
             if len(matches) == 0:
-                self.radar_selected_id = None
-            elif len(matches) == 1 and isinstance(matches[0], Acft):
-                self.radar_selected_id = matches[0].identity
-                matches[0].is_clicked = True
+                self.radar_selected = None
+            elif len(matches) == 1 and isinstance(matches[0][0], Acft):
+                self.radar_selected = matches[0][0]
+                matches[0][0].is_clicked = True
+            elif len(matches) >= 2:
+                match_dist = self.acft_detect_buffer * 10
+                found = None
+                for acft in matches:
+                    distance = math.hypot(mouse_x - acft[1], mouse_y - acft[2])
+                    if distance < match_dist:
+                        found = acft[0]
+                        match_dist = distance
+                self.radar_selected = found
+                found.is_clicked = True
 
         if event.button == 2:
             # Middle click
@@ -315,5 +325,9 @@ class Main:
             self.radar_acft_refresh_rate_counter = 0
 
     def move_acft(self):
+        if self.radar_selected is not None:
+            identity = self.radar_selected.identity
+        else:
+            identity = None
         for acft in self.acft_list:
-            acft.tick(self.radar_selected_id)
+            acft.tick(identity)

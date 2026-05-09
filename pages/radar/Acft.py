@@ -88,7 +88,7 @@ class Acft:
             self.airspace_center_lon
         )
 
-    def tick(self, identity: int|float):
+    def tick(self, identity: int|None):
         if self.identity != identity:
             self.is_clicked = False
         self.check_heading()
