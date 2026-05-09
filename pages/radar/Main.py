@@ -6,6 +6,7 @@ import pygame
 from pages.Variables import Variables
 from pages.radar.Acft import Acft
 from pages.radar.Airspace import Airspace
+from pages.radar.Command import Command
 from pages.radar.Drawer import Drawer
 from pages.radar.data.helper import world_to_screen_x, world_to_screen_y
 
@@ -13,6 +14,8 @@ from pages.radar.data.helper import world_to_screen_x, world_to_screen_y
 class Main:
     acft_list: list[Acft] = []
     acft_detect_buffer: int = 20
+
+    command_box: Command
 
     font = None
 
@@ -61,6 +64,7 @@ class Main:
         self.variables.display_height = info.current_h
         self.main_surface = pygame.display.set_mode((self.variables.display_width, self.variables.display_height))
         self.drawer = Drawer(self.main_surface, self.root_directory)
+        self.command_box = Command(self.main_surface)
         self.after_init()
 
     def init(self) -> None:
@@ -132,6 +136,7 @@ class Main:
     def draw(self):
         self.draw_airspace()
         self.draw_acft()
+        self.command_box.draw()
 
     def draw_airspace(self):
         for area in self.airspace.areas:
