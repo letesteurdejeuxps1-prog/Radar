@@ -24,8 +24,11 @@ class Command:
     color_button_hover = (80, 80, 80)
     color_button_border = (255, 255, 255)
 
-    def __init__(self, surface: pygame.Surface):
+    def __init__(self, surface: pygame.Surface, main):
 
+        self.main = main
+
+        self.global_prl_length: int|float = 60
         self.button_spacing = 0
         self.input_rect = None | pygame.Rect
         self.title_rect = None | pygame.Rect
@@ -292,15 +295,7 @@ class Command:
 
     def handle_mouse_click(self, mouse_pos):
 
-        # =========================
-        # WINDOW CLICK CHECK
-        # =========================
-
         clicked_inside = self.rect.collidepoint(mouse_pos)
-
-        # =========================
-        # DRAG START
-        # =========================
 
         if self.title_rect.collidepoint(mouse_pos):
             self.dragging = True
@@ -308,24 +303,34 @@ class Command:
             self.drag_offset_x = mouse_pos[0] - self.pos_x
             self.drag_offset_y = mouse_pos[1] - self.pos_y
 
-        # =========================
-        # INPUT ACTIVATION
-        # =========================
-
         self.input_active = self.input_rect.collidepoint(mouse_pos)
-
-        # =========================
-        # BUTTONS
-        # =========================
 
         for button in self.buttons:
 
             if button["rect"].collidepoint(mouse_pos):
 
+                new_val = 60 * float(button["value"])
+
+                # =========================
+                # AIRCRAFT SELECTED
+                # =========================
+
                 if self.selected_acft is not None:
-                    self.selected_acft.d_prl_length_in_sec = (
-                            60 * float(button["value"])
-                    )
+
+                    self.selected_acft.d_prl_length_in_sec = new_val
+                    self.selected_acft.d_prl_has_custom = True
+
+                # =========================
+                # GLOBAL MODE
+                # =========================
+
+                else:
+
+                    self.global_prl_length = new_val
+
+                    # reset ALL aircraft custom values
+                    for acft in self.main.acft_list:
+                        acft.d_prl_has_custom = False
 
                 return True
 

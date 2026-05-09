@@ -13,6 +13,7 @@ class Acft:
     d_prl_color: tuple[int, int, int] = (255, 255, 255)
     d_prl_width: int = 1
     d_prl_length_in_sec: int|float = 60
+    d_prl_has_custom: bool = False
 
     pos_x: int | float = 0
     pos_y: int | float = 0

@@ -64,7 +64,7 @@ class Main:
         self.variables.display_height = info.current_h
         self.main_surface = pygame.display.set_mode((self.variables.display_width, self.variables.display_height))
         self.drawer = Drawer(self.main_surface, self.root_directory)
-        self.command_box = Command(self.main_surface)
+        self.command_box = Command(self.main_surface, self)
         self.after_init()
 
     def init(self) -> None:
@@ -189,6 +189,10 @@ class Main:
 
     def draw_acft(self):
         for acft in self.acft_list:
+
+            if not acft.d_prl_has_custom:
+                acft.d_prl_length_in_sec = self.command_box.global_prl_length
+
             self.drawer.draw_acft(
                 acft,
                 self.cam_offset_x,
