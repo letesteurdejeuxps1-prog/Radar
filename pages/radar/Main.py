@@ -259,7 +259,8 @@ class Main:
 
     def handle_event_mouseclick(self, event):
         mouse_x, mouse_y = pygame.mouse.get_pos()
-        if self.command_box.handle_mouse_click((mouse_x, mouse_y)):
+        handle_mouse_result = self.command_box.handle_mouse_click((mouse_x, mouse_y), self.acft_list)
+        if handle_mouse_result:
             return
         if event.button == 1:
             # Left click

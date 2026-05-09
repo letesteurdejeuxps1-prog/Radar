@@ -293,7 +293,7 @@ class Command:
 
             self.input_text += event.unicode
 
-    def handle_mouse_click(self, mouse_pos):
+    def handle_mouse_click(self, mouse_pos, acft_list):
 
         clicked_inside = self.rect.collidepoint(mouse_pos)
 
@@ -329,7 +329,7 @@ class Command:
                     self.global_prl_length = new_val
 
                     # reset ALL aircraft custom values
-                    for acft in self.main.acft_list:
+                    for acft in acft_list:
                         acft.d_prl_has_custom = False
 
                 return True
