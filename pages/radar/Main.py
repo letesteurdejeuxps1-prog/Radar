@@ -208,6 +208,7 @@ class Main:
                     self.main_running = False
                 elif event.type == pygame.KEYDOWN:
                     self.handle_event_key_down(event.key)
+                    self.command_box.handle_keydown(event)
                 elif event.type == pygame.MOUSEWHEEL:
                     self.handle_event_scroll(event)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -249,6 +250,9 @@ class Main:
         self.cam_offset_y = world_y * self.zoom - mouse_y
 
     def handle_event_mouseclick(self, event):
+        self.command_box.handle_mouse_click(
+            pygame.mouse.get_pos()
+        )
         if event.button == 1:
             # Left click
             self.left_click_on = True
@@ -268,8 +272,14 @@ class Main:
 
             if len(matches) == 0:
                 self.radar_selected = None
+                self.command_box.set_selected_acft(
+                    self.radar_selected
+                )
             elif len(matches) == 1 and isinstance(matches[0][0], Acft):
                 self.radar_selected = matches[0][0]
+                self.command_box.set_selected_acft(
+                    self.radar_selected
+                )
                 matches[0][0].is_clicked = True
             elif len(matches) >= 2:
                 match_dist = self.acft_detect_buffer * 10
@@ -280,6 +290,9 @@ class Main:
                         found = acft[0]
                         match_dist = distance
                 self.radar_selected = found
+                self.command_box.set_selected_acft(
+                    self.radar_selected
+                )
                 found.is_clicked = True
 
         if event.button == 2:
@@ -301,6 +314,13 @@ class Main:
             self.cam_offset_y -= event.rel[1]
 
     def handle_event_key_down(self, key_pressed):
+        self.command_box.handle_keydown(
+            pygame.event.Event(
+                pygame.KEYDOWN,
+                key=key_pressed,
+                unicode=""
+            )
+        )
         if key_pressed == pygame.K_q:
             self.main_running = False
         elif key_pressed == pygame.K_KP_PLUS:
