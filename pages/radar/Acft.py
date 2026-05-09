@@ -25,6 +25,7 @@ class Acft:
 
     default_rate_of_turn: int = 3
     rate_of_turn: int = 3
+    acft_trail_radius: int = 2
 
     def __init__(
             self,

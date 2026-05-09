@@ -189,10 +189,11 @@ class Drawer:
                 pos[0],
                 pos[1],
                 acft.color,
-                1,
+                acft.acft_trail_radius,
                 offset_x,
                 offset_y,
-                zoom
+                zoom,
+                0
             )
 
     def draw_acft_blip(self):
