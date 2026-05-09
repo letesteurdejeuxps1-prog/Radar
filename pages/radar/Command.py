@@ -1,5 +1,7 @@
 import pygame
 
+from pages.radar.Acft import Acft
+
 
 class Command:
     pos_x: int = 20
@@ -31,7 +33,7 @@ class Command:
 
         self.font = pygame.font.SysFont("consolas", 18)
 
-        self.selected_acft_name: str = ""
+        self.selected_acft: Acft | None = None
 
         self.input_text: str = ""
         self.input_active: bool = False
@@ -176,8 +178,13 @@ class Command:
             1
         )
 
+        if self.selected_acft is None:
+            title = ""
+        else:
+            title = self.selected_acft.cs
+
         title_surface = self.font.render(
-            self.selected_acft_name,
+            title,
             True,
             self.color_text
         )
@@ -286,6 +293,12 @@ class Command:
     def handle_mouse_click(self, mouse_pos):
 
         # =========================
+        # WINDOW CLICK CHECK
+        # =========================
+
+        clicked_inside = self.rect.collidepoint(mouse_pos)
+
+        # =========================
         # DRAG START
         # =========================
 
@@ -308,9 +321,15 @@ class Command:
         for button in self.buttons:
 
             if button["rect"].collidepoint(mouse_pos):
-                print(f"Clicked value: {button['value']}")
 
-                self.input_text += str(button["value"])
+                if self.selected_acft is not None:
+                    self.selected_acft.d_prl_length_in_sec = (
+                            60 * float(button["value"])
+                    )
+
+                return True
+
+        return clicked_inside
 
     def handle_mouse_release(self):
 
@@ -328,7 +347,4 @@ class Command:
 
     def set_selected_acft(self, acft):
 
-        if acft is None:
-            self.selected_acft_name = ""
-        else:
-            self.selected_acft_name = acft.cs
+        self.selected_acft = acft

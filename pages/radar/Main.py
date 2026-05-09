@@ -254,13 +254,13 @@ class Main:
         self.cam_offset_y = world_y * self.zoom - mouse_y
 
     def handle_event_mouseclick(self, event):
-        self.command_box.handle_mouse_click(
-            pygame.mouse.get_pos()
-        )
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        if self.command_box.handle_mouse_click((mouse_x, mouse_y)):
+            return
         if event.button == 1:
             # Left click
             self.left_click_on = True
-            mouse_x, mouse_y = pygame.mouse.get_pos()
+
 
             matches = []
 

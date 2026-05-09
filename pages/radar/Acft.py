@@ -12,7 +12,7 @@ class Acft:
     d_acft_color_conflict: tuple[int, int, int] = (255, 255, 255)
     d_prl_color: tuple[int, int, int] = (255, 255, 255)
     d_prl_width: int = 1
-    d_prl_length_in_sec: int = 60
+    d_prl_length_in_sec: int|float = 60
 
     pos_x: int | float = 0
     pos_y: int | float = 0
