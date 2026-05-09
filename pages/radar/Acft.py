@@ -15,6 +15,9 @@ class Acft:
     d_prl_length_in_sec: int|float = 60
     d_prl_has_custom: bool = False
 
+    old_pos = []
+    old_radar_blip_amount = 5
+
     pos_x: int | float = 0
     pos_y: int | float = 0
     lat: int | float = 0
@@ -88,6 +91,8 @@ class Acft:
             self.airspace_center_lat,
             self.airspace_center_lon
         )
+        for i in range(self.old_radar_blip_amount):
+            self.old_pos.append((self.pos_x, self.pos_y))
 
     def tick(self, identity: int|None):
         if self.identity != identity:
@@ -111,10 +116,16 @@ class Acft:
             self.check_heading()
 
     def move_logic(self):
+        self.update_pos_list()
         self.move_logic_heading()
         self.move_logic_speed()
         self.move_logic_alt()
         self.move_acft()
+
+    def update_pos_list(self):
+        self.old_pos.append((self.pos_x, self.pos_y))
+        new_list = self.old_pos[-self.old_radar_blip_amount:]
+        self.old_pos = new_list
 
     def move_logic_heading(self):
         if self.turn_direction == 1 or self.turn_direction == -1:

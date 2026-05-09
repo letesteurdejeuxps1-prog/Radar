@@ -184,3 +184,16 @@ class Drawer:
             offset_y,
             zoom
         )
+        for pos in acft.old_pos:
+            self.draw_circle_no_scale(
+                pos[0],
+                pos[1],
+                acft.color,
+                1,
+                offset_x,
+                offset_y,
+                zoom
+            )
+
+    def draw_acft_blip(self):
+        pass
