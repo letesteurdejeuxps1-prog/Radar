@@ -214,10 +214,14 @@ class Main:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self.handle_event_mouseclick(event)
                 elif event.type == pygame.MOUSEMOTION:
+                    self.command_box.handle_mouse_motion(
+                        pygame.mouse.get_pos()
+                    )
                     if self.middle_click_on or self.right_click_on:
                         self.handle_event_mouse_middle_click_drag(event)
                 elif event.type == pygame.MOUSEBUTTONUP:
                     self.handle_event_mouseclick_off()
+                    self.command_box.handle_mouse_release()
 
             # TODO REMOVE TEST FUNCTION
             self.test()

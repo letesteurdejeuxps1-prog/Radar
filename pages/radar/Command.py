@@ -2,14 +2,13 @@ import pygame
 
 
 class Command:
-
     pos_x: int = 20
     pos_y: int = 20
 
     width: int = 900
     height: int = 140
 
-    padding: int = 8
+    padding: int = 2
 
     color_bg = (25, 25, 25)
     color_border = (255, 255, 255)
@@ -25,6 +24,7 @@ class Command:
 
     def __init__(self, surface: pygame.Surface):
 
+        self.button_spacing = 0
         self.input_rect = None | pygame.Rect
         self.title_rect = None | pygame.Rect
         self.surface = surface
@@ -62,6 +62,10 @@ class Command:
             self.height
         )
 
+        self.dragging = False
+        self.drag_offset_x = 0
+        self.drag_offset_y = 0
+
         self.build_layout()
 
     def build_layout(self):
@@ -80,27 +84,18 @@ class Command:
             30
         )
 
-
         self.buttons.clear()
 
         button_y = self.input_rect.bottom + self.padding
 
         available_width = self.width - (self.padding * 2)
 
-        button_spacing = 4
-
-        button_width = (
-            available_width - ((self.button_count - 1) * button_spacing)
-        ) // self.button_count
+        button_width = (available_width - ((self.button_count - 1) * self.button_spacing)) // self.button_count
 
         button_height = 30
 
         for i, value in enumerate(self.button_values):
-            x = (
-                    self.pos_x
-                    + self.padding
-                    + (button_width + button_spacing) * i
-            )
+            x = (self.pos_x + self.padding + (button_width + self.button_spacing) * i)
 
             rect = pygame.Rect(
                 x,
@@ -114,6 +109,36 @@ class Command:
                 "text": value,
                 "value": value
             })
+
+    def update_layout_positions(self):
+
+        self.rect.x = self.pos_x
+        self.rect.y = self.pos_y
+
+        self.title_rect.x = self.pos_x + self.padding
+        self.title_rect.y = self.pos_y + self.padding
+
+        self.input_rect.x = self.pos_x + self.padding
+        self.input_rect.y = self.title_rect.bottom + self.padding
+
+        button_y = self.input_rect.bottom + self.padding
+
+        button_spacing = 4
+
+        available_width = self.width - (self.padding * 2)
+
+        button_width = (
+                               available_width - ((self.button_count - 1) * button_spacing)
+                       ) // self.button_count
+
+        for i, button in enumerate(self.buttons):
+            button["rect"].x = (
+                    self.pos_x
+                    + self.padding
+                    + (button_width + button_spacing) * i
+            )
+
+            button["rect"].y = button_y
 
     def draw(self):
 
@@ -209,7 +234,6 @@ class Command:
         mouse_pos = pygame.mouse.get_pos()
 
         for button in self.buttons:
-
             hovered = button["rect"].collidepoint(mouse_pos)
 
             pygame.draw.rect(
@@ -261,15 +285,46 @@ class Command:
 
     def handle_mouse_click(self, mouse_pos):
 
-        # Input activation
+        # =========================
+        # DRAG START
+        # =========================
+
+        if self.title_rect.collidepoint(mouse_pos):
+            self.dragging = True
+
+            self.drag_offset_x = mouse_pos[0] - self.pos_x
+            self.drag_offset_y = mouse_pos[1] - self.pos_y
+
+        # =========================
+        # INPUT ACTIVATION
+        # =========================
+
         self.input_active = self.input_rect.collidepoint(mouse_pos)
 
-        # Buttons
+        # =========================
+        # BUTTONS
+        # =========================
+
         for button in self.buttons:
 
             if button["rect"].collidepoint(mouse_pos):
                 print(f"Clicked value: {button['value']}")
 
+                self.input_text += str(button["value"])
+
+    def handle_mouse_release(self):
+
+        self.dragging = False
+
+    def handle_mouse_motion(self, mouse_pos):
+
+        if not self.dragging:
+            return
+
+        self.pos_x = mouse_pos[0] - self.drag_offset_x
+        self.pos_y = mouse_pos[1] - self.drag_offset_y
+
+        self.update_layout_positions()
 
     def set_selected_acft(self, acft):
 
