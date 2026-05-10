@@ -15,7 +15,6 @@ class Acft:
     d_prl_length_in_sec: int|float = 60
     d_prl_has_custom: bool = False
 
-    old_pos = []
     old_radar_blip_amount = 5
 
     pos_x: int | float = 0
@@ -80,6 +79,7 @@ class Acft:
         self.is_clicked = is_clicked
         self.airspace_center_lon = airspace_center_lon
         self.airspace_center_lat = airspace_center_lat
+        self.old_pos = []
         self.after_load()
 
     def after_load(self):
@@ -95,11 +95,11 @@ class Acft:
         for i in range(self.old_radar_blip_amount):
             self.old_pos.append((self.pos_x, self.pos_y))
 
-    def tick(self, identity: int|None):
+    def tick(self, identity: int|None, elapsed_sec: float):
         if self.identity != identity:
             self.is_clicked = False
         self.check_heading()
-        self.move_logic()
+        self.move_logic(elapsed_sec)
         self.check_heading()
 
     def check_heading(self):
@@ -116,19 +116,19 @@ class Acft:
             self.heading_req -= 360
             self.check_heading()
 
-    def move_logic(self):
+    def move_logic(self, elapsed_sec: float):
         self.update_pos_list()
-        self.move_logic_heading()
+        self.move_logic_heading(elapsed_sec)
         self.move_logic_speed()
         self.move_logic_alt()
-        self.move_acft()
+        self.move_acft(elapsed_sec)
 
     def update_pos_list(self):
         self.old_pos.append((self.pos_x, self.pos_y))
         new_list = self.old_pos[-self.old_radar_blip_amount:]
         self.old_pos = new_list
 
-    def move_logic_heading(self):
+    def move_logic_heading(self, elapsed_sec: float):
         if self.turn_direction == 1 or self.turn_direction == -1:
             if self.heading_act != self.heading_req:
                 next_move_p = self.heading_act + 3
@@ -136,7 +136,7 @@ class Acft:
                 if next_move_m <= self.heading_req < next_move_p:
                     self.heading_act = self.heading_req
                 else:
-                    self.heading_act += self.turn_direction * self.rate_of_turn
+                    self.heading_act += self.turn_direction * self.rate_of_turn * elapsed_sec
 
     def move_logic_speed(self):
         diff = self.req_speed_ias - self.act_speed_ias
@@ -151,8 +151,8 @@ class Acft:
     def move_logic_alt(self):
         pass
 
-    def move_acft(self):
-        next_x, next_y = self.next_pos(get_rad_angle(self.heading_act), 1)
+    def move_acft(self, elapsed_sec: float = 1):
+        next_x, next_y = self.next_pos(get_rad_angle(self.heading_act), elapsed_sec)
         self.pos_x = next_x
         self.pos_y = next_y
 

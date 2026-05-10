@@ -233,7 +233,7 @@ class Main:
             self.test_draw()
             ct = pygame.time.get_ticks()
             if ct - self.last_acft_update_time >= self.acft_update_interval_ms:
-                self.move_acft()
+                self.move_acft(self.acft_update_interval_ms / 1000)
                 self.last_acft_update_time = ct
             self.draw()
             pygame.display.flip()
@@ -355,10 +355,10 @@ class Main:
         self.cam_offset_x = self.cam_center_x * self.zoom - self.variables.display_width_half
         self.cam_offset_y = -self.cam_center_y * self.zoom - self.variables.display_height_half
 
-    def move_acft(self):
+    def move_acft(self, elapsed_sec: float):
         if self.radar_selected is not None:
             identity = self.radar_selected.identity
         else:
             identity = None
         for acft in self.acft_list:
-            acft.tick(identity)
+            acft.tick(identity, elapsed_sec)
