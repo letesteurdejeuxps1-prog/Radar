@@ -230,8 +230,7 @@ class Main:
                 if event.type == pygame.QUIT:
                     self.main_running = False
                 elif event.type == pygame.KEYDOWN:
-                    self.handle_event_key_down(event.key)
-                    self.command_box.handle_keydown(event)
+                    self.handle_event_key_down(event)
                 elif event.type == pygame.MOUSEWHEEL:
                     self.handle_event_scroll(event)
                 elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -348,29 +347,82 @@ class Main:
             self.cam_offset_x -= event.rel[0]
             self.cam_offset_y -= event.rel[1]
 
-    def handle_event_key_down(self, key_pressed):
-        self.command_box.handle_keydown(
-            pygame.event.Event(
-                pygame.KEYDOWN,
-                key=key_pressed,
-                unicode=""
-            )
-        )
+    def handle_event_key_down(self, event):
+
+        key_pressed = event.key
+
+        # ==================================================
+        # AIRCRAFT COMMAND MODE
+        # ==================================================
+
+        if self.radar_selected is not None:
+
+            # ENTER = execute command
+            if key_pressed == pygame.K_RETURN:
+
+                self.execute_command()
+
+                # TODO: analyse command here
+
+                self.command_box.input_text = ""
+                return
+
+            # BACKSPACE
+            elif key_pressed == pygame.K_BACKSPACE:
+
+                self.command_box.input_text = (
+                    self.command_box.input_text[:-1]
+                )
+                return
+
+            elif key_pressed == pygame.K_ESCAPE:
+                self.command_box.input_text = ""
+
+            # =========================
+            # NORMAL TEXT INPUT
+            # =========================
+
+            else:
+
+                if event.unicode.isprintable():
+                    self.command_box.input_text += event.unicode
+
+                return
+
+        # ==================================================
+        # NORMAL GAME MODE
+        # ==================================================
+
         if key_pressed == pygame.K_q:
+
             self.main_running = False
+
         elif key_pressed == pygame.K_KP_PLUS:
+
             self.zoom += self.zoom_increment
+
         elif key_pressed == pygame.K_KP_MINUS:
+
             self.zoom -= self.zoom_increment
+
         elif key_pressed == pygame.K_DOWN:
+
             self.cam_offset_y -= self.cam_offset_increment
+
         elif key_pressed == pygame.K_UP:
+
             self.cam_offset_y += self.cam_offset_increment
+
         elif key_pressed == pygame.K_LEFT:
+
             self.cam_offset_x -= self.cam_offset_increment
+
         elif key_pressed == pygame.K_RIGHT:
+
             self.cam_offset_x += self.cam_offset_increment
+
         elif key_pressed == pygame.K_c:
+
             self.reset_camera()
 
     def reset_camera(self):
@@ -415,3 +467,11 @@ class Main:
 
         if self.middle_click_on or self.right_click_on:
             self.handle_event_mouse_middle_click_drag(event)
+
+    def execute_command(self):
+        print(
+            "EXECUTE:",
+            self.command_box.input_text,
+            "FOR",
+            self.radar_selected.cs
+        )
