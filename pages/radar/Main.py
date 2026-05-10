@@ -201,6 +201,23 @@ class Main:
                 self.cam_offset_y,
                 self.zoom
             )
+            screen_x = world_to_screen_x(
+                acft.pos_x,
+                self.cam_offset_x,
+                self.zoom
+            )
+
+            screen_y = world_to_screen_y(
+                acft.pos_y,
+                self.cam_offset_y,
+                self.zoom
+            )
+
+            acft.draw_label(
+                self.main_surface,
+                screen_x,
+                screen_y
+            )
 
     def test_draw(self):
         pass

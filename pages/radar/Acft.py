@@ -1,3 +1,6 @@
+import pygame
+
+from pages.radar.Label import Label
 from pages.radar.data.helper import convert_lat_and_long_to_radar, get_rad_angle, get_cos_angle, get_sin_angle, \
     latlon_to_world
 
@@ -82,6 +85,7 @@ class Acft:
         self.airspace_center_lon = airspace_center_lon
         self.airspace_center_lat = airspace_center_lat
         self.old_pos = []
+        self.label = Label()
         self.after_load()
 
     def after_load(self):
@@ -190,3 +194,22 @@ class Acft:
                 * amount_of_sec
         )
         return next_x, next_y
+
+    def draw_label(self, surface: pygame.Surface, screen_x, screen_y):
+        self.label.draw(
+            surface,
+            screen_x,
+            screen_y,
+            {
+                "cs": self.cs,
+                "ssr": self.ssr,
+                "wtc": self.wtc,
+                "heading_act": self.heading_act,
+                "heading_req": self.heading_req,
+                "req_speed_ias": self.req_speed_ias,
+                "act_speed_ias": self.act_speed_ias,
+                "act_speed_gs": self.act_speed_gs,
+                "altitude_req": self.altitude_req,
+                "altitude_act": self.altitude_act,
+            }
+        )
