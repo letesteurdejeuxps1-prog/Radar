@@ -23,8 +23,9 @@ class Label:
     # INIT
     # =========================
 
-    def __init__(self):
+    def __init__(self, trl: int = 6000):
 
+        self.TRL = trl
         self.font_size = 15
         self.font = pygame.font.SysFont("consolas", self.font_size)
 
@@ -83,18 +84,14 @@ class Label:
         if self.display_state == self.STATE_COLLAPSED:
 
             lines.append(
-                f"{vals['cs']}"
-            )
-
-            lines.append(
-                self.alt_to_label(vals["altitude_act"])
+                f"{vals['cs']}  {self.alt_to_label(vals["altitude_act"])}"
             )
 
         # MEDIUM
         elif self.display_state == self.STATE_MEDIUM:
 
             lines.append(
-                f"{vals['cs']} {vals['wtc']}"
+                f"{vals['cs']}  {vals['wtc']}"
             )
 
             lines.append(
@@ -106,25 +103,25 @@ class Label:
         elif self.display_state == self.STATE_FULL:
 
             lines.append(
-                f"{vals['cs']} {vals['wtc']}"
+                f"{vals['cs']} {vals['icao_type']} {vals['wtc']}"
             )
 
             lines.append(
-                f"{self.alt_to_label(vals['altitude_act'])} "
-                f"{int(vals['act_speed_gs'])}"
+                f"SSR {vals['ssr']} | GS: {int(vals['act_speed_gs'])}"
             )
 
             lines.append(
-                f"HDG {int(vals['heading_act'])}"
+                f"HDG {int(vals['heading_act'])} / {int(vals['heading_req'])}"
             )
 
             lines.append(
-                f"REQ {int(vals['heading_req'])}"
+                f"ALT:{self.alt_to_label(vals['altitude_act'])} / {self.alt_to_label(vals['altitude_req'])}"
             )
 
             lines.append(
-                f"SSR {vals['ssr']}"
+                f"IAS:{self.alt_to_label(vals['act_speed_ias'])} / {self.alt_to_label(vals['req_speed_ias'])}"
             )
+
 
         # Safety
         if len(lines) == 0:
@@ -271,6 +268,9 @@ class Label:
 
     def alt_to_label(self, value):
 
-        level = int(value / 100)
+        if value >= self.TRL:
+            level = int(value / 100)
+        else:
+            level = value
 
-        return f"FL{level}"
+        return level

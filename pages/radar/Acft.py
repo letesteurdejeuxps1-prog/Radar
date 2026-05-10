@@ -37,6 +37,7 @@ class Acft:
             airspace_center_lat: int | float,
             identity: int,
             cs: str = '',
+            icao_type: str = '',
             coord_x: str = '',
             coord_y: str = '',
 
@@ -64,6 +65,7 @@ class Acft:
     ) -> None:
         self.identity = identity
         self.cs = cs
+        self.icao_type = icao_type
         self.coord_x = coord_x
         self.coord_y = coord_y
         self.heading_act = heading_act
@@ -202,6 +204,7 @@ class Acft:
             screen_y,
             {
                 "cs": self.cs,
+                "icao_type": self.icao_type,
                 "ssr": self.ssr,
                 "wtc": self.wtc,
                 "heading_act": self.heading_act,

@@ -3,6 +3,7 @@
     {
       "identity": 1,
       "cs": "SAS101",
+      "type": "A320",
       "coord_x": "57°25'00''N",
       "coord_y": "14°49'30''E",
       "pos_x": 120,
@@ -27,6 +28,7 @@
     {
       "identity": 2,
       "cs": "FIN202",
+      "type": "A320",
       "coord_x": "57°18'00''N",
       "coord_y": "15°10'10''E",
       "pos_x": 410,

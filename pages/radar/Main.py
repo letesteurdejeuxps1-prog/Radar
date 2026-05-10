@@ -111,6 +111,7 @@ class Main:
                     self.radar_center_lat,
                     acft['identity'],
                     acft['cs'],
+                    acft['type'],
                     acft['coord_x'],
                     acft['coord_y'],
                     acft['heading_act'],
