@@ -30,7 +30,7 @@ class Command:
         self.main = main
 
         self.global_prl_length: int | float = 60
-        self.button_spacing = 0
+        self.button_spacing: int = 4
         self.input_rect = Rect
         self.title_rect = Rect
         self.surface = surface
@@ -116,6 +116,14 @@ class Command:
                 "value": value
             })
 
+        last_button = self.buttons[-1]["rect"]
+        self.height = (
+                last_button.bottom
+                - self.pos_y
+                + self.padding
+        )
+        self.rect.height = self.height
+
     def update_layout_positions(self):
 
         self.rect.x = self.pos_x
@@ -129,19 +137,17 @@ class Command:
 
         button_y = self.input_rect.bottom + self.padding
 
-        button_spacing = 4
-
         available_width = self.width - (self.padding * 2)
 
         button_width = (
-                               available_width - ((self.button_count - 1) * button_spacing)
+                               available_width - ((self.button_count - 1) * self.button_spacing)
                        ) // self.button_count
 
         for i, button in enumerate(self.buttons):
             button["rect"].x = (
                     self.pos_x
                     + self.padding
-                    + (button_width + button_spacing) * i
+                    + (button_width + self.button_spacing) * i
             )
 
             button["rect"].y = button_y

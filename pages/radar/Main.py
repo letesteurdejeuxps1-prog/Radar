@@ -54,23 +54,23 @@ class Main:
     cam_offset_increment: int = 10
 
     def __init__(self, v: Variables, working_dir: str) -> None:
+        pygame.init()
         self.root_directory = working_dir
         self.main_running = True
         self.main_counter = 0
         self.variables = v
         self.airspace = Airspace()
         self.path_root = str(pathlib.Path().resolve())
-        self.init()
         info = pygame.display.Info()
         self.variables.display_width = info.current_w
         self.variables.display_height = info.current_h
+        self.init()
         self.main_surface = pygame.display.set_mode((self.variables.display_width, self.variables.display_height))
         self.drawer = Drawer(self.main_surface, self.root_directory)
         self.command_box = Command(self.main_surface, self)
         self.after_init()
 
     def init(self) -> None:
-        pygame.init()
         pygame.display.set_caption(self.variables.game_caption)
         center = self.airspace.load("{}\\{}\\{}".format(
             self.path_root,
