@@ -25,9 +25,7 @@ class Command:
     color_button_hover = (80, 80, 80)
     color_button_border = (255, 255, 255)
 
-    def __init__(self, surface: pygame.Surface, main):
-
-        self.main = main
+    def __init__(self, surface: pygame.Surface):
 
         self.global_prl_length: int | float = 60
         self.button_spacing: int = 4

@@ -67,7 +67,7 @@ class Main:
         self.init()
         self.main_surface = pygame.display.set_mode((self.variables.display_width, self.variables.display_height))
         self.drawer = Drawer(self.main_surface, self.root_directory)
-        self.command_box = Command(self.main_surface, self)
+        self.command_box = Command(self.main_surface)
         self.after_init()
 
     def init(self) -> None:
