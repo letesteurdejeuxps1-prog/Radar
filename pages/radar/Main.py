@@ -231,9 +231,12 @@ class Main:
             # TODO REMOVE TEST FUNCTION
             self.test()
             self.test_draw()
+            dt = self.main_clock.get_time() / 1000
+            self.move_acft(dt)
             ct = pygame.time.get_ticks()
             if ct - self.last_acft_update_time >= self.acft_update_interval_ms:
-                self.move_acft(self.acft_update_interval_ms / 1000)
+                for acft in self.acft_list:
+                    acft.radar_refresh()
                 self.last_acft_update_time = ct
             self.draw()
             pygame.display.flip()

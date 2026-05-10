@@ -173,7 +173,7 @@ class Drawer:
                 zoom
             )
 
-        prl_end_x, prl_end_y = acft.get_next_pos(acft.d_prl_length_in_sec)
+        prl_end_x, prl_end_y = acft.get_prl_pos(acft.d_prl_length_in_sec)
         self.draw_line(
             acft.pos_x,
             acft.pos_y,

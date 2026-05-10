@@ -12,13 +12,15 @@ class Acft:
     d_acft_color_conflict: tuple[int, int, int] = (255, 255, 255)
     d_prl_color: tuple[int, int, int] = (255, 255, 255)
     d_prl_width: int = 1
-    d_prl_length_in_sec: int|float = 60
+    d_prl_length_in_sec: int = 60
     d_prl_has_custom: bool = False
 
     old_radar_blip_amount = 5
 
     pos_x: int | float = 0
     pos_y: int | float = 0
+    real_x: int | float = 0
+    real_y: int | float = 0
     lat: int | float = 0
     lon: int | float = 0
 
@@ -92,6 +94,8 @@ class Acft:
             self.airspace_center_lat,
             self.airspace_center_lon
         )
+        self.real_x = self.pos_x
+        self.real_y = self.pos_y
         for i in range(self.old_radar_blip_amount):
             self.old_pos.append((self.pos_x, self.pos_y))
 
@@ -117,14 +121,13 @@ class Acft:
             self.check_heading()
 
     def move_logic(self, elapsed_sec: float):
-        self.update_pos_list()
         self.move_logic_heading(elapsed_sec)
         self.move_logic_speed()
         self.move_logic_alt()
         self.move_acft(elapsed_sec)
 
     def update_pos_list(self):
-        self.old_pos.append((self.pos_x, self.pos_y))
+        self.old_pos.append((self.real_x, self.real_y))
         new_list = self.old_pos[-self.old_radar_blip_amount:]
         self.old_pos = new_list
 
@@ -153,17 +156,37 @@ class Acft:
 
     def move_acft(self, elapsed_sec: float = 1):
         next_x, next_y = self.next_pos(get_rad_angle(self.heading_act), elapsed_sec)
-        self.pos_x = next_x
-        self.pos_y = next_y
+        self.real_x = next_x
+        self.real_y = next_y
 
     def get_gs_speed_per_sec(self) -> float:
         return self.act_speed_gs / 3600
 
     def next_pos(self, r_angle, amount_of_sec):
-        next_x = self.pos_x + get_cos_angle(r_angle) * self.get_gs_speed_per_sec() * amount_of_sec
-        next_y = self.pos_y + get_sin_angle(r_angle) * self.get_gs_speed_per_sec() * amount_of_sec
+        next_x = self.real_x + get_cos_angle(r_angle) * self.get_gs_speed_per_sec() * amount_of_sec
+        next_y = self.real_y + get_sin_angle(r_angle) * self.get_gs_speed_per_sec() * amount_of_sec
         return next_x, next_y
 
     def get_next_pos(self, amount_of_sec: int = 1):
         r_angle = get_rad_angle(self.heading_act)
         return self.next_pos(r_angle, amount_of_sec)
+
+    def radar_refresh(self):
+        self.update_pos_list()
+
+        self.pos_x = self.real_x
+        self.pos_y = self.real_y
+
+    def get_prl_pos(self, amount_of_sec: int = 1):
+        r_angle = get_rad_angle(self.heading_act)
+        next_x = self.pos_x + (
+                get_cos_angle(r_angle)
+                * self.get_gs_speed_per_sec()
+                * amount_of_sec
+        )
+        next_y = self.pos_y + (
+                get_sin_angle(r_angle)
+                * self.get_gs_speed_per_sec()
+                * amount_of_sec
+        )
+        return next_x, next_y
