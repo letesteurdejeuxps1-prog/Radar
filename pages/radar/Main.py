@@ -330,6 +330,10 @@ class Main:
             # Right click
             print("Right click")
             self.right_click_on = True
+            for acft in self.acft_list:
+                if acft.label.is_mouse_over(mouse_x, mouse_y):
+                    acft.label.next_state()
+                    return
 
     def handle_event_mouseclick_off(self):
         self.left_click_on = False
