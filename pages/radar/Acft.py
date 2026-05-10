@@ -138,8 +138,8 @@ class Acft:
     def move_logic_heading(self, elapsed_sec: float):
         if self.turn_direction == 1 or self.turn_direction == -1:
             if self.heading_act != self.heading_req:
-                next_move_p = self.heading_act + 3
-                next_move_m = self.heading_act - 3
+                next_move_p = self.heading_act + self.rate_of_turn
+                next_move_m = self.heading_act - self.rate_of_turn
                 if next_move_m <= self.heading_req < next_move_p:
                     self.heading_act = self.heading_req
                 else:

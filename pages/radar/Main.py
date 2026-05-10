@@ -236,11 +236,7 @@ class Main:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self.handle_event_mouseclick(event)
                 elif event.type == pygame.MOUSEMOTION:
-                    self.command_box.handle_mouse_motion(
-                        pygame.mouse.get_pos()
-                    )
-                    if self.middle_click_on or self.right_click_on:
-                        self.handle_event_mouse_middle_click_drag(event)
+                    self.handle_mouse_motion(event)
                 elif event.type == pygame.MOUSEBUTTONUP:
                     self.handle_event_mouseclick_off()
                     self.command_box.handle_mouse_release()
@@ -290,6 +286,10 @@ class Main:
 
             for acft in self.acft_list:
 
+                if acft.label.is_mouse_over(mouse_x, mouse_y):
+                    acft.label.start_drag(mouse_x, mouse_y)
+                    return
+
                 screen_x = world_to_screen_x(acft.pos_x, self.cam_offset_x, self.zoom)
 
                 screen_y = world_to_screen_y(acft.pos_y, self.cam_offset_y, self.zoom)
@@ -335,6 +335,8 @@ class Main:
         self.left_click_on = False
         self.middle_click_on = False
         self.right_click_on = False
+        for acft in self.acft_list:
+            acft.label.stop_drag()
 
     def handle_event_mouse_middle_click_drag(self, event):
         if isinstance(event.rel, tuple) and len(event.rel) == 2:
@@ -378,3 +380,33 @@ class Main:
             identity = None
         for acft in self.acft_list:
             acft.tick(identity, elapsed_sec)
+
+    def handle_mouse_motion(self, event):
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+
+        self.command_box.handle_mouse_motion(
+            (mouse_x, mouse_y)
+        )
+
+        for acft in self.acft_list:
+            screen_x = world_to_screen_x(
+                acft.pos_x,
+                self.cam_offset_x,
+                self.zoom
+            )
+
+            screen_y = world_to_screen_y(
+                acft.pos_y,
+                self.cam_offset_y,
+                self.zoom
+            )
+
+            acft.label.drag(
+                mouse_x,
+                mouse_y,
+                screen_x,
+                screen_y
+            )
+
+        if self.middle_click_on or self.right_click_on:
+            self.handle_event_mouse_middle_click_drag(event)
