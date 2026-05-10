@@ -265,20 +265,17 @@ class Main:
 
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
-        # 2. Convert mouse position to world coordinates BEFORE zoom
         world_x = (mouse_x + self.cam_offset_x) / self.zoom
-        world_y = (mouse_y + self.cam_offset_y) / self.zoom
+        world_y = -(mouse_y + self.cam_offset_y) / self.zoom
 
-        # 3. Apply zoom
         zoom_factor = 1.1 if event.y > 0 else 0.9
+
         self.zoom *= zoom_factor
 
-        # Optional: clamp zoom
-        self.zoom = max(0.1, min(self.zoom, 600000000))
+        self.zoom = max(0.1, min(self.zoom, 500))
 
-        # 4. Recalculate offset so the world point stays under the mouse
         self.cam_offset_x = world_x * self.zoom - mouse_x
-        self.cam_offset_y = world_y * self.zoom - mouse_y
+        self.cam_offset_y = -world_y * self.zoom - mouse_y
 
     def handle_event_mouseclick(self, event):
         mouse_x, mouse_y = pygame.mouse.get_pos()
