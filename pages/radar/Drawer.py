@@ -2,7 +2,7 @@ import pygame
 
 from pages.radar.Acft import Acft
 from pages.radar.airspace.Point import Point
-from pages.radar.data.helper import world_to_screen_x, world_to_screen_y, convert_lat_and_long_to_radar
+from pages.radar.data.helper import world_to_screen_x, world_to_screen_y
 
 
 class Drawer:

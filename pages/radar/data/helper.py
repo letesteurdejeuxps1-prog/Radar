@@ -38,7 +38,7 @@ def separate_axis_from_coord(coord: str) -> tuple['str', 'str']:
         direction = 'E'
     else:
         raise ValueError(f"Missing direction in {coord}")
-    return (coord, direction)
+    return coord, direction
 
 
 def extract_deg_min_sec_from_str(coord: str) -> tuple[int, int, int]:
@@ -63,7 +63,7 @@ def extract_deg_min_sec_from_str(coord: str) -> tuple[int, int, int]:
     else:
         seconds = 0
 
-    return (degree, minutes, seconds)
+    return degree, minutes, seconds
 
 
 def convert_deg_min_sec_to_sim(data: tuple[int, int, int], axis: str):
@@ -101,6 +101,7 @@ def world_to_screen_x(pos, offset, zoom):
 
 def world_to_screen_y(pos, offset, zoom):
     return (-pos * zoom) - offset
+
 
 def latlon_to_world(lat, lon, origin_lat, origin_lon):
     x = (lon - origin_lon) * 60 * math.cos(math.radians(origin_lat))

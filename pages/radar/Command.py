@@ -1,4 +1,5 @@
 import pygame
+from pygame import Rect
 
 from pages.radar.Acft import Acft
 
@@ -28,10 +29,10 @@ class Command:
 
         self.main = main
 
-        self.global_prl_length: int|float = 60
+        self.global_prl_length: int | float = 60
         self.button_spacing = 0
-        self.input_rect = None | pygame.Rect
-        self.title_rect = None | pygame.Rect
+        self.input_rect = Rect
+        self.title_rect = Rect
         self.surface = surface
 
         self.font = pygame.font.SysFont("consolas", 18)
@@ -75,7 +76,7 @@ class Command:
 
     def build_layout(self):
 
-        self.title_rect = pygame.Rect(
+        self.title_rect = Rect(
             self.pos_x + self.padding,
             self.pos_y + self.padding,
             self.width - self.padding * 2,
@@ -146,6 +147,12 @@ class Command:
             button["rect"].y = button_y
 
     def draw(self):
+
+        if not isinstance(self.title_rect, Rect):
+            return
+
+        if not isinstance(self.input_rect, Rect):
+            return
 
         # =========================
         # MAIN WINDOW
@@ -293,7 +300,7 @@ class Command:
 
             self.input_text += event.unicode
 
-    def handle_mouse_click(self, mouse_pos, acft_list):
+    def handle_mouse_click(self, mouse_pos: tuple[int, int], acft_list: list[Acft]):
 
         clicked_inside = self.rect.collidepoint(mouse_pos)
 

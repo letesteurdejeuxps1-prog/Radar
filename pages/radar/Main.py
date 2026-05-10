@@ -37,8 +37,8 @@ class Main:
     path_root: str = ''
 
     radar_color_bg: tuple[int, int, int] = (0, 0, 0)
-    radar_center_lon: int|float = 0
-    radar_center_lat: int|float = 0
+    radar_center_lon: int | float = 0
+    radar_center_lat: int | float = 0
 
     radar_show_navaids_name: bool = True
     radar_refresh_rate: int = 5
@@ -271,7 +271,6 @@ class Main:
         if event.button == 1:
             # Left click
             self.left_click_on = True
-
 
             matches = []
 
