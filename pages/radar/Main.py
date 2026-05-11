@@ -359,7 +359,7 @@ class Main:
         if self.radar_selected is not None:
 
             # ENTER = execute command
-            if key_pressed == pygame.K_RETURN:
+            if key_pressed == pygame.K_RETURN or key_pressed == pygame.K_KP_ENTER:
 
                 self.execute_command()
 
