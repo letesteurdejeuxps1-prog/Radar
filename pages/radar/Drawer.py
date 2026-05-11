@@ -184,7 +184,7 @@ class Drawer:
             offset_y,
             zoom
         )
-        for pos in acft.old_pos:
+        for pos in acft.old_pos[:-1]:
             self.draw_circle_no_scale(
                 pos[0],
                 pos[1],

@@ -24,7 +24,7 @@ class Main:
     game_acft_selected_id: int = 0
 
     last_acft_update_time: int = 0
-    acft_update_interval_ms: int = 3000
+    acft_update_interval_ms: int = 4000
 
     main_clock: pygame.time.Clock = pygame.time.Clock()
     main_running: bool = False
