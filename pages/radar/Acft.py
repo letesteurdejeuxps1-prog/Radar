@@ -175,6 +175,7 @@ class Acft:
         self.act_speed_gs = self.act_speed_tas
 
     def get_roc_per_sec(self):
+        # TODO: Change so roc is 0 on steady flight
         if self.rate_of_climb == False:
             self.rate_of_climb = self.default_rate_of_climb
         return self.rate_of_climb / 60
@@ -248,6 +249,7 @@ class Acft:
                 "act_speed_gs": self.act_speed_gs,
                 "altitude_req": self.altitude_req,
                 "altitude_act": self.altitude_act,
+                "rate_of_climb": self.rate_of_climb,
             }
         )
 

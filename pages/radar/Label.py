@@ -119,7 +119,11 @@ class Label:
             )
 
             lines.append(
-                f"IAS:{vals['act_speed_ias']} / {vals['req_speed_ias']}"
+                f"RoC: {vals['rate_of_climb']} ft/sec"
+            )
+
+            lines.append(
+                f"IAS:{int(vals['act_speed_ias'])} / {int(vals['req_speed_ias'])}"
             )
 
 
