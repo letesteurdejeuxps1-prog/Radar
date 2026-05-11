@@ -195,5 +195,3 @@ class Drawer:
                 0
             )
 
-    def draw_acft_blip(self):
-        pass
