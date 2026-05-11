@@ -31,6 +31,9 @@ class Acft:
     rate_of_turn: int = 3
     acft_trail_radius: int = 2
 
+    rate_of_climb: int | bool = False
+    default_rate_of_climb: int = 1500
+
     def __init__(
             self,
             airspace_center_lon: int | float,
@@ -129,7 +132,7 @@ class Acft:
     def move_logic(self, elapsed_sec: float):
         self.move_logic_heading(elapsed_sec)
         self.move_logic_speed()
-        self.move_logic_alt()
+        self.move_logic_alt(elapsed_sec)
         self.move_acft(elapsed_sec)
 
     def update_pos_list(self):
@@ -157,8 +160,25 @@ class Acft:
         # TODO calculate gs when wind is implemented
         self.act_speed_gs = self.act_speed_tas
 
-    def move_logic_alt(self):
-        pass
+    def get_roc_per_sec(self):
+        if self.rate_of_climb == False:
+            self.rate_of_climb = self.default_rate_of_climb
+        return self.rate_of_climb // 60
+
+    def move_logic_alt(self, elapsed_time):
+        if self.altitude_act == self.altitude_req:
+            return
+
+        climb_step = self.get_roc_per_sec() * elapsed_time
+
+        if self.altitude_req > self.altitude_act:
+            self.altitude_act += climb_step
+            if self.altitude_act > self.altitude_req:
+                self.altitude_act = self.altitude_req
+        else:
+            self.altitude_act -= climb_step
+            if self.altitude_act < self.altitude_req:
+                self.altitude_act = self.altitude_req
 
     def move_acft(self, elapsed_sec: float = 1):
         next_x, next_y = self.next_pos(get_rad_angle(self.heading_act), elapsed_sec)
