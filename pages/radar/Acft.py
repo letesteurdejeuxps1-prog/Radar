@@ -236,3 +236,27 @@ class Acft:
                 "altitude_act": self.altitude_act,
             }
         )
+
+    def execute_command(self, command: str, value: int):
+        if command == "↑" or command == "↓":
+            self.altitude_req = value * 100
+        elif command == "←":
+            self.heading_req = value
+            self.turn_direction = -1
+        elif command == "→":
+            self.heading_req = value
+            self.turn_direction = 1
+        elif command == "*":
+            self.heading_req = value
+            if self.heading_act - value > 0:
+                self.turn_direction = -1
+            else:
+                self.turn_direction = 1
+        elif command == "/":
+            self.req_speed_ias = value
+        elif command == "ms":
+            self.act_speed_ias = value
+            self.req_speed_ias = value
+        elif command == "mh":
+            self.heading_req = value
+            self.heading_act = value

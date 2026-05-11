@@ -119,7 +119,7 @@ class Label:
             )
 
             lines.append(
-                f"IAS:{self.alt_to_label(vals['act_speed_ias'])} / {self.alt_to_label(vals['req_speed_ias'])}"
+                f"IAS:{vals['act_speed_ias']} / {vals['req_speed_ias']}"
             )
 
 
@@ -267,10 +267,4 @@ class Label:
     # =========================
 
     def alt_to_label(self, value):
-
-        if value >= self.TRL:
-            level = int(value / 100)
-        else:
-            level = value
-
-        return level
+        return int(value / 100)

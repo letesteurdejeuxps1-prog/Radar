@@ -285,25 +285,6 @@ class Command:
                 txt_rect
             )
 
-    def handle_keydown(self, event):
-
-        if not self.input_active:
-            return
-
-        if event.key == pygame.K_BACKSPACE:
-
-            self.input_text = self.input_text[:-1]
-
-        elif event.key == pygame.K_RETURN:
-
-            print("COMMAND:", self.input_text)
-
-            self.input_text = ""
-
-        else:
-
-            self.input_text += event.unicode
-
     def handle_mouse_click(self, mouse_pos: tuple[int, int], acft_list: list[Acft]):
 
         clicked_inside = self.rect.collidepoint(mouse_pos)

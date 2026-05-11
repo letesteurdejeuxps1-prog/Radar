@@ -8,6 +8,7 @@ from pages.radar.Acft import Acft
 from pages.radar.Airspace import Airspace
 from pages.radar.Command import Command
 from pages.radar.Drawer import Drawer
+from pages.radar.data.command_helper import get_command
 from pages.radar.data.helper import world_to_screen_x, world_to_screen_y
 
 
@@ -362,8 +363,6 @@ class Main:
 
                 self.execute_command()
 
-                # TODO: analyse command here
-
                 self.command_box.input_text = ""
                 return
 
@@ -377,6 +376,23 @@ class Main:
 
             elif key_pressed == pygame.K_ESCAPE:
                 self.command_box.input_text = ""
+
+            elif self.command_box.input_text == "":
+
+                if event.key == pygame.K_UP or event.key == pygame.K_KP_8:
+                    self.command_box.input_text += "↑"
+                elif event.key == pygame.K_DOWN or event.key == pygame.K_KP_2:
+                    self.command_box.input_text += "↓"
+                elif event.key == pygame.K_LEFT or event.key == pygame.K_KP_4:
+                    self.command_box.input_text += "←"
+                elif event.key == pygame.K_RIGHT or event.key == pygame.K_KP_6:
+                    self.command_box.input_text += "→"
+                elif event.key == pygame.K_KP_MULTIPLY:
+                    self.command_box.input_text += "*"
+                elif event.key == pygame.K_KP_DIVIDE:
+                    self.command_box.input_text += "/"
+                elif event.key == pygame.K_m:
+                    self.command_box.input_text += "m"
 
             # =========================
             # NORMAL TEXT INPUT
@@ -469,9 +485,7 @@ class Main:
             self.handle_event_mouse_middle_click_drag(event)
 
     def execute_command(self):
-        print(
-            "EXECUTE:",
-            self.command_box.input_text,
-            "FOR",
-            self.radar_selected.cs
-        )
+        if isinstance(self.radar_selected, Acft):
+            is_valid, command, value = get_command(self.command_box.input_text)
+            if is_valid:
+                self.radar_selected.execute_command(command, value)
