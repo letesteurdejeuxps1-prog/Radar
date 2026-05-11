@@ -40,6 +40,7 @@ class Acft:
     wtc: str
 
     is_speed_locked: bool = False
+    prl_heading_snapshot: float = 0
 
     def __init__(
             self,
@@ -118,6 +119,7 @@ class Acft:
         self.prl_end_x, self.prl_end_y = self.get_prl_pos(
             self.d_prl_length_in_sec
         )
+        self.prl_heading_snapshot = self.heading_act
         for i in range(self.old_radar_blip_amount):
             self.old_pos.append((self.pos_x, self.pos_y))
 
@@ -257,12 +259,14 @@ class Acft:
         self.pos_x = self.real_x
         self.pos_y = self.real_y
 
+        self.prl_heading_snapshot = self.heading_act
+
         self.prl_end_x, self.prl_end_y = self.get_prl_pos(
             self.d_prl_length_in_sec
         )
-
     def get_prl_pos(self, amount_of_sec: int | float = 1):
-        r_angle = get_rad_angle(self.heading_act)
+        r_angle = get_rad_angle(self.prl_heading_snapshot)
+
         next_x = self.pos_x + (
                 get_cos_angle(r_angle)
                 * self.get_gs_speed_per_sec()

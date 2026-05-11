@@ -1,7 +1,7 @@
 import math
 
 
-def get_rad_angle(angle: int) -> float:
+def get_rad_angle(angle: int | float) -> float:
     return math.radians(90 - angle)
 
 

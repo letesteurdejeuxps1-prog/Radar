@@ -312,6 +312,12 @@ class Command:
                     self.selected_acft.d_prl_length_in_sec = new_val
                     self.selected_acft.d_prl_has_custom = True
 
+                    self.selected_acft.prl_end_x, self.selected_acft.prl_end_y = (
+                        self.selected_acft.get_prl_pos(
+                            self.selected_acft.d_prl_length_in_sec
+                        )
+                    )
+
                 # =========================
                 # GLOBAL MODE
                 # =========================
