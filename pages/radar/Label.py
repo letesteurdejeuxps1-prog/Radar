@@ -25,6 +25,10 @@ class Label:
 
     def __init__(self, trl: int = 6000):
 
+        self.EMERGENCY_CODE = "EM"
+        self.COM_FAILURE_CODE = "CF"
+        self.HIJACK = "HI"
+        self.emergency_color = (255, 50, 50)
         self.TRL = trl
         self.font_size = 15
         self.font = pygame.font.SysFont("consolas", self.font_size)
@@ -70,6 +74,16 @@ class Label:
             vals: dict
     ):
 
+
+        ssr = self.get_ssr_status(vals['ssr'])
+        if ssr:
+            ssr_content = ssr[0]
+            border_color = ssr[1]
+        else:
+            ssr_content = ""
+            border_color = self.color_border
+
+
         # Final label position
         draw_x = aircraft_screen_x + self.rel_pos_x
         draw_y = aircraft_screen_y + self.rel_pos_y
@@ -84,14 +98,14 @@ class Label:
         if self.display_state == self.STATE_COLLAPSED:
 
             lines.append(
-                f"{vals['cs']}  {self.alt_to_label(vals["altitude_act"])}"
+                f"{vals['cs']}  {self.alt_to_label(vals["altitude_act"])}  {ssr_content}"
             )
 
         # MEDIUM
         elif self.display_state == self.STATE_MEDIUM:
 
             lines.append(
-                f"{vals['cs']}  {vals['wtc']}"
+                f"{vals['cs']}  {vals['wtc']}  {ssr_content}"
             )
 
             lines.append(
@@ -103,7 +117,7 @@ class Label:
         elif self.display_state == self.STATE_FULL:
 
             lines.append(
-                f"{vals['cs']} {vals['icao_type']} {vals['wtc']}"
+                f"{vals['cs']} {vals['icao_type']} {vals['wtc']}  {ssr_content}"
             )
 
             lines.append(
@@ -178,7 +192,7 @@ class Label:
 
         pygame.draw.rect(
             surface,
-            self.color_border,
+            border_color,
             background_rect,
             1
         )
@@ -272,3 +286,14 @@ class Label:
 
     def alt_to_label(self, value):
         return int(value / 100)
+    
+    def get_ssr_status(self, ssr):
+        ssr = str(ssr)
+        if ssr == "7700":
+            return self.EMERGENCY_CODE, self.emergency_color
+        elif ssr == "7600" or ssr == "7601":
+            return self.COM_FAILURE_CODE, self.emergency_color
+        elif ssr == "7500":
+            return self.HIJACK, self.emergency_color
+        else:
+            return False
