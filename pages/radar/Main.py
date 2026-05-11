@@ -413,30 +413,6 @@ class Main:
 
             self.main_running = False
 
-        elif key_pressed == pygame.K_KP_PLUS:
-
-            self.zoom += self.zoom_increment
-
-        elif key_pressed == pygame.K_KP_MINUS:
-
-            self.zoom -= self.zoom_increment
-
-        elif key_pressed == pygame.K_DOWN:
-
-            self.cam_offset_y -= self.cam_offset_increment
-
-        elif key_pressed == pygame.K_UP:
-
-            self.cam_offset_y += self.cam_offset_increment
-
-        elif key_pressed == pygame.K_LEFT:
-
-            self.cam_offset_x -= self.cam_offset_increment
-
-        elif key_pressed == pygame.K_RIGHT:
-
-            self.cam_offset_x += self.cam_offset_increment
-
         elif key_pressed == pygame.K_c:
 
             self.reset_camera()
