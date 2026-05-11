@@ -6,6 +6,8 @@ class PerformanceData:
     path_to_perf_file = "\\pages\\radar\\data\\aircraft_performance.json"
 
     def __init__(self, root_dir: str):
+        self.speed_default = 250
+        self.roc_default = 1000
         self.wtc_default = "M"
         self.root_dir = root_dir
         self.data = {}
@@ -56,3 +58,39 @@ class PerformanceData:
             pass
         else:
             return wtc
+
+    def get_rate_of_climb(self, icao_type, altitude, climb_direction):
+
+        perf = self.get_perf_by_icao(icao_type)
+
+        if not perf:
+            return self.roc_default
+
+        if climb_direction == 1:
+            lookout_table = perf["climb"]
+        else:
+            lookout_table = perf["descent"]
+
+        for item in lookout_table:
+            if item["min"] <= altitude <= item["max"]:
+                return item["roc"]
+
+        return self.roc_default
+
+    def get_speed(self, icao_type, altitude: int, climb_direction: int):
+
+        perf = self.get_perf_by_icao(icao_type)
+
+        if not perf:
+            return self.roc_default
+
+        if climb_direction == 1:
+            lookout_table = perf["climb"]
+        else:
+            lookout_table = perf["descent"]
+
+        for item in lookout_table:
+            if item["min"] <= altitude <= item["max"]:
+                return item["speed"]
+
+        return self.speed_default 

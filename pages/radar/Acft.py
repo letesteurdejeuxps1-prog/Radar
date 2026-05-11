@@ -71,6 +71,7 @@ class Acft:
             selected_radius: int | float = 50,
             is_clicked: bool = False,
     ) -> None:
+        self.climb_dir = 1
         self.perf_data = perf_data
         self.identity = identity
         self.cs = cs
@@ -163,16 +164,27 @@ class Acft:
 
     def move_logic_speed(self, elapsed_sec: float):
 
+        # Get target speed from performance table
+        self.req_speed_ias = self.perf_data.get_speed(
+            self.icao_type,
+            self.altitude_act,
+            self.climb_dir
+        )
+
         diff = self.req_speed_ias - self.act_speed_ias
 
         if diff != 0:
+
             step = self.speed_increment * elapsed_sec
+
             if abs(diff) < step:
                 step = abs(diff)
+
             if diff > 0:
                 self.act_speed_ias += step
             else:
                 self.act_speed_ias -= step
+
         self.update_speed()
 
     def get_roc_per_sec(self):
@@ -183,20 +195,41 @@ class Acft:
         return self.default_rate_of_climb
 
     def move_logic_alt(self, elapsed_time):
+
+        # Already at target altitude
         if self.altitude_act == self.altitude_req:
             self.rate_of_climb = 0
             return
 
-        climb_step = self.get_roc_per_sec() * elapsed_time
-
+        # Determine climb / descent direction
         if self.altitude_req > self.altitude_act:
-            self.altitude_act += climb_step
-            if self.altitude_act > self.altitude_req:
-                self.altitude_act = self.altitude_req
+            self.climb_dir = 1
         else:
-            self.altitude_act -= climb_step
-            if self.altitude_act < self.altitude_req:
-                self.altitude_act = self.altitude_req
+            self.climb_dir = -1
+
+        # Get current ROC from performance table
+        roc = self.perf_data.get_rate_of_climb(
+            self.icao_type,
+            self.altitude_act,
+            self.climb_dir
+        )
+
+        self.rate_of_climb = roc * self.climb_dir
+
+        # Feet moved this frame
+        climb_step = (roc / 60) * elapsed_time
+
+        # Apply movement
+        self.altitude_act += climb_step * self.climb_dir
+
+        # Prevent overshoot
+        if self.climb_dir == 1 and self.altitude_act > self.altitude_req:
+            self.altitude_act = self.altitude_req
+            self.rate_of_climb = 0
+
+        elif self.climb_dir == -1 and self.altitude_act < self.altitude_req:
+            self.altitude_act = self.altitude_req
+            self.rate_of_climb = 0
 
     def move_acft(self, elapsed_sec: float = 1):
         next_x, next_y = self.next_pos(get_rad_angle(self.heading_act), elapsed_sec)
