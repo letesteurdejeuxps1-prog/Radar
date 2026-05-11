@@ -107,3 +107,14 @@ def latlon_to_world(lat, lon, origin_lat, origin_lon):
     x = (lon - origin_lon) * 60 * math.cos(math.radians(origin_lat))
     y = (lat - origin_lat) * 60
     return x, y
+
+def validate_ssr(ssr):
+    checker = str(ssr)
+    if len(checker) == 4:
+        for nmbr in checker:
+            if 0 <= int(nmbr) <= 7:
+                pass
+            else:
+                return False
+        return ssr
+    return False

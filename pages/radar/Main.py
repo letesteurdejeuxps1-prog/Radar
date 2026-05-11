@@ -393,6 +393,8 @@ class Main:
                     self.command_box.input_text += "/"
                 elif event.key == pygame.K_m:
                     self.command_box.input_text += "m"
+                elif event.key == pygame.K_s:
+                    self.command_box.input_text += "s"
 
             # =========================
             # NORMAL TEXT INPUT

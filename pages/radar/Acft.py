@@ -2,7 +2,7 @@ import pygame
 
 from pages.radar.Label import Label
 from pages.radar.data.helper import convert_lat_and_long_to_radar, get_rad_angle, get_cos_angle, get_sin_angle, \
-    latlon_to_world
+    latlon_to_world, validate_ssr
 
 
 class Acft:
@@ -279,3 +279,7 @@ class Acft:
         elif command == "ml":
             self.altitude_req = value * 100
             self.altitude_act = value * 100
+        elif command == "s":
+            ssr = validate_ssr(value)
+            if ssr:
+                self.ssr = ssr
