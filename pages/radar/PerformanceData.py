@@ -82,7 +82,7 @@ class PerformanceData:
         perf = self.get_perf_by_icao(icao_type)
 
         if not perf:
-            return self.roc_default
+            return self.speed_default
 
         if climb_direction == 1:
             lookout_table = perf["climb"]
@@ -93,4 +93,11 @@ class PerformanceData:
             if item["min"] <= altitude <= item["max"]:
                 return item["speed"]
 
-        return self.speed_default 
+        return self.speed_default
+
+    def get_max_speed(self, icao_type):
+        perf = self.get_perf_by_icao(icao_type)
+        if not perf:
+            return self.speed_default
+        else:
+            return perf["max_speed"]

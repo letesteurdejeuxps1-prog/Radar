@@ -37,6 +37,9 @@ class Acft:
 
     rate_of_climb: int = 0
     default_rate_of_climb: int = 1500
+    wtc: str
+
+    is_speed_locked: bool = False
 
     def __init__(
             self,
@@ -67,7 +70,6 @@ class Acft:
             color_selected_radius: tuple[int, int, int] = (255, 50, 50),
             color_wake_radius: tuple[int, int, int] = (255, 150, 150),
 
-            wtc: str = 'M',
             selected_radius: int | float = 50,
             is_clicked: bool = False,
     ) -> None:
@@ -91,7 +93,6 @@ class Acft:
         self.color = color
         self.color_selected_radius = color_selected_radius
         self.color_wake_radius = color_wake_radius
-        self.wtc = wtc
         self.selected_radius = selected_radius
         self.is_clicked = is_clicked
         self.airspace_center_lon = airspace_center_lon
@@ -164,12 +165,14 @@ class Acft:
 
     def move_logic_speed(self, elapsed_sec: float):
 
-        # Get target speed from performance table
-        self.req_speed_ias = self.perf_data.get_speed(
-            self.icao_type,
-            self.altitude_act,
-            self.climb_dir
-        )
+        if not self.is_speed_locked:
+
+            # Get target speed from performance table
+            self.req_speed_ias = self.perf_data.get_speed(
+                self.icao_type,
+                self.altitude_act,
+                self.climb_dir
+            )
 
         diff = self.req_speed_ias - self.act_speed_ias
 
@@ -309,10 +312,17 @@ class Acft:
             else:
                 self.turn_direction = 1
         elif command == "/":
-            self.req_speed_ias = value
+            if value is None:
+                self.is_speed_locked = False
+            else:
+                self.is_speed_locked = True
+                new_speed = self.get_realistic_speed(value)
+                self.req_speed_ias = new_speed
         elif command == "ms":
-            self.act_speed_ias = value
-            self.req_speed_ias = value
+            self.is_speed_locked = True
+            new_speed = self.get_realistic_speed(value)
+            self.act_speed_ias = new_speed
+            self.req_speed_ias = new_speed
         elif command == "mh":
             self.heading_req = value
             self.heading_act = value
@@ -340,3 +350,8 @@ class Acft:
 
     def update_data(self):
         self.wtc = self.perf_data.get_wtc(self.icao_type)
+
+    def get_realistic_speed(self, value):
+        # TODO : Compare normal speed to max_speed (watch out with mach number conversion)
+        # max_speed = self.perf_data.get_max_speed(self.icao_type)
+        return value

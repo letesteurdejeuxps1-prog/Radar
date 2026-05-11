@@ -15,6 +15,7 @@ def get_command(data: str) -> list[tuple[bool, str, int]]:
                 command_content = int(command_content.strip(" "))
                 return_data.append((True, command_header, command_content))
             except ValueError:
-                pass
+                if command_header == "/" and command_content == "":
+                    return_data.append((True, command_header, None))
 
     return return_data
