@@ -377,7 +377,7 @@ class Main:
             elif key_pressed == pygame.K_ESCAPE:
                 self.command_box.input_text = ""
 
-            elif self.command_box.input_text == "":
+            elif self.command_box.input_text == "" or self.command_box.input_text.endswith(" "):
 
                 if event.key == pygame.K_UP or event.key == pygame.K_KP_8:
                     self.command_box.input_text += "↑"
@@ -464,6 +464,7 @@ class Main:
 
     def execute_command(self):
         if isinstance(self.radar_selected, Acft):
-            is_valid, command, value = get_command(self.command_box.input_text)
-            if is_valid:
-                self.radar_selected.execute_command(command, value)
+            results = get_command(self.command_box.input_text)
+            for result in results:
+                if result[0]:
+                    self.radar_selected.execute_command(result[1], result[2])
