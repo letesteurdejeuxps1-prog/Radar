@@ -53,7 +53,7 @@ class Acft:
 
             req_speed_ias: int = 0,
             act_speed_ias: int = 0,
-            speed_increment: int = 1,
+            speed_increment: int = 2,
 
             ssr: str = '7000',
             route: str = '',
@@ -131,7 +131,7 @@ class Acft:
 
     def move_logic(self, elapsed_sec: float):
         self.move_logic_heading(elapsed_sec)
-        self.move_logic_speed()
+        self.move_logic_speed(elapsed_sec)
         self.move_logic_alt(elapsed_sec)
         self.move_acft(elapsed_sec)
 
@@ -150,20 +150,34 @@ class Acft:
                 else:
                     self.heading_act += self.turn_direction * self.rate_of_turn * elapsed_sec
 
-    def move_logic_speed(self):
-        diff = self.req_speed_ias - self.act_speed_ias
-        if diff != 0:
-            step = self.speed_increment if abs(diff) > self.speed_increment else abs(diff)
-            self.act_speed_ias += step if diff > 0 else -step
+    def move_logic_speed(self, elapsed_sec: float):
 
-        self.act_speed_tas = self.act_speed_ias + (self.act_speed_ias * 0.02 * self.altitude_req / 1000)
-        # TODO calculate gs when wind is implemented
+        diff = self.req_speed_ias - self.act_speed_ias
+
+        if diff != 0:
+            step = self.speed_increment * elapsed_sec
+            if abs(diff) < step:
+                step = abs(diff)
+            if diff > 0:
+                self.act_speed_ias += step
+            else:
+                self.act_speed_ias -= step
+        self.act_speed_tas = (
+                self.act_speed_ias
+                + (
+                        self.act_speed_ias
+                        * 0.02
+                        * self.altitude_req
+                        / 1000
+                )
+        )
+        # TODO wind later
         self.act_speed_gs = self.act_speed_tas
 
     def get_roc_per_sec(self):
         if self.rate_of_climb == False:
             self.rate_of_climb = self.default_rate_of_climb
-        return self.rate_of_climb // 60
+        return self.rate_of_climb / 60
 
     def move_logic_alt(self, elapsed_time):
         if self.altitude_act == self.altitude_req:
@@ -260,3 +274,6 @@ class Acft:
         elif command == "mh":
             self.heading_req = value
             self.heading_act = value
+        elif command == "ml":
+            self.altitude_req = value * 100
+            self.altitude_act = value * 100

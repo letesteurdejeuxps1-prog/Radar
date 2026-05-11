@@ -1,5 +1,5 @@
 def get_command(data: str) -> tuple[bool, str, int]:
-    possibilities = ["↑", "↓", "←", "→", "*", "/", "ms", "mh"]
+    possibilities = ["↑", "↓", "←", "→", "*", "/", "ms", "mh", "ml"]
     command_header = False
     command_content = ""
     for possibility in possibilities:
