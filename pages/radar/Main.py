@@ -8,6 +8,7 @@ from pages.radar.Acft import Acft
 from pages.radar.Airspace import Airspace
 from pages.radar.Command import Command
 from pages.radar.Drawer import Drawer
+from pages.radar.PerformanceData import PerformanceData
 from pages.radar.data.command_helper import get_command
 from pages.radar.data.helper import world_to_screen_x, world_to_screen_y
 
@@ -65,6 +66,7 @@ class Main:
         info = pygame.display.Info()
         self.variables.display_width = info.current_w
         self.variables.display_height = info.current_h
+        self.perf_data = PerformanceData(self.root_directory)
         self.init()
         self.main_surface = pygame.display.set_mode((self.variables.display_width, self.variables.display_height))
         self.drawer = Drawer(self.main_surface, self.root_directory)
@@ -110,6 +112,7 @@ class Main:
                 new_acft = Acft(
                     self.radar_center_lon,
                     self.radar_center_lat,
+                    self.perf_data,
                     acft['identity'],
                     acft['cs'],
                     acft['type'],
@@ -128,7 +131,6 @@ class Main:
                     (acft['color'], acft['color'], acft['color']),
                     (acft['color_selected_radius'], acft['color_selected_radius'], acft['color_selected_radius']),
                     acft['color_wake_radius'],
-                    acft['wtc'],
                     acft['selected_radius'],
                     acft['is_clicked'],
                 )

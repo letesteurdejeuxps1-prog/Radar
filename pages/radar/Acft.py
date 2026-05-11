@@ -1,6 +1,7 @@
 import pygame
 
 from pages.radar.Label import Label
+from pages.radar.PerformanceData import PerformanceData
 from pages.radar.data.helper import convert_lat_and_long_to_radar, get_rad_angle, get_cos_angle, get_sin_angle, \
     latlon_to_world, validate_ssr
 
@@ -34,13 +35,14 @@ class Acft:
     rate_of_turn: int = 3
     acft_trail_radius: int = 2
 
-    rate_of_climb: int | bool = False
+    rate_of_climb: int = 0
     default_rate_of_climb: int = 1500
 
     def __init__(
             self,
             airspace_center_lon: int | float,
             airspace_center_lat: int | float,
+            perf_data: PerformanceData,
             identity: int,
             cs: str = '',
             icao_type: str = '',
@@ -69,6 +71,7 @@ class Acft:
             selected_radius: int | float = 50,
             is_clicked: bool = False,
     ) -> None:
+        self.perf_data = perf_data
         self.identity = identity
         self.cs = cs
         self.icao_type = icao_type
@@ -94,6 +97,7 @@ class Acft:
         self.airspace_center_lat = airspace_center_lat
         self.old_pos = []
         self.label = Label()
+        self.update_data()
         self.after_load()
 
     def after_load(self):
@@ -172,13 +176,15 @@ class Acft:
         self.update_speed()
 
     def get_roc_per_sec(self):
-        # TODO: Change so roc is 0 on steady flight
-        if self.rate_of_climb is None:
-            self.rate_of_climb = self.default_rate_of_climb
+        self.rate_of_climb = self.select_roc()
         return self.rate_of_climb / 60
+
+    def select_roc(self):
+        return self.default_rate_of_climb
 
     def move_logic_alt(self, elapsed_time):
         if self.altitude_act == self.altitude_req:
+            self.rate_of_climb = 0
             return
 
         climb_step = self.get_roc_per_sec() * elapsed_time
@@ -298,3 +304,6 @@ class Acft:
 
         # TODO wind later
         self.act_speed_gs = self.act_speed_tas
+
+    def update_data(self):
+        self.wtc = self.perf_data.get_wtc(self.icao_type)

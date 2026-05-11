@@ -2,8 +2,8 @@
   "acft": [
     {
       "identity": 1,
-      "cs": "SAS101",
-      "type": "A320",
+      "cs": "MACE88",
+      "type": "F16",
       "coord_x": "57°25'00''N",
       "coord_y": "14°49'30''E",
       "pos_x": 120,
@@ -21,14 +21,13 @@
       "color": 255,
       "color_selected_radius": 255,
       "color_wake_radius": 255,
-      "wtc": "M",
       "selected_radius": 20,
       "is_clicked": false
     },
     {
       "identity": 2,
-      "cs": "FIN202",
-      "type": "A320",
+      "cs": "MATRX65",
+      "type": "F16",
       "coord_x": "57°18'00''N",
       "coord_y": "15°10'10''E",
       "pos_x": 410,
@@ -46,7 +45,6 @@
       "color": 200,
       "color_selected_radius": 255,
       "color_wake_radius": 255,
-      "wtc": "M",
       "selected_radius": 20,
       "is_clicked": true
     }
