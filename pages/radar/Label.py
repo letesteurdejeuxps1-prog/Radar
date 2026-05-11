@@ -41,7 +41,7 @@ class Label:
         self.padding = 4
 
         # Current display mode
-        self.display_state = self.STATE_COLLAPSED
+        self.display_state = self.STATE_MEDIUM
 
         # Dragging
         self.dragging = False
@@ -76,7 +76,7 @@ class Label:
 
 
         ssr = self.get_ssr_status(vals['ssr'])
-        if ssr:
+        if isinstance(ssr, tuple):
             ssr_content = ssr[0]
             border_color = ssr[1]
         else:
@@ -224,14 +224,20 @@ class Label:
         # DRAW CONNECTOR LINE
         # =========================
 
+        anchor_x, anchor_y = self.get_connector_anchor(
+            aircraft_screen_x,
+            aircraft_screen_y,
+            draw_x,
+            draw_y,
+            box_width,
+            box_height
+        )
+
         pygame.draw.line(
             surface,
             self.color_font,
             (aircraft_screen_x, aircraft_screen_y),
-            (
-                draw_x,
-                draw_y + (box_height // 2)
-            ),
+            (anchor_x, anchor_y),
             1
         )
 
@@ -297,3 +303,94 @@ class Label:
             return self.HIJACK, self.emergency_color
         else:
             return False
+
+    def get_connector_anchor(
+            self,
+            aircraft_x,
+            aircraft_y,
+            label_x,
+            label_y,
+            label_w,
+            label_h
+    ):
+        """
+        Returns best connector point on label border.
+        """
+
+        center_x = label_x + (label_w / 2)
+        center_y = label_y + (label_h / 2)
+
+        dx = aircraft_x - center_x
+        dy = aircraft_y - center_y
+
+        # =========================
+        # HORIZONTAL SIDE
+        # =========================
+
+        if abs(dx) > abs(dy):
+
+            # Aircraft LEFT of label
+            if dx < 0:
+
+                # top-left
+                if dy < -(label_h * 0.33):
+                    return label_x, label_y
+
+                # bottom-left
+                elif dy > (label_h * 0.33):
+                    return label_x, label_y + label_h
+
+                # middle-left
+                else:
+                    return label_x, label_y + (label_h / 2)
+
+            # Aircraft RIGHT of label
+            else:
+
+                # top-right
+                if dy < -(label_h * 0.33):
+                    return label_x + label_w, label_y
+
+                # bottom-right
+                elif dy > (label_h * 0.33):
+                    return label_x + label_w, label_y + label_h
+
+                # middle-right
+                else:
+                    return label_x + label_w, label_y + (label_h / 2)
+
+        # =========================
+        # VERTICAL SIDE
+        # =========================
+
+        else:
+
+            # Aircraft ABOVE label
+            if dy < 0:
+
+                # top-left
+                if dx < -(label_w * 0.33):
+                    return label_x, label_y
+
+                # top-right
+                elif dx > (label_w * 0.33):
+                    return label_x + label_w, label_y
+
+                # middle-top
+                else:
+                    return label_x + (label_w / 2), label_y
+
+            # Aircraft BELOW label
+            else:
+
+                # bottom-left
+                if dx < -(label_w * 0.33):
+                    return label_x, label_y + label_h
+
+                # bottom-right
+                elif dx > (label_w * 0.33):
+                    return label_x + label_w, label_y + label_h
+
+                # middle-bottom
+                else:
+                    return label_x + (label_w / 2), label_y + label_h
