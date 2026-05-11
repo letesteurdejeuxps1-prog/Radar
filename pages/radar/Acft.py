@@ -108,6 +108,10 @@ class Acft:
         )
         self.real_x = self.pos_x
         self.real_y = self.pos_y
+        self.update_speed()
+        self.prl_end_x, self.prl_end_y = self.get_prl_pos(
+            self.d_prl_length_in_sec
+        )
         for i in range(self.old_radar_blip_amount):
             self.old_pos.append((self.pos_x, self.pos_y))
 
@@ -165,17 +169,7 @@ class Acft:
                 self.act_speed_ias += step
             else:
                 self.act_speed_ias -= step
-        self.act_speed_tas = (
-                self.act_speed_ias
-                + (
-                        self.act_speed_ias
-                        * 0.02
-                        * self.altitude_act
-                        / 1000
-                )
-        )
-        # TODO wind later
-        self.act_speed_gs = self.act_speed_tas
+        self.update_speed()
 
     def get_roc_per_sec(self):
         # TODO: Change so roc is 0 on steady flight
@@ -290,3 +284,17 @@ class Acft:
             ssr = validate_ssr(value)
             if ssr:
                 self.ssr = ssr
+
+    def update_speed(self):
+        self.act_speed_tas = (
+                self.act_speed_ias
+                + (
+                        self.act_speed_ias
+                        * 0.02
+                        * self.altitude_act
+                        / 1000
+                )
+        )
+
+        # TODO wind later
+        self.act_speed_gs = self.act_speed_tas
