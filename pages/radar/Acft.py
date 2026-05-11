@@ -20,6 +20,9 @@ class Acft:
 
     old_radar_blip_amount = 5
 
+    prl_end_x: int | float = 0
+    prl_end_y: int | float = 0
+
     pos_x: int | float = 0
     pos_y: int | float = 0
     real_x: int | float = 0
@@ -217,6 +220,10 @@ class Acft:
 
         self.pos_x = self.real_x
         self.pos_y = self.real_y
+
+        self.prl_end_x, self.prl_end_y = self.get_prl_pos(
+            self.d_prl_length_in_sec
+        )
 
     def get_prl_pos(self, amount_of_sec: int | float = 1):
         r_angle = get_rad_angle(self.heading_act)
