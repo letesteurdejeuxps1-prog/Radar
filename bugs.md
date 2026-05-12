@@ -1,1 +1,2 @@
-- [ ] PRL works but will only change on radar display (Ex, going from 1' to 3'' PRL only change PRL size on radar update)
+- [X] PRL works but will only change on radar display (Ex, going from 1' to 3'' PRL only change PRL size on radar update)
+- [ ] Label heading, roc and altitude change every frame and not every radar update
