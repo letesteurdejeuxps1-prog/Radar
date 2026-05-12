@@ -10,12 +10,13 @@ from pages.radar.Command import Command
 from pages.radar.Drawer import Drawer
 from pages.radar.PerformanceData import PerformanceData
 from pages.radar.data.command_helper import get_command
-from pages.radar.data.helper import world_to_screen_x, world_to_screen_y
+from pages.radar.data.helper import world_to_screen_x, world_to_screen_y, get_wake_sep
 
 
 class Main:
     acft_list: list[Acft] = []
     acft_detect_buffer: int = 20
+    acft_conflict_list = []
 
     command_box: Command
 
@@ -141,8 +142,18 @@ class Main:
 
     def draw(self):
         self.draw_airspace()
+        self.draw_conflicts()
         self.draw_acft()
         self.command_box.draw()
+
+    def draw_conflicts(self):
+        for conflict in self.acft_conflict_list:
+            self.drawer.draw_conflict(
+                conflict,
+                self.cam_offset_x,
+                self.cam_offset_y,
+                self.zoom
+            )
 
     def draw_airspace(self):
         for area in self.airspace.areas:
@@ -251,6 +262,7 @@ class Main:
             self.move_acft(dt)
             ct = pygame.time.get_ticks()
             if ct - self.last_acft_update_time >= self.acft_update_interval_ms:
+                self.detect_conflicts()
                 for acft in self.acft_list:
                     acft.radar_refresh()
                 self.last_acft_update_time = ct
@@ -470,3 +482,46 @@ class Main:
             for result in results:
                 if result[0]:
                     self.radar_selected.execute_command(result[1], result[2], result[3])
+
+
+    def detect_conflicts(self):
+
+        self.acft_conflict_list = []
+
+        for i in range(len(self.acft_list)):
+
+            acft_1 = self.acft_list[i]
+
+            for j in range(i + 1, len(self.acft_list)):
+
+                acft_2 = self.acft_list[j]
+
+                dist = math.hypot(
+                    acft_1.real_x - acft_2.real_x,
+                    acft_1.real_y - acft_2.real_y
+                )
+
+                wtc_dist_1 = get_wake_sep(
+                    acft_1.wtc,
+                    acft_2.wtc
+                )
+
+                wtc_dist_2 = get_wake_sep(
+                    acft_2.wtc,
+                    acft_1.wtc
+                )
+
+                rw = max(wtc_dist_1, wtc_dist_2)
+
+                vert_dist = abs(
+                    acft_1.altitude_act
+                    - acft_2.altitude_act
+                )
+
+                if dist < rw and vert_dist < 1000:
+                    self.acft_conflict_list.append((
+                        (acft_1.pos_x, acft_1.pos_y),
+                        (acft_2.pos_x, acft_2.pos_y),
+                    ))
+                    acft_1.is_conflicting = True
+                    acft_2.is_conflicting = True

@@ -51,6 +51,7 @@ class Acft:
     wtc: str
 
     is_speed_locked: bool = False
+    is_conflicting: bool = False
 
     # Frozen heading snapshot for PRL
     prl_heading_snapshot: float = 0
@@ -89,6 +90,7 @@ class Acft:
             is_clicked: bool = False,
     ) -> None:
 
+        self.color_conflict = (255, 0, 0)
         self.is_roc_locked = False
         self.climb_dir = 1
 
@@ -483,3 +485,9 @@ class Acft:
         # Compare against aircraft max speed / mach
 
         return value
+
+    def get_color(self):
+        if self.is_conflicting:
+            return self.color_conflict
+        else:
+            return self.color

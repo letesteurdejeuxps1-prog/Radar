@@ -24,6 +24,7 @@ class Drawer:
     label_offset_y = 2
 
     def __init__(self, surface: pygame.Surface, root_directory: str) -> None:
+        self.conflict_color = (255, 0, 0)
         self.surface = surface
         self.root_directory = root_directory
 
@@ -156,7 +157,7 @@ class Drawer:
             acft.pos_y,
             acft.d_acft_width,
             acft.d_acft_height,
-            acft.color,
+            acft.get_color(),
             offset_x,
             offset_y,
             zoom
@@ -178,7 +179,7 @@ class Drawer:
             acft.pos_y,
             acft.prl_end_x,
             acft.prl_end_y,
-            acft.color,
+            acft.get_color(),
             offset_x,
             offset_y,
             zoom
@@ -194,4 +195,24 @@ class Drawer:
                 zoom,
                 0
             )
+
+    def draw_conflict(
+            self,
+            conflict,
+            offset_x,
+            offset_y,
+            zoom
+    ):
+        acft_1 = conflict[0]
+        acft_2 = conflict[1]
+        self.draw_line(
+            acft_1[0],
+            acft_1[1],
+            acft_2[0],
+            acft_2[1],
+            self.conflict_color,
+            offset_x,
+            offset_y,
+            zoom
+        )
 

@@ -118,3 +118,26 @@ def validate_ssr(ssr):
                 return False
         return ssr
     return False
+
+def get_wake_sep(leading_wtc: str, trailing_wtc: str, default_sep = 3):
+    separation_table = {
+
+        # SUPER
+        ("J", "J"): 6,
+        ("J", "H"): 7,
+        ("J", "M"): 8,
+        ("J", "L"): 8,
+
+        # HEAVY
+        ("H", "H"): 4,
+        ("H", "M"): 5,
+        ("H", "L"): 6,
+
+        # MEDIUM
+        ("M", "L"): 5,
+    }
+
+    return separation_table.get(
+        (leading_wtc, trailing_wtc),
+        default_sep
+    )
