@@ -2,8 +2,14 @@ import pygame
 
 from pages.radar.Label import Label
 from pages.radar.PerformanceData import PerformanceData
-from pages.radar.data.helper import convert_lat_and_long_to_radar, get_rad_angle, get_cos_angle, get_sin_angle, \
-    latlon_to_world, validate_ssr
+from pages.radar.data.helper import (
+    convert_lat_and_long_to_radar,
+    get_rad_angle,
+    get_cos_angle,
+    get_sin_angle,
+    latlon_to_world,
+    validate_ssr
+)
 
 
 class Acft:
@@ -14,6 +20,7 @@ class Acft:
     d_acft_height: int = 11
     d_acft_color_ident: tuple[int, int, int] = (255, 255, 255)
     d_acft_color_conflict: tuple[int, int, int] = (255, 255, 255)
+
     d_prl_color: tuple[int, int, int] = (255, 255, 255)
     d_prl_width: int = 1
     d_prl_length_in_sec: int | float = 60
@@ -26,20 +33,26 @@ class Acft:
 
     pos_x: int | float = 0
     pos_y: int | float = 0
+
     real_x: int | float = 0
     real_y: int | float = 0
+
     lat: int | float = 0
     lon: int | float = 0
 
     default_rate_of_turn: int = 3
     rate_of_turn: int = 3
+
     acft_trail_radius: int = 2
 
     rate_of_climb: int = 0
     default_rate_of_climb: int = 1500
+
     wtc: str
 
     is_speed_locked: bool = False
+
+    # Frozen heading snapshot for PRL
     prl_heading_snapshot: float = 0
 
     def __init__(
@@ -48,6 +61,7 @@ class Acft:
             airspace_center_lat: int | float,
             perf_data: PerformanceData,
             identity: int,
+
             cs: str = '',
             icao_type: str = '',
             coord_x: str = '',
@@ -74,102 +88,152 @@ class Acft:
             selected_radius: int | float = 50,
             is_clicked: bool = False,
     ) -> None:
+
         self.climb_dir = 1
+
         self.perf_data = perf_data
+
         self.identity = identity
         self.cs = cs
         self.icao_type = icao_type
+
         self.coord_x = coord_x
         self.coord_y = coord_y
+
         self.heading_act = heading_act
         self.heading_req = heading_req
         self.turn_direction = turn_direction
+
         self.altitude_act = altitude_act
         self.altitude_req = altitude_req
+
         self.req_speed_ias = req_speed_ias
         self.act_speed_ias = act_speed_ias
         self.speed_increment = speed_increment
+
         self.ssr = ssr
         self.route = route
+
         self.color = color
         self.color_selected_radius = color_selected_radius
         self.color_wake_radius = color_wake_radius
+
         self.selected_radius = selected_radius
         self.is_clicked = is_clicked
+
         self.airspace_center_lon = airspace_center_lon
         self.airspace_center_lat = airspace_center_lat
+
         self.old_pos = []
+
         self.label = Label()
+
         self.update_data()
         self.after_load()
 
     def after_load(self):
-        lon, lat = convert_lat_and_long_to_radar(f"{self.coord_x}|{self.coord_y}")
+
+        lon, lat = convert_lat_and_long_to_radar(
+            f"{self.coord_x}|{self.coord_y}"
+        )
+
         self.lon = lon
         self.lat = lat
+
         self.pos_x, self.pos_y = latlon_to_world(
             lat,
             lon,
             self.airspace_center_lat,
             self.airspace_center_lon
         )
+
         self.real_x = self.pos_x
         self.real_y = self.pos_y
+
         self.update_speed()
+
+        # Initial PRL heading snapshot
+        self.prl_heading_snapshot = self.heading_act
+
         self.prl_end_x, self.prl_end_y = self.get_prl_pos(
             self.d_prl_length_in_sec
         )
-        self.prl_heading_snapshot = self.heading_act
+
         for i in range(self.old_radar_blip_amount):
             self.old_pos.append((self.pos_x, self.pos_y))
 
     def tick(self, identity: int | None, elapsed_sec: float):
+
         if self.identity != identity:
             self.is_clicked = False
+
         self.check_heading()
+
         self.move_logic(elapsed_sec)
+
         self.check_heading()
 
     def check_heading(self):
+
         if self.heading_act <= 0:
             self.heading_act += 360
             self.check_heading()
+
         elif self.heading_act > 360:
             self.heading_act -= 360
             self.check_heading()
+
         elif self.heading_req <= 0:
             self.heading_req += 360
             self.check_heading()
+
         elif self.heading_req > 360:
             self.heading_req -= 360
             self.check_heading()
 
     def move_logic(self, elapsed_sec: float):
+
         self.move_logic_heading(elapsed_sec)
         self.move_logic_speed(elapsed_sec)
         self.move_logic_alt(elapsed_sec)
         self.move_acft(elapsed_sec)
 
+        # Recalculate PRL every frame
+        # using frozen heading + live speed
+        self.prl_end_x, self.prl_end_y = self.get_prl_pos(
+            self.d_prl_length_in_sec
+        )
+
     def update_pos_list(self):
+
         self.old_pos.append((self.real_x, self.real_y))
+
         new_list = self.old_pos[-self.old_radar_blip_amount:]
+
         self.old_pos = new_list
 
     def move_logic_heading(self, elapsed_sec: float):
+
         if self.turn_direction == 1 or self.turn_direction == -1:
+
             if self.heading_act != self.heading_req:
+
                 next_move_p = self.heading_act + self.rate_of_turn
                 next_move_m = self.heading_act - self.rate_of_turn
+
                 if next_move_m <= self.heading_req < next_move_p:
                     self.heading_act = self.heading_req
+
                 else:
-                    self.heading_act += self.turn_direction * self.rate_of_turn * elapsed_sec
+                    self.heading_act += (
+                            self.turn_direction
+                            * self.rate_of_turn
+                            * elapsed_sec
+                    )
 
     def move_logic_speed(self, elapsed_sec: float):
 
         if not self.is_speed_locked:
-
-            # Get target speed from performance table
             self.req_speed_ias = self.perf_data.get_speed(
                 self.icao_type,
                 self.altitude_act,
@@ -187,32 +251,24 @@ class Acft:
 
             if diff > 0:
                 self.act_speed_ias += step
+
             else:
                 self.act_speed_ias -= step
 
         self.update_speed()
 
-    def get_roc_per_sec(self):
-        self.rate_of_climb = self.select_roc()
-        return self.rate_of_climb / 60
-
-    def select_roc(self):
-        return self.default_rate_of_climb
-
     def move_logic_alt(self, elapsed_time):
 
-        # Already at target altitude
         if self.altitude_act == self.altitude_req:
             self.rate_of_climb = 0
             return
 
-        # Determine climb / descent direction
         if self.altitude_req > self.altitude_act:
             self.climb_dir = 1
+
         else:
             self.climb_dir = -1
 
-        # Get current ROC from performance table
         roc = self.perf_data.get_rate_of_climb(
             self.icao_type,
             self.altitude_act,
@@ -221,23 +277,28 @@ class Acft:
 
         self.rate_of_climb = roc * self.climb_dir
 
-        # Feet moved this frame
         climb_step = (roc / 60) * elapsed_time
 
-        # Apply movement
         self.altitude_act += climb_step * self.climb_dir
 
         # Prevent overshoot
         if self.climb_dir == 1 and self.altitude_act > self.altitude_req:
+
             self.altitude_act = self.altitude_req
             self.rate_of_climb = 0
 
         elif self.climb_dir == -1 and self.altitude_act < self.altitude_req:
+
             self.altitude_act = self.altitude_req
             self.rate_of_climb = 0
 
     def move_acft(self, elapsed_sec: float = 1):
-        next_x, next_y = self.next_pos(get_rad_angle(self.heading_act), elapsed_sec)
+
+        next_x, next_y = self.next_pos(
+            get_rad_angle(self.heading_act),
+            elapsed_sec
+        )
+
         self.real_x = next_x
         self.real_y = next_y
 
@@ -245,41 +306,62 @@ class Acft:
         return self.act_speed_gs / 3600
 
     def next_pos(self, r_angle, amount_of_sec):
-        next_x = self.real_x + get_cos_angle(r_angle) * self.get_gs_speed_per_sec() * amount_of_sec
-        next_y = self.real_y + get_sin_angle(r_angle) * self.get_gs_speed_per_sec() * amount_of_sec
+
+        next_x = (
+                self.real_x
+                + get_cos_angle(r_angle)
+                * self.get_gs_speed_per_sec()
+                * amount_of_sec
+        )
+
+        next_y = (
+                self.real_y
+                + get_sin_angle(r_angle)
+                * self.get_gs_speed_per_sec()
+                * amount_of_sec
+        )
+
         return next_x, next_y
 
     def get_next_pos(self, amount_of_sec: int = 1):
+
         r_angle = get_rad_angle(self.heading_act)
+
         return self.next_pos(r_angle, amount_of_sec)
 
     def radar_refresh(self):
+
         self.update_pos_list()
 
+        # Freeze radar position
         self.pos_x = self.real_x
         self.pos_y = self.real_y
 
+        # Freeze PRL heading
         self.prl_heading_snapshot = self.heading_act
 
-        self.prl_end_x, self.prl_end_y = self.get_prl_pos(
-            self.d_prl_length_in_sec
-        )
     def get_prl_pos(self, amount_of_sec: int | float = 1):
+
+        # Frozen heading
         r_angle = get_rad_angle(self.prl_heading_snapshot)
 
+        # Frozen radar position
         next_x = self.pos_x + (
                 get_cos_angle(r_angle)
                 * self.get_gs_speed_per_sec()
                 * amount_of_sec
         )
+
         next_y = self.pos_y + (
                 get_sin_angle(r_angle)
                 * self.get_gs_speed_per_sec()
                 * amount_of_sec
         )
+
         return next_x, next_y
 
     def draw_label(self, surface: pygame.Surface, screen_x, screen_y):
+
         self.label.draw(
             surface,
             screen_x,
@@ -301,44 +383,72 @@ class Acft:
         )
 
     def execute_command(self, command: str, value: int):
+
         if command == "↑" or command == "↓":
+
             self.altitude_req = value * 100
+
         elif command == "←":
+
             self.heading_req = value
             self.turn_direction = -1
+
         elif command == "→":
+
             self.heading_req = value
             self.turn_direction = 1
+
         elif command == "*":
+
             self.heading_req = value
+
             if self.heading_act - value > 0:
                 self.turn_direction = -1
             else:
                 self.turn_direction = 1
+
         elif command == "/":
+
             if value is None:
+
                 self.is_speed_locked = False
+
             else:
+
                 self.is_speed_locked = True
+
                 new_speed = self.get_realistic_speed(value)
+
                 self.req_speed_ias = new_speed
+
         elif command == "ms":
+
             self.is_speed_locked = True
+
             new_speed = self.get_realistic_speed(value)
+
             self.act_speed_ias = new_speed
             self.req_speed_ias = new_speed
+
         elif command == "mh":
+
             self.heading_req = value
             self.heading_act = value
+
         elif command == "ml":
+
             self.altitude_req = value * 100
             self.altitude_act = value * 100
+
         elif command == "s":
+
             ssr = validate_ssr(value)
+
             if ssr:
                 self.ssr = ssr
 
     def update_speed(self):
+
         self.act_speed_tas = (
                 self.act_speed_ias
                 + (
@@ -353,9 +463,14 @@ class Acft:
         self.act_speed_gs = self.act_speed_tas
 
     def update_data(self):
-        self.wtc = self.perf_data.get_wtc(self.icao_type)
+
+        self.wtc = self.perf_data.get_wtc(
+            self.icao_type
+        )
 
     def get_realistic_speed(self, value):
-        # TODO : Compare normal speed to max_speed (watch out with mach number conversion)
-        # max_speed = self.perf_data.get_max_speed(self.icao_type)
+
+        # TODO:
+        # Compare against aircraft max speed / mach
+
         return value
