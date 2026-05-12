@@ -469,4 +469,4 @@ class Main:
             results = get_command(self.command_box.input_text)
             for result in results:
                 if result[0]:
-                    self.radar_selected.execute_command(result[1], result[2])
+                    self.radar_selected.execute_command(result[1], result[2], result[3])

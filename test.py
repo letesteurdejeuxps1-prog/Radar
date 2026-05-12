@@ -1,6 +1,7 @@
 from pages.radar.data.command_helper import get_command
 
 tests = (
+    "↑250,50",
     "/250 /330",
     "/",
     "/250",

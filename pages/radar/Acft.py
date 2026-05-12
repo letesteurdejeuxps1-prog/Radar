@@ -89,6 +89,7 @@ class Acft:
             is_clicked: bool = False,
     ) -> None:
 
+        self.is_roc_locked = False
         self.climb_dir = 1
 
         self.perf_data = perf_data
@@ -269,11 +270,14 @@ class Acft:
         else:
             self.climb_dir = -1
 
-        roc = self.perf_data.get_rate_of_climb(
-            self.icao_type,
-            self.altitude_act,
-            self.climb_dir
-        )
+        if self.is_roc_locked:
+            roc = abs(self.rate_of_climb)
+        else:
+            roc = self.perf_data.get_rate_of_climb(
+                self.icao_type,
+                self.altitude_act,
+                self.climb_dir
+            )
 
         self.rate_of_climb = roc * self.climb_dir
 
@@ -382,9 +386,14 @@ class Acft:
             }
         )
 
-    def execute_command(self, command: str, value: int):
+    def execute_command(self, command: str, value: int, special: int):
 
         if command == "↑" or command == "↓":
+            if special != 0:
+                self.rate_of_climb = special
+                self.is_roc_locked = True
+            else:
+                self.is_roc_locked = False
 
             self.altitude_req = value * 100
 
