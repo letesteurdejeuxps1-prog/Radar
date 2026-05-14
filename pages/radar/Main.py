@@ -304,17 +304,24 @@ class Main:
 
             matches = []
 
+            qdm, endpoint = self.get_qdm_endpoint_at_mouse(
+                mouse_x,
+                mouse_y
+            )
+            if qdm is not None:
+                if endpoint == "start":
+                    qdm.pickup_start()
+                elif endpoint == "end":
+                    qdm.pickup_end()
+                return
+
             for qdm in self.qdm_list:
-
-                if qdm.active and event.button == 1:
-                    mouse_x, mouse_y = pygame.mouse.get_pos()
-
+                if qdm.active:
                     anchor = self.get_anchor_from_mouse(
                         mouse_x,
                         mouse_y
                     )
-
-                    qdm.finalize(anchor)
+                    qdm.place_anchor(anchor)
 
                     return
 
@@ -727,3 +734,51 @@ class Main:
                 return qdm
 
         return None
+
+    def get_qdm_endpoint_at_mouse(
+            self,
+            mouse_x,
+            mouse_y,
+            buffer_px=12
+    ):
+
+        for qdm in reversed(self.qdm_list):
+
+            start_pos, end_pos = qdm.get_positions()
+
+            # =========================
+            # START
+            # =========================
+            sx = world_to_screen_x(
+                start_pos[0],
+                self.cam_offset_x,
+                self.zoom
+            )
+            sy = world_to_screen_y(
+                start_pos[1],
+                self.cam_offset_y,
+                self.zoom
+            )
+
+            if math.hypot(mouse_x - sx, mouse_y - sy) <= buffer_px:
+                return qdm, "start"
+
+            # =========================
+            # END
+            # =========================
+
+            if end_pos is not None:
+                ex = world_to_screen_x(
+                    end_pos[0],
+                    self.cam_offset_x,
+                    self.zoom
+                )
+                ey = world_to_screen_y(
+                    end_pos[1],
+                    self.cam_offset_y,
+                    self.zoom
+                )
+                if math.hypot(mouse_x - ex, mouse_y - ey) <= buffer_px:
+                    return qdm, "end"
+
+        return None, None

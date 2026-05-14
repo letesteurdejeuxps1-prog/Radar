@@ -248,11 +248,26 @@ class Drawer:
 
             mouse_x, mouse_y = pygame.mouse.get_pos()
 
-            end_x = (mouse_x + offset_x) / zoom
+            mouse_world_x = (mouse_x + offset_x) / zoom
+            mouse_world_y = -(mouse_y + offset_y) / zoom
 
-            end_y = -(mouse_y + offset_y) / zoom
+            if qdm.dragging_start:
+
+                start_x = mouse_world_x
+                start_y = mouse_world_y
+
+                end_x = end_pos[0]
+                end_y = end_pos[1]
+
+            else:
+
+                end_x = mouse_world_x
+                end_y = mouse_world_y
 
         else:
+
+            if end_pos is None:
+                return
 
             end_x = end_pos[0]
             end_y = end_pos[1]

@@ -13,6 +13,8 @@ class Qdm:
         self.start_anchor = start_anchor
         self.end_anchor: QdmAnchor | None = None
         self.active = True
+        self.dragging_start = False
+        self.dragging_end = False
 
     def finalize(self, end_anchor: QdmAnchor):
         self.end_anchor = end_anchor
@@ -75,5 +77,27 @@ class Qdm:
         return self.get_heading_between(start, temp_end_pos)
 
     def get_active_reciprocal_heading(self, temp_end_pos):
-
         return (self.get_active_heading(temp_end_pos) + 180) % 360
+
+    def pickup_start(self):
+        self.dragging_start = True
+        self.dragging_end = False
+        self.active = True
+
+    def pickup_end(self):
+        self.dragging_start = False
+        self.dragging_end = True
+        self.active = True
+
+    def place_anchor(self, anchor: QdmAnchor):
+
+        if self.dragging_start:
+            self.start_anchor = anchor
+        elif self.dragging_end:
+            self.end_anchor = anchor
+        else:
+            self.end_anchor = anchor
+
+        self.dragging_start = False
+        self.dragging_end = False
+        self.active = False
