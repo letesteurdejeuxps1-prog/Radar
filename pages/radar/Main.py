@@ -364,8 +364,26 @@ class Main:
             # Right click
             print("Right click")
             self.right_click_on = True
+
+            # =========================
+            # REMOVE QDM
+            # =========================
+            qdm = self.get_qdm_at_mouse(
+                mouse_x,
+                mouse_y
+            )
+            if qdm is not None:
+                self.qdm_list.remove(qdm)
+                return
+
+            # =========================
+            # LABEL STATE CHANGE
+            # =========================
             for acft in self.acft_list:
-                if acft.label.is_mouse_over(mouse_x, mouse_y):
+                if acft.label.is_mouse_over(
+                        mouse_x,
+                        mouse_y
+                ):
                     acft.label.next_state()
                     return
 
@@ -452,13 +470,18 @@ class Main:
 
             self.reset_camera()
 
+
         elif key_pressed == pygame.K_a:
+
+            # Do not allow multiple active QDMs
+            for qdm in self.qdm_list:
+                if qdm.active:
+                    return
+
             mouse_x, mouse_y = pygame.mouse.get_pos()
-            anchor = self.get_anchor_from_mouse(
-                mouse_x,
-                mouse_y
-            )
+            anchor = self.get_anchor_from_mouse(mouse_x, mouse_y)
             new_qdm = Qdm(anchor)
+
             self.qdm_list.append(new_qdm)
 
     def reset_camera(self):
@@ -634,3 +657,73 @@ class Main:
     def draw_qdm(self):
         for qdm in self.qdm_list:
             self.drawer.draw_qdm(qdm, self.cam_offset_x, self.cam_offset_y, self.zoom)
+
+    def get_qdm_at_mouse(
+            self,
+            mouse_x,
+            mouse_y,
+            buffer_px=10
+    ):
+
+        for qdm in reversed(self.qdm_list):
+
+            start_pos, end_pos = qdm.get_positions()
+
+            start_x = world_to_screen_x(
+                start_pos[0],
+                self.cam_offset_x,
+                self.zoom
+            )
+
+            start_y = world_to_screen_y(
+                start_pos[1],
+                self.cam_offset_y,
+                self.zoom
+            )
+
+            if qdm.active:
+
+                end_x, end_y = pygame.mouse.get_pos()
+
+            else:
+
+                end_x = world_to_screen_x(
+                    end_pos[0],
+                    self.cam_offset_x,
+                    self.zoom
+                )
+
+                end_y = world_to_screen_y(
+                    end_pos[1],
+                    self.cam_offset_y,
+                    self.zoom
+                )
+
+            # ======================================
+            # Distance from point to line segment
+            # ======================================
+
+            dx = end_x - start_x
+            dy = end_y - start_y
+
+            length_sq = dx * dx + dy * dy
+
+            if length_sq == 0:
+                continue
+
+            t = (((mouse_x - start_x) * dx + (mouse_y - start_y) * dy) / length_sq)
+
+            t = max(0, min(1, t))
+
+            proj_x = start_x + t * dx
+            proj_y = start_y + t * dy
+
+            dist = math.hypot(
+                mouse_x - proj_x,
+                mouse_y - proj_y
+            )
+
+            if dist <= buffer_px:
+                return qdm
+
+        return None

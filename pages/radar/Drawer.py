@@ -11,6 +11,8 @@ class Drawer:
 
     color_default: tuple[int, int, int] = (255, 255, 255)
 
+    font_size: int = 14
+
     icon_file_folder = "pages\\radar\\images"
     icon_file_format = ".png"
 
@@ -28,6 +30,7 @@ class Drawer:
         self.conflict_color = (255, 0, 0)
         self.surface = surface
         self.root_directory = root_directory
+        self.font = pygame.font.SysFont("consolas", self.font_size)
 
     def draw_rect(
             self,
@@ -117,6 +120,23 @@ class Drawer:
             (sx, sy),
             (ex, ey),
             width
+        )
+
+    def draw_text(self, text, x, y, color=(255, 255, 255)):
+
+        surf = self.font.render(
+            str(text),
+            True,
+            color
+        )
+
+        rect = surf.get_rect(
+            center=(x, y)
+        )
+
+        self.surface.blit(
+            surf,
+            rect
         )
 
     def draw_icon(self, point: Point, offset_x: int | float, offset_y: int | float, zoom: int | float):
@@ -218,9 +238,11 @@ class Drawer:
         )
 
     def draw_qdm(self, qdm: Qdm, offset_x, offset_y, zoom):
+
         start_pos, end_pos = qdm.get_positions()
 
-        start_x, start_y = start_pos
+        start_x = start_pos[0]
+        start_y = start_pos[1]
 
         if qdm.active:
 
@@ -236,7 +258,12 @@ class Drawer:
 
         else:
 
-            end_x, end_y = end_pos
+            end_x = end_pos[0]
+            end_y = end_pos[1]
+
+        # =====================================
+        # DRAW LINE
+        # =====================================
 
         self.draw_line(
             start_x,
@@ -247,4 +274,78 @@ class Drawer:
             offset_x,
             offset_y,
             zoom
+        )
+
+        # =====================================
+        # SCREEN POSITIONS
+        # =====================================
+
+        sx = int(world_to_screen_x(
+            start_x,
+            offset_x,
+            zoom
+        ))
+
+        sy = int(world_to_screen_y(
+            start_y,
+            offset_y,
+            zoom
+        ))
+
+        ex = int(world_to_screen_x(
+            end_x,
+            offset_x,
+            zoom
+        ))
+
+        ey = int(world_to_screen_y(
+            end_y,
+            offset_y,
+            zoom
+        ))
+
+        # =====================================
+        # CALCULATIONS
+        # =====================================
+
+        heading = qdm.get_heading()
+
+        reciprocal = qdm.get_reciprocal_heading()
+
+        distance = qdm.get_distance()
+
+        # =====================================
+        # MIDPOINT
+        # =====================================
+
+        mx = (sx + ex) // 2
+        my = (sy + ey) // 2
+
+        # =====================================
+        # DRAW DISTANCE
+        # =====================================
+
+        self.draw_text(
+            f"{distance:.1f}",
+            mx,
+            my - 10,
+            qdm.color
+        )
+
+        # =====================================
+        # DRAW HEADINGS
+        # =====================================
+
+        self.draw_text(
+            f"{heading:03}",
+            sx,
+            sy - 15,
+            qdm.color
+        )
+
+        self.draw_text(
+            f"{reciprocal:03}",
+            ex,
+            ey - 15,
+            qdm.color
         )
