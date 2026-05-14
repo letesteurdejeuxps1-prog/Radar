@@ -248,13 +248,9 @@ class Drawer:
 
             mouse_x, mouse_y = pygame.mouse.get_pos()
 
-            end_x = (
-                            mouse_x + offset_x
-                    ) / zoom
+            end_x = (mouse_x + offset_x) / zoom
 
-            end_y = -(
-                    mouse_y + offset_y
-            ) / zoom
+            end_y = -(mouse_y + offset_y) / zoom
 
         else:
 
@@ -308,11 +304,16 @@ class Drawer:
         # CALCULATIONS
         # =====================================
 
-        heading = qdm.get_heading()
-
-        reciprocal = qdm.get_reciprocal_heading()
-
-        distance = qdm.get_distance()
+        if qdm.active:
+            # Inverted heading and reciprocal for better display
+            reciprocal = qdm.get_active_heading((end_x, end_y))
+            heading = qdm.get_active_reciprocal_heading((end_x, end_y))
+            distance = qdm.get_active_distance((end_x, end_y))
+        else:
+            # Inverted heading and reciprocal for better display
+            reciprocal = qdm.get_heading()
+            heading = qdm.get_reciprocal_heading()
+            distance = qdm.get_distance()
 
         # =====================================
         # MIDPOINT
