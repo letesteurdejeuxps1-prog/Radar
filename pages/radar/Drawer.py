@@ -1,6 +1,7 @@
 import pygame
 
 from pages.radar.Acft import Acft
+from pages.radar.Qdm.Qdm import Qdm
 from pages.radar.airspace.Point import Point
 from pages.radar.data.helper import world_to_screen_x, world_to_screen_y
 
@@ -216,3 +217,34 @@ class Drawer:
             zoom
         )
 
+    def draw_qdm(self, qdm: Qdm, offset_x, offset_y, zoom):
+        start_pos, end_pos = qdm.get_positions()
+
+        start_x, start_y = start_pos
+
+        if qdm.active:
+
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+
+            end_x = (
+                            mouse_x + offset_x
+                    ) / zoom
+
+            end_y = -(
+                    mouse_y + offset_y
+            ) / zoom
+
+        else:
+
+            end_x, end_y = end_pos
+
+        self.draw_line(
+            start_x,
+            start_y,
+            end_x,
+            end_y,
+            qdm.color,
+            offset_x,
+            offset_y,
+            zoom
+        )

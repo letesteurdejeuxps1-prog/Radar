@@ -1,0 +1,39 @@
+from pages.radar.Qdm.QdmAnchor import QdmAnchor
+
+
+class Qdm:
+    color = (200, 200, 50)
+    width = 1
+
+    def __init__(
+            self,
+            start_anchor: QdmAnchor
+    ):
+        self.start_anchor = start_anchor
+        self.end_anchor: QdmAnchor | None = None
+        self.active = True
+
+    def finalize(self, end_anchor: QdmAnchor):
+        self.end_anchor = end_anchor
+        self.active = False
+
+    def get_positions(self):
+        start = self.start_anchor.get_position()
+        if self.end_anchor is not None:
+            end = self.end_anchor.get_position()
+        else:
+            end = None
+
+        return start, end
+
+    def get_distance(self):
+
+        start, end = self.get_positions()
+
+        if end is None:
+            return 0
+
+        dx = end[0] - start[0]
+        dy = end[1] - start[1]
+
+        return math.hypot(dx, dy)

@@ -9,6 +9,8 @@ from pages.radar.Airspace import Airspace
 from pages.radar.Command import Command
 from pages.radar.Drawer import Drawer
 from pages.radar.PerformanceData import PerformanceData
+from pages.radar.Qdm.Qdm import Qdm
+from pages.radar.Qdm.QdmAnchor import QdmAnchor
 from pages.radar.data.command_helper import get_command
 from pages.radar.data.helper import world_to_screen_x, world_to_screen_y, get_wake_sep
 
@@ -38,6 +40,8 @@ class Main:
     path_airspace_file: str = 'horn.json'
     path_airspace_folder: str = 'airspaces'
     path_root: str = ''
+
+    qdm_list: list[Qdm] = []
 
     radar_color_bg: tuple[int, int, int] = (0, 0, 0)
     radar_center_lon: int | float = 0
@@ -144,6 +148,7 @@ class Main:
         self.draw_airspace()
         self.draw_conflicts()
         self.draw_acft()
+        self.draw_qdm()
         self.command_box.draw()
 
     def draw_conflicts(self):
@@ -299,6 +304,20 @@ class Main:
 
             matches = []
 
+            for qdm in self.qdm_list:
+
+                if qdm.active and event.button == 1:
+                    mouse_x, mouse_y = pygame.mouse.get_pos()
+
+                    anchor = self.get_anchor_from_mouse(
+                        mouse_x,
+                        mouse_y
+                    )
+
+                    qdm.finalize(anchor)
+
+                    return
+
             for acft in self.acft_list:
 
                 if acft.label.is_mouse_over(mouse_x, mouse_y):
@@ -433,6 +452,15 @@ class Main:
 
             self.reset_camera()
 
+        elif key_pressed == pygame.K_a:
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            anchor = self.get_anchor_from_mouse(
+                mouse_x,
+                mouse_y
+            )
+            new_qdm = Qdm(anchor)
+            self.qdm_list.append(new_qdm)
+
     def reset_camera(self):
         self.zoom = self.default_zoom
         self.cam_offset_x = self.cam_center_x * self.zoom - self.variables.display_width_half
@@ -483,7 +511,6 @@ class Main:
                 if result[0]:
                     self.radar_selected.execute_command(result[1], result[2], result[3])
 
-
     def detect_conflicts(self):
 
         self.acft_conflict_list = []
@@ -527,3 +554,83 @@ class Main:
                     ))
                     acft_1.is_conflicting = True
                     acft_2.is_conflicting = True
+
+    def get_anchor_from_mouse(
+            self,
+            mouse_x,
+            mouse_y,
+            buffer_px=20
+    ):
+        # =========================
+        # AIRCRAFT
+        # =========================
+
+        for acft in self.acft_list:
+
+            screen_x = world_to_screen_x(
+                acft.pos_x,
+                self.cam_offset_x,
+                self.zoom
+            )
+
+            screen_y = world_to_screen_y(
+                acft.pos_y,
+                self.cam_offset_y,
+                self.zoom
+            )
+
+            dist = math.hypot(mouse_x - screen_x, mouse_y - screen_y)
+
+            if dist <= buffer_px:
+                return QdmAnchor(
+                    acft.pos_x,
+                    acft.pos_y,
+                    acft
+                )
+
+        # =========================
+        # POINTS
+        # =========================
+
+        for point in self.airspace.points:
+
+            screen_x = world_to_screen_x(
+                point.pos_x,
+                self.cam_offset_x,
+                self.zoom
+            )
+
+            screen_y = world_to_screen_y(
+                point.pos_y,
+                self.cam_offset_y,
+                self.zoom
+            )
+
+            dist = math.hypot(
+                mouse_x - screen_x,
+                mouse_y - screen_y
+            )
+
+            if dist <= buffer_px:
+                return QdmAnchor(
+                    point.pos_x,
+                    point.pos_y,
+                    point
+                )
+
+        # =========================
+        # WORLD POSITION
+        # =========================
+
+        world_x = (mouse_x + self.cam_offset_x) / self.zoom
+
+        world_y = -(mouse_y + self.cam_offset_y) / self.zoom
+
+        return QdmAnchor(
+            world_x,
+            world_y
+        )
+
+    def draw_qdm(self):
+        for qdm in self.qdm_list:
+            self.drawer.draw_qdm(qdm, self.cam_offset_x, self.cam_offset_y, self.zoom)
