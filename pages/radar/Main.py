@@ -618,6 +618,17 @@ class Main:
                     acft
                 )
 
+            # =====================================
+            # AIRCRAFT LABEL HITBOX
+            # =====================================
+
+            if acft.label.is_mouse_over(mouse_x, mouse_y):
+                return QdmAnchor(
+                    acft.pos_x,
+                    acft.pos_y,
+                    acft
+                )
+
         # =========================
         # POINTS
         # =========================
