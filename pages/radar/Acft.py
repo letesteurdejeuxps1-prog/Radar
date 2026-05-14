@@ -56,6 +56,19 @@ class Acft:
     # Frozen heading snapshot for PRL
     prl_heading_snapshot: float = 0
 
+    # Radar-frozen display values
+    d_heading_act: float = 0
+    d_heading_req: float = 0
+
+    d_altitude_act: float = 0
+    d_altitude_req: float = 0
+
+    d_act_speed_ias: float = 0
+    d_req_speed_ias: float = 0
+    d_act_speed_gs: float = 0
+
+    d_rate_of_climb: float = 0
+
     def __init__(
             self,
             airspace_center_lon: int | float,
@@ -165,6 +178,7 @@ class Acft:
 
         for i in range(self.old_radar_blip_amount):
             self.old_pos.append((self.pos_x, self.pos_y))
+        self.update_radar_data()
 
     def tick(self, identity: int | None, elapsed_sec: float):
 
@@ -347,6 +361,8 @@ class Acft:
         # Freeze PRL heading
         self.prl_heading_snapshot = self.heading_act
 
+        self.update_radar_data()
+
     def get_prl_pos(self, amount_of_sec: int | float = 1):
 
         # Frozen heading
@@ -380,12 +396,12 @@ class Acft:
                 "wtc": self.wtc,
                 "heading_act": self.heading_act,
                 "heading_req": self.heading_req,
-                "req_speed_ias": self.req_speed_ias,
-                "act_speed_ias": self.act_speed_ias,
-                "act_speed_gs": self.act_speed_gs,
-                "altitude_req": self.altitude_req,
-                "altitude_act": self.altitude_act,
-                "rate_of_climb": self.rate_of_climb,
+                "req_speed_ias": self.d_req_speed_ias,
+                "act_speed_ias": self.d_act_speed_ias,
+                "act_speed_gs": self.d_act_speed_gs,
+                "altitude_req": self.d_altitude_req,
+                "altitude_act": self.d_altitude_act,
+                "rate_of_climb": self.d_rate_of_climb,
                 "debug": self.rate_of_turn,
             }
         )
@@ -502,3 +518,13 @@ class Acft:
             self.rate_of_turn = self.expedite_rate_of_turn
         else:
             self.rate_of_turn = self.default_rate_of_turn
+
+    def update_radar_data(self):
+        self.d_heading_act = self.heading_act
+        self.d_heading_req = self.heading_req
+        self.d_altitude_act = self.altitude_act
+        self.d_altitude_req = self.altitude_req
+        self.d_act_speed_ias = self.act_speed_ias
+        self.d_req_speed_ias = self.req_speed_ias
+        self.d_act_speed_gs = self.act_speed_gs
+        self.d_rate_of_climb = self.rate_of_climb

@@ -487,6 +487,8 @@ class Main:
     def detect_conflicts(self):
 
         self.acft_conflict_list = []
+        for acft in self.acft_list:
+            acft.is_conflicting = False
 
         for i in range(len(self.acft_list)):
 
