@@ -579,8 +579,8 @@ class Main:
 
                 if dist < rw and vert_dist < 1000:
                     self.acft_conflict_list.append((
-                        (acft_1.pos_x, acft_1.pos_y),
-                        (acft_2.pos_x, acft_2.pos_y),
+                        (acft_1.real_x, acft_1.real_y),
+                        (acft_2.real_x, acft_2.real_y),
                     ))
                     acft_1.is_conflicting = True
                     acft_2.is_conflicting = True
