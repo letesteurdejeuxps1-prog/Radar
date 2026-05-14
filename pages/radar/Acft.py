@@ -26,7 +26,7 @@ class Acft:
     d_prl_length_in_sec: int | float = 60
     d_prl_has_custom: bool = False
 
-    old_radar_blip_amount = 5
+    old_radar_blip_amount = 6
 
     prl_end_x: int | float = 0
     prl_end_y: int | float = 0
@@ -41,7 +41,7 @@ class Acft:
     lon: int | float = 0
 
     default_rate_of_turn: int = 3
-    rate_of_turn: int = 3
+    expedite_rate_of_turn: int = 5
 
     acft_trail_radius: int = 2
 
@@ -93,6 +93,7 @@ class Acft:
         self.color_conflict = (255, 0, 0)
         self.is_roc_locked = False
         self.climb_dir = 1
+        self.rate_of_turn = self.default_rate_of_turn
 
         self.perf_data = perf_data
 
@@ -221,18 +222,18 @@ class Acft:
 
             if self.heading_act != self.heading_req:
 
-                next_move_p = self.heading_act + self.rate_of_turn
-                next_move_m = self.heading_act - self.rate_of_turn
+                step = self.rate_of_turn * elapsed_sec
 
-                if next_move_m <= self.heading_req < next_move_p:
+                next_move_p = self.heading_act + step
+                next_move_m = self.heading_act - step
+
+                if next_move_m <= self.heading_req <= next_move_p:
                     self.heading_act = self.heading_req
 
                 else:
-                    self.heading_act += (
-                            self.turn_direction
-                            * self.rate_of_turn
-                            * elapsed_sec
-                    )
+                    self.heading_act += self.turn_direction * step
+            elif self.rate_of_turn != self.default_rate_of_turn:
+                self.rate_of_turn = self.default_rate_of_turn
 
     def move_logic_speed(self, elapsed_sec: float):
 
@@ -385,6 +386,7 @@ class Acft:
                 "altitude_req": self.altitude_req,
                 "altitude_act": self.altitude_act,
                 "rate_of_climb": self.rate_of_climb,
+                "debug": self.rate_of_turn,
             }
         )
 
@@ -400,23 +402,26 @@ class Acft:
             self.altitude_req = value * 100
 
         elif command == "←":
+            self.set_rate_of_turn(special)
 
             self.heading_req = value
             self.turn_direction = -1
 
         elif command == "→":
+            self.set_rate_of_turn(special)
 
             self.heading_req = value
             self.turn_direction = 1
 
         elif command == "*":
-
+            self.set_rate_of_turn(special)
             self.heading_req = value
 
-            if self.heading_act - value > 0:
-                self.turn_direction = -1
-            else:
+            diff = (value - self.heading_act) % 360
+            if diff <= 180:
                 self.turn_direction = 1
+            else:
+                self.turn_direction = -1
 
         elif command == "/":
 
@@ -491,3 +496,9 @@ class Acft:
             return self.color_conflict
         else:
             return self.color
+
+    def set_rate_of_turn(self, special: int):
+        if special == 1:
+            self.rate_of_turn = self.expedite_rate_of_turn
+        else:
+            self.rate_of_turn = self.default_rate_of_turn

@@ -94,6 +94,11 @@ class Label:
 
         lines = []
 
+        # TODO REMOVE AFTER DEBUG
+        lines.append(
+            f"DEBUG INFO : {vals['debug']}"
+        )
+
         # COLLAPSED
         if self.display_state == self.STATE_COLLAPSED:
 

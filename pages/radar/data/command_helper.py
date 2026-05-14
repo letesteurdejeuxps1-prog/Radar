@@ -27,6 +27,17 @@ def get_command(data: str) -> list[tuple[bool, str, int, int]]:
                     except ValueError:
                         return_data.append((False, "", None, 0))
                 continue
+            if command_header in ["←", "→", "*"] and command_content.endswith("*"):
+                try:
+                    heading = int(command_content[:-1])
+                    return_data.append((
+                        True,
+                        command_header,
+                        heading,
+                        1
+                    ))
+                except ValueError:
+                    return_data.append((False, "", None, 0))
 
             # ==========================================
             # NORMAL COMMANDS
