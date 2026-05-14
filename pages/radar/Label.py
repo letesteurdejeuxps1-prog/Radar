@@ -95,55 +95,34 @@ class Label:
         lines = []
 
         # TODO REMOVE AFTER DEBUG
-        lines.append(
-            f"DEBUG INFO : {vals['debug']}"
-        )
+        lines.append(f"DEBUG INFO : {vals['debug']}")
 
         # COLLAPSED
         if self.display_state == self.STATE_COLLAPSED:
 
-            lines.append(
-                f"{vals['cs']}  {self.alt_to_label(vals["altitude_act"])}  {ssr_content}"
-            )
+            lines.append(f"{vals['cs']}  {self.alt_to_label(vals["altitude_act"])}  {ssr_content}")
 
         # MEDIUM
         elif self.display_state == self.STATE_MEDIUM:
 
-            lines.append(
-                f"{vals['cs']}  {vals['wtc']}  {ssr_content}"
-            )
+            lines.append(f"{vals['cs']}  {vals['wtc']}  {ssr_content}")
 
-            lines.append(
-                f"{self.alt_to_label(vals['altitude_act'])} "
-                f"{int(vals['act_speed_gs'])}"
-            )
+            lines.append(f"{self.alt_to_label(vals['altitude_act'])}  N{int(vals['act_speed_gs'])}")
 
         # FULL
         elif self.display_state == self.STATE_FULL:
 
-            lines.append(
-                f"{vals['cs']} {vals['icao_type']} {vals['wtc']}  {ssr_content}"
-            )
+            lines.append(f"{vals['cs']} {vals['icao_type']} {vals['wtc']}  {ssr_content}")
 
-            lines.append(
-                f"SSR {vals['ssr']} | GS: {int(vals['act_speed_gs'])}"
-            )
+            lines.append(f"SSR {vals['ssr']} | GS: {int(vals['act_speed_gs'])}")
 
-            lines.append(
-                f"HDG {int(vals['heading_act'])} / {int(vals['heading_req'])}"
-            )
+            lines.append(f"HDG {int(vals['heading_act'])} / {int(vals['heading_req'])}")
 
-            lines.append(
-                f"ALT:{self.alt_to_label(vals['altitude_act'])} / {self.alt_to_label(vals['altitude_req'])}"
-            )
+            lines.append(f"ALT:{self.alt_to_label(vals['altitude_act'])} / {self.alt_to_label(vals['altitude_req'])}")
 
-            lines.append(
-                f"RoC: {vals['rate_of_climb']} ft/sec"
-            )
+            lines.append(f"RoC: {vals['rate_of_climb']} ft/sec")
 
-            lines.append(
-                f"IAS:{int(vals['act_speed_ias'])} / {int(vals['req_speed_ias'])}"
-            )
+            lines.append(f"IAS:{int(vals['act_speed_ias'])} / {int(vals['req_speed_ias'])}")
 
 
         # Safety
