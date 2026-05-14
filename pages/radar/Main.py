@@ -8,6 +8,7 @@ from pages.radar.Acft import Acft
 from pages.radar.Airspace import Airspace
 from pages.radar.Command import Command
 from pages.radar.Drawer import Drawer
+from pages.radar.Infobox import Infobox
 from pages.radar.PerformanceData import PerformanceData
 from pages.radar.Qdm.Qdm import Qdm
 from pages.radar.Qdm.QdmAnchor import QdmAnchor
@@ -76,6 +77,7 @@ class Main:
         self.main_surface = pygame.display.set_mode((self.variables.display_width, self.variables.display_height))
         self.drawer = Drawer(self.main_surface, self.root_directory)
         self.command_box = Command(self.main_surface)
+        self.infobox = Infobox(self.main_surface, self.variables)
         self.after_init()
 
     def init(self) -> None:
@@ -150,6 +152,7 @@ class Main:
         self.draw_acft()
         self.draw_qdm()
         self.command_box.draw()
+        self.infobox.draw()
 
     def draw_conflicts(self):
         for conflict in self.acft_conflict_list:
@@ -295,8 +298,11 @@ class Main:
 
     def handle_event_mouseclick(self, event):
         mouse_x, mouse_y = pygame.mouse.get_pos()
-        handle_mouse_result = self.command_box.handle_mouse_click((mouse_x, mouse_y), self.acft_list)
-        if handle_mouse_result:
+        handle_mouse_result_cb = self.command_box.handle_mouse_click((mouse_x, mouse_y), self.acft_list)
+        handle_mouse_result_ib = self.command_box.handle_mouse_click((mouse_x, mouse_y), self.acft_list)
+        if handle_mouse_result_cb:
+            return
+        if handle_mouse_result_ib:
             return
         if event.button == 1:
             # Left click
@@ -544,6 +550,7 @@ class Main:
     def detect_conflicts(self):
 
         self.acft_conflict_list = []
+        self.infobox.reset_conflicts()
         for acft in self.acft_list:
             acft.is_conflicting = False
 
@@ -584,6 +591,12 @@ class Main:
                     ))
                     acft_1.is_conflicting = True
                     acft_2.is_conflicting = True
+                    self.infobox.add_conflicts((
+                        acft_1.cs,
+                        acft_2.cs,
+                        dist,
+                        vert_dist
+                    ))
 
     def get_anchor_from_mouse(
             self,
