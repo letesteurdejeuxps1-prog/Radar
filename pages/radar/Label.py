@@ -15,6 +15,7 @@ class Label:
     color_bg = (0, 0, 0)
     color_border = (255, 255, 255)
     color_border_conflict = (255, 0, 0)
+    color_txt_ssr = (255, 0, 0)
 
     # =========================
     # DISPLAY STATES
@@ -99,31 +100,31 @@ class Label:
         lines = []
 
         # TODO REMOVE AFTER DEBUG
-        #lines.append(f"DEBUG INFO : {vals['debug']}")
+        #lines.append((f"DEBUG INFO : {vals['debug']}", False))
 
         # COLLAPSED
         if self.display_state == self.STATE_COLLAPSED:
-            lines.append(f"{vals['cs']}  {self.alt_to_label(vals["altitude_act"])}  {ssr_content}")
+            if ssr_content != "":
+                lines.append((f"{ssr_content}", True))
+            lines.append((f"{vals['cs']}  {self.alt_to_label(vals["altitude_act"])}", False))
 
         # MEDIUM
         elif self.display_state == self.STATE_MEDIUM:
-            lines.append(f"{vals['cs']}  {vals['wtc']}  {ssr_content}")
-            lines.append(f"{self.alt_to_label(vals['altitude_act'])}  N{int(vals['act_speed_gs'])}")
+            if ssr_content != "":
+                lines.append((f"{ssr_content}", True))
+            lines.append((f"{vals['cs']}  {vals['wtc']}", False))
+            lines.append((f"{self.alt_to_label(vals['altitude_act'])}  N{int(vals['act_speed_gs'])}", False))
 
         # FULL
         elif self.display_state == self.STATE_FULL:
-
-            lines.append(f"{vals['cs']} {vals['icao_type']} {vals['wtc']}  {ssr_content}")
-
-            lines.append(f"SSR {vals['ssr']} | GS: {int(vals['act_speed_gs'])}")
-
-            lines.append(f"HDG {int(vals['heading_act'])} / {int(vals['heading_req'])}")
-
-            lines.append(f"ALT:{self.alt_to_label(vals['altitude_act'])} / {self.alt_to_label(vals['altitude_req'])}")
-
-            lines.append(f"RoC: {vals['rate_of_climb']} ft/sec")
-
-            lines.append(f"IAS:{int(vals['act_speed_ias'])} / {int(vals['req_speed_ias'])}")
+            if ssr_content != "":
+                lines.append((f"{ssr_content}", True))
+            lines.append((f"{vals['cs']} {vals['icao_type']} {vals['wtc']}", False))
+            lines.append((f"SSR {vals['ssr']} | GS: {int(vals['act_speed_gs'])}", False))
+            lines.append((f"HDG {int(vals['heading_act'])} / {int(vals['heading_req'])}", False))
+            lines.append((f"ALT:{self.alt_to_label(vals['altitude_act'])} / {self.alt_to_label(vals['altitude_req'])}", False))
+            lines.append((f"RoC: {vals['rate_of_climb']} ft/sec", False))
+            lines.append((f"IAS:{int(vals['act_speed_ias'])} / {int(vals['req_speed_ias'])}", False))
 
 
         # Safety
@@ -138,10 +139,17 @@ class Label:
 
         for line in lines:
 
+            content, is_txt_ssr = line
+
+            if is_txt_ssr:
+                color = self.color_txt_ssr
+            else:
+                color = self.color_font
+
             txt_surface = self.font.render(
-                line,
+                content,
                 True,
-                self.color_font
+                color
             )
 
             max_width = max(
@@ -191,10 +199,17 @@ class Label:
 
         for i, line in enumerate(lines):
 
+            content, is_txt_ssr = line
+
+            if is_txt_ssr:
+                color = self.color_txt_ssr
+            else:
+                color = self.color_font
+
             txt_surface = self.font.render(
-                line,
+                content,
                 True,
-                self.color_font
+                color
             )
 
             surface.blit(
