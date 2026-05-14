@@ -392,6 +392,7 @@ class Acft:
             {
                 "cs": self.cs,
                 "icao_type": self.icao_type,
+                "is_conflicting": self.is_conflicting,
                 "ssr": self.ssr,
                 "wtc": self.wtc,
                 "heading_act": self.heading_act,

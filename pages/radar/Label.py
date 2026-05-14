@@ -7,9 +7,14 @@ class Label:
     # COLORS
     # =========================
 
+    EMERGENCY_CODE = "EM"
+    COM_FAILURE_CODE = "CF"
+    HIJACK = "HI"
+    emergency_color = (255, 50, 50)
     color_font = (255, 255, 255)
     color_bg = (0, 0, 0)
     color_border = (255, 255, 255)
+    color_border_conflict = (255, 0, 0)
 
     # =========================
     # DISPLAY STATES
@@ -25,10 +30,6 @@ class Label:
 
     def __init__(self, trl: int = 6000):
 
-        self.EMERGENCY_CODE = "EM"
-        self.COM_FAILURE_CODE = "CF"
-        self.HIJACK = "HI"
-        self.emergency_color = (255, 50, 50)
         self.TRL = trl
         self.font_size = 15
         self.font = pygame.font.SysFont("consolas", self.font_size)
@@ -81,7 +82,10 @@ class Label:
             border_color = ssr[1]
         else:
             ssr_content = ""
-            border_color = self.color_border
+            if vals['is_conflicting']:
+                border_color = self.color_border_conflict
+            else:
+                border_color = self.color_border
 
 
         # Final label position
@@ -95,18 +99,15 @@ class Label:
         lines = []
 
         # TODO REMOVE AFTER DEBUG
-        lines.append(f"DEBUG INFO : {vals['debug']}")
+        #lines.append(f"DEBUG INFO : {vals['debug']}")
 
         # COLLAPSED
         if self.display_state == self.STATE_COLLAPSED:
-
             lines.append(f"{vals['cs']}  {self.alt_to_label(vals["altitude_act"])}  {ssr_content}")
 
         # MEDIUM
         elif self.display_state == self.STATE_MEDIUM:
-
             lines.append(f"{vals['cs']}  {vals['wtc']}  {ssr_content}")
-
             lines.append(f"{self.alt_to_label(vals['altitude_act'])}  N{int(vals['act_speed_gs'])}")
 
         # FULL
