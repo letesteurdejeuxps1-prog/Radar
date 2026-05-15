@@ -53,6 +53,8 @@ class Acft:
     is_speed_locked: bool = False
     is_conflicting: bool = False
 
+    msaw_warning: bool = False
+
     # Frozen heading snapshot for PRL
     prl_heading_snapshot: float = 0
 
@@ -393,6 +395,7 @@ class Acft:
                 "cs": self.cs,
                 "icao_type": self.icao_type,
                 "is_conflicting": self.is_conflicting,
+                "msaw_warning": self.msaw_warning,
                 "ssr": self.ssr,
                 "wtc": self.wtc,
                 "heading_act": self.heading_act,

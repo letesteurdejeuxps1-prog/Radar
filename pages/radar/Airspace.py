@@ -122,3 +122,10 @@ class Airspace:
 
         except KeyError as e:
             print(f"Could not load airspace. Key {e.args[0]} does not exist or is incorrect")
+
+    def get_areas_for_acft(self, acft):
+        matches = []
+        for area in self.areas:
+            if area.contains_acft(acft):
+                matches.append(area)
+        return matches

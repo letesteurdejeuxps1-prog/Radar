@@ -549,6 +549,7 @@ class Main:
 
     def detect_conflicts(self):
 
+
         self.acft_conflict_list = []
         self.infobox.reset_conflicts()
         for acft in self.acft_list:
@@ -557,6 +558,7 @@ class Main:
         for i in range(len(self.acft_list)):
 
             acft_1 = self.acft_list[i]
+            self.msaw(acft_1)
 
             for j in range(i + 1, len(self.acft_list)):
 
@@ -806,3 +808,10 @@ class Main:
                     return qdm, "end"
 
         return None, None
+
+    def msaw(self, acft):
+        areas = self.airspace.get_areas_for_acft(acft)
+        if areas:
+            acft.msaw_warning = False
+        else:
+            acft.msaw_warning = True

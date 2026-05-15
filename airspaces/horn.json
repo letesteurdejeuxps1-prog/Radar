@@ -36,10 +36,10 @@
         "58°33'30''N|15°59'45''E",
         "58°23'30''N|16°27'00''E"
       ],
-      "limit_low": "4500ft",
-      "limit_high": "FL205",
-      "lowest_alt": "5000ft",
-      "highest_alt": "FL200"
+      "limit_low": "4500",
+      "limit_high": "20500",
+      "lowest_alt": "5000",
+      "highest_alt": "20000"
     },
     "area_2": {
       "coord": [
@@ -50,10 +50,10 @@
         "58°09'55''N|16°29'00''E",
         "58°13'30''N|15°16'30''E"
       ],
-      "limit_low": "4500ft",
-      "limit_high": "FL205",
-      "lowest_alt": "5000ft",
-      "highest_alt": "FL200"
+      "limit_low": "4500",
+      "limit_high": "20500",
+      "lowest_alt": "5000",
+      "highest_alt": "20000"
     },
     "area_3": {
       "coord": [
@@ -64,10 +64,10 @@
         "57°46'00''N|15°00'50''E",
         "57°50'45''N|15°01'30''E"
       ],
-      "limit_low": "4500ft",
-      "limit_high": "FL205",
-      "lowest_alt": "5000ft",
-      "highest_alt": "FL200"
+      "limit_low": "4500",
+      "limit_high": "20500",
+      "lowest_alt": "5000",
+      "highest_alt": "20000"
     },
     "area_4": {
       "coord": [
@@ -76,10 +76,10 @@
         "57°43'00''N|17°12'30''E",
         "57°46'00''N|16°35'00''E"
       ],
-      "limit_low": "4500ft",
-      "limit_high": "FL205",
-      "lowest_alt": "5000ft",
-      "highest_alt": "FL200"
+      "limit_low": "4500",
+      "limit_high": "20500",
+      "lowest_alt": "5000",
+      "highest_alt": "20000"
     },
     "area_5": {
       "coord": [
@@ -90,10 +90,10 @@
         "57°23'15''N|14°32'00''E",
         "57°34'00''N|14°12'00''E"
       ],
-      "limit_low": "4500ft",
-      "limit_high": "FL205",
-      "lowest_alt": "5000ft",
-      "highest_alt": "FL200"
+      "limit_low": "4500",
+      "limit_high": "20500",
+      "lowest_alt": "5000",
+      "highest_alt": "20000"
     },
     "area_6": {
       "coord": [
@@ -103,10 +103,10 @@
         "57°13'30''N|15°31'00''E",
         "57°19'30''N|14°55'00''E"
       ],
-      "limit_low": "4500ft",
-      "limit_high": "FL205",
-      "lowest_alt": "5000ft",
-      "highest_alt": "FL200"
+      "limit_low": "4500",
+      "limit_high": "20500",
+      "lowest_alt": "5000",
+      "highest_alt": "20000"
     },
     "area_7": {
       "coord": [
@@ -116,10 +116,10 @@
         "57°12'30''N|15°51'40''E",
         "57°31'30''N|15°51'30''E"
       ],
-      "limit_low": "4500ft",
-      "limit_high": "FL205",
-      "lowest_alt": "5000ft",
-      "highest_alt": "FL200"
+      "limit_low": "4500",
+      "limit_high": "20500",
+      "lowest_alt": "5000",
+      "highest_alt": "20000"
     }
   }
 }

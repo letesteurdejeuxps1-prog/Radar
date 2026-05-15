@@ -15,6 +15,7 @@ class Label:
     color_bg = (0, 0, 0)
     color_border = (255, 255, 255)
     color_border_conflict = (255, 0, 0)
+    color_border_msaw: tuple[int, int, int] = (255, 255, 0)
     color_txt_ssr = (255, 0, 0)
 
     # =========================
@@ -85,6 +86,8 @@ class Label:
             ssr_content = ""
             if vals['is_conflicting']:
                 border_color = self.color_border_conflict
+            elif vals['msaw_warning']:
+                border_color = self.color_border_msaw
             else:
                 border_color = self.color_border
 
@@ -106,7 +109,7 @@ class Label:
         if self.display_state == self.STATE_COLLAPSED:
             if ssr_content != "":
                 lines.append((f"{ssr_content}", True))
-            lines.append((f"{vals['cs']}  {self.alt_to_label(vals["altitude_act"])}", False))
+            lines.append((f"{vals['cs']}  {self.alt_to_label(vals['altitude_act'])}", False))
 
         # MEDIUM
         elif self.display_state == self.STATE_MEDIUM:
