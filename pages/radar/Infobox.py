@@ -18,7 +18,9 @@ class Infobox:
 
         self.font_size = 16
         self.color_font_conflict = (255, 0, 0)
-        self.content = []
+        self.color_font_msaw = (255, 255, 0)
+        self.conflicts = []
+        self.msaw_list = []
         self.surface = surface
         self.variables = variables
         self.font = pygame.font.SysFont("consolas", 18)
@@ -31,12 +33,25 @@ class Infobox:
         height = self.pos_y
         width = 0
         content = []
-        for line in self.content:
+        for line in self.conflicts:
 
             txt_surface = self.font.render(
                 line,
                 True,
                 self.color_font_conflict
+            )
+
+            content.append((txt_surface, height))
+            height += txt_surface.get_height() + self.padding_y
+            if txt_surface.get_width() > width:
+                width = txt_surface.get_width()
+
+        for line in self.msaw_list:
+
+            txt_surface = self.font.render(
+                line,
+                True,
+                self.color_font_msaw
             )
 
             content.append((txt_surface, height))
@@ -53,7 +68,12 @@ class Infobox:
 
     def add_conflicts(self, data: tuple[str, str, float, float]):
         acft_1_cs, acft_2_cs, h_dist, v_dist = data
-        self.content.append(f"{acft_1_cs} {acft_2_cs} : {round(h_dist, 2)}NM | {round(v_dist)}ft")
+        self.conflicts.append(f"{acft_1_cs} {acft_2_cs} : {round(h_dist, 2)}NM | {round(v_dist)}ft")
 
-    def reset_conflicts(self):
-        self.content = []
+    def add_msaw(self, cs: str, alt: int|float):
+        alt = int(alt / 100)
+        self.msaw_list.append(f"MSAW: {cs} is at FL{alt}")
+
+    def reset(self):
+        self.conflicts = []
+        self.msaw_list = []

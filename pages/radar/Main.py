@@ -551,7 +551,7 @@ class Main:
 
 
         self.acft_conflict_list = []
-        self.infobox.reset_conflicts()
+        self.infobox.reset()
         for acft in self.acft_list:
             acft.is_conflicting = False
 
@@ -815,3 +815,4 @@ class Main:
             acft.msaw_warning = False
         else:
             acft.msaw_warning = True
+            self.infobox.add_msaw(acft.cs, acft.altitude_act)
