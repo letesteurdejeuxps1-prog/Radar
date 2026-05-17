@@ -247,7 +247,7 @@ class Acft:
 
         if self.turn_direction == 1 or self.turn_direction == -1:
 
-            if self.heading_act != self.heading_req:
+            if abs(self.heading_act - self.heading_req) > 0.1:
 
                 step = self.rate_of_turn * elapsed_sec
 
