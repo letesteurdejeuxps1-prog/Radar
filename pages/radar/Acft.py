@@ -1,3 +1,5 @@
+import math
+
 import pygame
 
 from pages.radar.Label import Label
@@ -71,6 +73,9 @@ class Acft:
 
     d_rate_of_climb: float = 0
 
+    NAV_HEADING = 0
+    NAV_ROUTE = 1
+
     def __init__(
             self,
             airspace_center_lon: int | float,
@@ -132,6 +137,8 @@ class Acft:
 
         self.ssr = ssr
         self.route = route
+        self.route_points = []
+        self.route_index = 0
 
         self.color = color
         self.color_selected_radius = color_selected_radius
@@ -149,6 +156,7 @@ class Acft:
 
         self.update_data()
         self.after_load()
+        self.nav_mode = self.NAV_HEADING
 
     def after_load(self):
 
@@ -186,6 +194,9 @@ class Acft:
 
         if self.identity != identity:
             self.is_clicked = False
+
+        if self.nav_mode == self.NAV_ROUTE:
+            self.update_route_navigation()
 
         self.check_heading()
 
@@ -532,3 +543,40 @@ class Acft:
         self.d_req_speed_ias = self.req_speed_ias
         self.d_act_speed_gs = self.act_speed_gs
         self.d_rate_of_climb = self.rate_of_climb
+
+    def update_route_navigation(self):
+        if len(self.route_points) == 0:
+            return
+        if self.route_index >= len(self.route_points):
+            return
+        target = self.route_points[self.route_index]
+        dx = target.pos_x - self.real_x
+        dy = target.pos_y - self.real_y
+
+        distance = math.hypot(dx, dy)
+
+        # Waypoint reached
+        if distance < 2:
+            self.route_index += 1
+
+            if self.route_index >= len(self.route_points):
+                return
+
+            target = self.route_points[self.route_index]
+
+            dx = target.pos_x - self.real_x
+            dy = target.pos_y - self.real_y
+
+        # Convert to heading
+        heading = math.degrees(math.atan2(dy, dx))
+
+        heading = (90 - heading) % 360
+
+        self.heading_req = heading
+
+        diff = (self.heading_req - self.heading_act) % 360
+
+        if diff <= 180:
+            self.turn_direction = 1
+        else:
+            self.turn_direction = -1

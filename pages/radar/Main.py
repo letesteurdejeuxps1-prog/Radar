@@ -141,7 +141,17 @@ class Main:
                     acft['selected_radius'],
                     acft['is_clicked'],
                 )
-                self.acft_list.append(new_acft)
+                if acft['route'] != "":
+                    new_acft.nav_mode = new_acft.NAV_ROUTE
+                    route_names = acft['route'].split()
+                    for name in route_names:
+                        pt = self.airspace.get_point_by_name(name)
+                        if pt is not None:
+                            new_acft.route_points.append(pt)
+                    self.acft_list.append(new_acft)
+                else:
+                    acft.nav_mode = acft.NAV_HEADING
+
 
     def test(self):
         pass

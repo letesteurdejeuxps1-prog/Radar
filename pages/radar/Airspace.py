@@ -129,3 +129,11 @@ class Airspace:
             if area.contains_acft(acft):
                 matches.append(area)
         return matches
+
+    def get_point_by_name(self, name):
+        for point in self.points:
+            if point.name.upper() == name.upper():
+                return point
+            if point.abbreviation.upper() == name.upper():
+                return point
+        return None
