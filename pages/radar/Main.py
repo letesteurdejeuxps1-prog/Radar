@@ -228,6 +228,14 @@ class Main:
             if not acft.d_prl_has_custom:
                 acft.d_prl_length_in_sec = self.command_box.global_prl_length
 
+            if acft.show_route:
+                self.drawer.draw_route(
+                    acft,
+                    self.cam_offset_x,
+                    self.cam_offset_y,
+                    self.zoom
+                )
+
             self.drawer.draw_acft(
                 acft,
                 self.cam_offset_x,
@@ -383,6 +391,11 @@ class Main:
         if event.button == 2:
             # Middle click
             self.middle_click_on = True
+            mouse_x, mouse_y = pygame.mouse.get_pos()
+            for acft in self.acft_list:
+                if acft.label.is_mouse_over(mouse_x, mouse_y):
+                    acft.show_route = not acft.show_route
+                    return
         if event.button == 3:
             # Right click
             print("Right click")

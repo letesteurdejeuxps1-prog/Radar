@@ -27,7 +27,9 @@ class Drawer:
     label_offset_y = 2
 
     def __init__(self, surface: pygame.Surface, root_directory: str) -> None:
-        self.conflict_color = (255, 0, 0)
+        self.route_width = 1
+        self.route_color: tuple[int, int, int] = (200, 200, 200)
+        self.conflict_color: tuple[int, int, int] = (255, 0, 0)
         self.surface = surface
         self.root_directory = root_directory
         self.font = pygame.font.SysFont("consolas", self.font_size)
@@ -365,3 +367,61 @@ class Drawer:
             ey - 15,
             qdm.color
         )
+
+    def draw_route(
+            self,
+            acft,
+            cam_offset_x,
+            cam_offset_y,
+            zoom
+    ):
+
+        if len(acft.route_points) == 0:
+            return
+
+        # =========================
+        # START = AIRCRAFT POSITION
+        # =========================
+
+        prev_x = acft.pos_x
+        prev_y = acft.pos_y
+
+        # =========================
+        # DRAW EACH ROUTE LEG
+        # =========================
+
+        for point in acft.route_points:
+            sx1 = world_to_screen_x(
+                prev_x,
+                cam_offset_x,
+                zoom
+            )
+
+            sy1 = world_to_screen_y(
+                prev_y,
+                cam_offset_y,
+                zoom
+            )
+
+            sx2 = world_to_screen_x(
+                point.pos_x,
+                cam_offset_x,
+                zoom
+            )
+
+            sy2 = world_to_screen_y(
+                point.pos_y,
+                cam_offset_y,
+                zoom
+            )
+
+            pygame.draw.line(
+                self.surface,
+                self.route_color,
+                (sx1, sy1),
+                (sx2, sy2),
+                self.route_width
+            )
+
+            prev_x = point.pos_x
+            prev_y = point.pos_y

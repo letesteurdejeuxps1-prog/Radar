@@ -73,8 +73,10 @@ class Acft:
 
     d_rate_of_climb: float = 0
 
-    NAV_HEADING = 0
-    NAV_ROUTE = 1
+    NAV_HEADING: int = 0
+    NAV_ROUTE: int = 1
+
+    show_route: bool = False
 
     def __init__(
             self,
