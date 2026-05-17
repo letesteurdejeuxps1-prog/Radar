@@ -128,6 +128,13 @@ class Label:
             lines.append((f"ALT:{self.alt_to_label(vals['altitude_act'])} / {self.alt_to_label(vals['altitude_req'])}", False))
             lines.append((f"RoC: {vals['rate_of_climb']} ft/sec", False))
             lines.append((f"IAS:{int(vals['act_speed_ias'])} / {int(vals['req_speed_ias'])}", False))
+            points = vals['route_points']
+            if len(points) > 0:
+                route_str = ""
+                for point in points:
+                    route_str += point.abbreviation + ' '
+                lines.append((f"{route_str}", False))
+
 
 
         # Safety

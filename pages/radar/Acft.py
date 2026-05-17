@@ -138,7 +138,6 @@ class Acft:
         self.ssr = ssr
         self.route = route
         self.route_points = []
-        self.route_index = 0
 
         self.color = color
         self.color_selected_radius = color_selected_radius
@@ -417,6 +416,7 @@ class Acft:
                 "altitude_req": self.d_altitude_req,
                 "altitude_act": self.d_altitude_act,
                 "rate_of_climb": self.d_rate_of_climb,
+                "route_points": self.route_points,
                 "debug": self.rate_of_turn,
             }
         )
@@ -545,38 +545,56 @@ class Acft:
         self.d_rate_of_climb = self.rate_of_climb
 
     def update_route_navigation(self):
+
         if len(self.route_points) == 0:
             return
-        if self.route_index >= len(self.route_points):
-            return
-        target = self.route_points[self.route_index]
+
+        target = self.route_points[0]
+
         dx = target.pos_x - self.real_x
         dy = target.pos_y - self.real_y
 
         distance = math.hypot(dx, dy)
 
-        # Waypoint reached
-        if distance < 2:
-            self.route_index += 1
+        # =========================
+        # WAYPOINT PASSED
+        # =========================
 
-            if self.route_index >= len(self.route_points):
+        capture_radius = max(
+            2,
+            self.get_gs_speed_per_sec() * 3
+        )
+        if distance < capture_radius:
+
+            self.route_points.pop(0)
+
+            # Route finished
+            if len(self.route_points) == 0:
+                self.nav_mode = self.NAV_HEADING
                 return
 
-            target = self.route_points[self.route_index]
+            target = self.route_points[0]
 
             dx = target.pos_x - self.real_x
             dy = target.pos_y - self.real_y
 
-        # Convert to heading
-        heading = math.degrees(math.atan2(dy, dx))
+        # =========================
+        # COMPUTE REQUIRED HEADING
+        # =========================
+
+        heading = math.degrees(
+            math.atan2(dy, dx)
+        )
 
         heading = (90 - heading) % 360
 
         self.heading_req = heading
 
+        # Turn direction
         diff = (self.heading_req - self.heading_act) % 360
 
         if diff <= 180:
             self.turn_direction = 1
         else:
             self.turn_direction = -1
+
