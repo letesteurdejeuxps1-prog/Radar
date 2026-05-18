@@ -215,6 +215,12 @@ def get_command(data: str, allow_debug_commands: bool = False) -> list[dict]:
                     "cmd": "ROUTE",
                     "value": route_points
                 })
+            elif len(route_points) == 0:
+                commands.append({
+                    "valid": True,
+                    "cmd": "ROUTE",
+                    "value": 0
+                })
             else:
                 commands.append({
                     "valid": False,

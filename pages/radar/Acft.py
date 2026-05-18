@@ -538,8 +538,11 @@ class Acft:
         # ==========================================
 
         elif command == "ROUTE":
-            self.route_points = value
-            self.nav_mode = self.NAV_ROUTE
+            if value == 0:
+                self.nav_mode = self.NAV_ROUTE
+            else:
+                self.route_points = value
+                self.nav_mode = self.NAV_ROUTE
 
     def update_speed(self):
 

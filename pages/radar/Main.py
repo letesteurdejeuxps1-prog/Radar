@@ -593,20 +593,21 @@ class Main:
             # ROUTE
             # ==========================================
             elif cmd == "ROUTE":
-                resolved_points = []
-                for point_name in result["value"]:
-                    point = self.airspace.get_point_by_name(
-                        point_name
-                    )
-                    if point is None:
-                        print(f"Unknown point: {point_name}")
-                        resolved_points = []
-                        break
-                    resolved_points.append(point)
-                if len(resolved_points) == 0:
-                    continue
+                if result["value"] != 0:
+                    resolved_points = []
+                    for point_name in result["value"]:
+                        point = self.airspace.get_point_by_name(
+                            point_name
+                        )
+                        if point is None:
+                            print(f"Unknown point: {point_name}")
+                            resolved_points = []
+                            break
+                        resolved_points.append(point)
+                    if len(resolved_points) == 0:
+                        continue
 
-                result["value"] = resolved_points
+                    result["value"] = resolved_points
 
             self.radar_selected.execute_command(result)
 

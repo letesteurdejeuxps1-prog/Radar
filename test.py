@@ -1,6 +1,7 @@
 from pages.radar.data.command_helper import get_command
 
 tests = (
+    "rte",
     "↑250,50",
     "↓220",
     "↓",
@@ -17,6 +18,7 @@ tests = (
     "d andie",
     "d stege sta",
     "rte stege sta hrn paddi",
+    "rte",
 )
 
 for test in tests:
