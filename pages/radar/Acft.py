@@ -77,7 +77,6 @@ class Acft:
     NAV_ROUTE: int = 1
 
     show_route: bool = False
-    todo_list = []
 
     def __init__(
             self,
@@ -160,6 +159,8 @@ class Acft:
         self.after_load()
         self.nav_mode = self.NAV_HEADING
 
+        self.todo_list = []
+
     def after_load(self):
 
         lon, lat = convert_lat_and_long_to_radar(
@@ -226,7 +227,6 @@ class Acft:
 
     def move_logic(self, elapsed_sec: float):
 
-        self.check_todo_list()
         self.move_logic_heading(elapsed_sec)
         self.move_logic_speed(elapsed_sec)
         self.move_logic_alt(elapsed_sec)
@@ -293,13 +293,13 @@ class Acft:
 
     def move_logic_alt(self, elapsed_time):
 
+        previous_alt = self.altitude_act
         if self.altitude_act == self.altitude_req:
             self.rate_of_climb = 0
             return
 
         if self.altitude_req > self.altitude_act:
             self.climb_dir = 1
-
         else:
             self.climb_dir = -1
 
@@ -320,14 +320,14 @@ class Acft:
 
         # Prevent overshoot
         if self.climb_dir == 1 and self.altitude_act > self.altitude_req:
-
             self.altitude_act = self.altitude_req
             self.rate_of_climb = 0
 
         elif self.climb_dir == -1 and self.altitude_act < self.altitude_req:
-
             self.altitude_act = self.altitude_req
             self.rate_of_climb = 0
+
+        self.check_todo_list(previous_alt)
 
     def move_acft(self, elapsed_sec: float = 1):
 
@@ -670,26 +670,36 @@ class Acft:
         else:
             self.turn_direction = -1
 
-    def check_todo_list(self):
+    def check_todo_list(self, previous_alt):
         remove_items = []
         for item in self.todo_list:
             try:
                 target_type = item["target_type"]
-                target = int(item["target"])
+                target = int(item["target"]) * 100
                 command = item["command"]
 
-                if target_type == 'l':
-                    if self.altitude_act // 100 == target:
-                        self.execute_command(command)
-                        remove_items.append(item)
-            except ValueError:
-                pass
+                if target_type != "l":
+                    continue
+
+                crossed = (
+                        previous_alt < target <= self.altitude_act
+                        or
+                        previous_alt > target >= self.altitude_act
+                )
+
+                if crossed:
+                    self.execute_command(command)
+                    remove_items.append(item)
+
+            except (ValueError, TypeError, KeyError):
+                remove_items.append(item)
+
         for item in remove_items:
             self.todo_list.remove(item)
 
     def check_todo_list_point(self, abbr: str):
         remove_items = []
-        for item in self.todo_list:
+        for item in list(self.todo_list):
             if item["target_type"] == "f":
                 target = str(item["target"]).upper()
                 if target == abbr.upper():
