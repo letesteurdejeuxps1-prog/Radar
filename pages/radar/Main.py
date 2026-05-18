@@ -478,10 +478,9 @@ class Main:
                     self.command_box.input_text += "*"
                 elif event.key == pygame.K_KP_DIVIDE:
                     self.command_box.input_text += "/"
-                elif event.key == pygame.K_m:
-                    self.command_box.input_text += "m"
-                elif event.key == pygame.K_s:
-                    self.command_box.input_text += "s"
+                else:
+                    if event.unicode.isprintable():
+                        self.command_box.input_text += event.unicode
 
             # =========================
             # NORMAL TEXT INPUT
@@ -564,11 +563,52 @@ class Main:
             self.handle_event_mouse_middle_click_drag(event)
 
     def execute_command(self):
-        if isinstance(self.radar_selected, Acft):
-            results = get_command(self.command_box.input_text)
-            for result in results:
-                if result[0]:
-                    self.radar_selected.execute_command(result[1], result[2], result[3])
+
+        if not isinstance(self.radar_selected, Acft):
+            return
+        results = get_command(
+            self.command_box.input_text,
+            True
+        )
+
+        for result in results:
+            if not result.get("valid"):
+                continue
+            cmd = result.get("cmd")
+
+            # ==========================================
+            # DIRECT
+            # ==========================================
+            if cmd == "DIRECT":
+                point_name = result["value"]
+                point = self.airspace.get_point_by_name(
+                    point_name
+                )
+                if point is None:
+                    print(f"Unknown point: {point_name}")
+                    continue
+                result["value"] = point
+
+            # ==========================================
+            # ROUTE
+            # ==========================================
+            elif cmd == "ROUTE":
+                resolved_points = []
+                for point_name in result["value"]:
+                    point = self.airspace.get_point_by_name(
+                        point_name
+                    )
+                    if point is None:
+                        print(f"Unknown point: {point_name}")
+                        resolved_points = []
+                        break
+                    resolved_points.append(point)
+                if len(resolved_points) == 0:
+                    continue
+
+                result["value"] = resolved_points
+
+            self.radar_selected.execute_command(result)
 
     def detect_conflicts(self):
 

@@ -2,14 +2,25 @@ from pages.radar.data.command_helper import get_command
 
 tests = (
     "↑250,50",
+    "↓220",
+    "↓",
+    "←220",
+    "→330",
+    "→090",
+    "→",
     "/250 /330",
     "/",
-    "/250",
+    "/250 ",
     "ms 220",
     "/250 mh330",
-    " /250 mh330   ",
+    " /250 mh330",
+    "d andie",
+    "d stege sta",
+    "rte stege sta hrn paddi",
 )
 
 for test in tests:
     val = get_command(test)
-    print(val)
+    for v in val:
+        print(v)
+    print("_"*20)

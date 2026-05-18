@@ -423,78 +423,123 @@ class Acft:
             }
         )
 
-    def execute_command(self, command: str, value: int, special: int):
+    def execute_command(self, data: dict):
 
-        if command == "↑" or command == "↓":
+        command = data.get("cmd")
+        value = data.get("value")
+        special = data.get("special", 0)
+
+        # ==========================================
+        # CLIMB / DESCEND
+        # ==========================================
+        if command in ["CLIMB", "DESCEND"]:
             if special != 0:
                 self.rate_of_climb = special
                 self.is_roc_locked = True
             else:
                 self.is_roc_locked = False
-
             self.altitude_req = value * 100
 
-        elif command == "←":
+        # ==========================================
+        # TURN LEFT
+        # ==========================================
+        elif command == "TURN_LEFT":
             self.set_rate_of_turn(special)
-
             self.heading_req = value
             self.turn_direction = -1
+            self.nav_mode = self.NAV_HEADING
 
-        elif command == "→":
+        # ==========================================
+        # TURN RIGHT
+        # ==========================================
+
+        elif command == "TURN_RIGHT":
             self.set_rate_of_turn(special)
-
             self.heading_req = value
             self.turn_direction = 1
+            self.nav_mode = self.NAV_HEADING
 
-        elif command == "*":
+        # ==========================================
+        # HEADING
+        # ==========================================
+
+        elif command == "HEADING":
             self.set_rate_of_turn(special)
             self.heading_req = value
-
             diff = (value - self.heading_act) % 360
             if diff <= 180:
                 self.turn_direction = 1
             else:
                 self.turn_direction = -1
+            self.nav_mode = self.NAV_HEADING
 
-        elif command == "/":
+        # ==========================================
+        # SPEED
+        # ==========================================
 
-            if value is None:
-
-                self.is_speed_locked = False
-
-            else:
-
-                self.is_speed_locked = True
-
-                new_speed = self.get_realistic_speed(value)
-
-                self.req_speed_ias = new_speed
-
-        elif command == "ms":
-
+        elif command == "SPEED":
             self.is_speed_locked = True
-
             new_speed = self.get_realistic_speed(value)
+            self.req_speed_ias = new_speed
 
+        # ==========================================
+        # UNLOCK SPEED
+        # ==========================================
+
+        elif command == "UNLOCK_SPEED":
+            self.is_speed_locked = False
+
+        # ==========================================
+        # MAKE SPEED
+        # ==========================================
+
+        elif command == "MAKE_SPEED":
+            self.is_speed_locked = True
+            new_speed = self.get_realistic_speed(value)
             self.act_speed_ias = new_speed
             self.req_speed_ias = new_speed
 
-        elif command == "mh":
+        # ==========================================
+        # MAKE HEADING
+        # ==========================================
 
+        elif command == "MAKE_HEADING":
             self.heading_req = value
             self.heading_act = value
+            self.nav_mode = self.NAV_HEADING
 
-        elif command == "ml":
+        # ==========================================
+        # MAKE LEVEL
+        # ==========================================
 
+        elif command == "MAKE_LEVEL":
             self.altitude_req = value * 100
             self.altitude_act = value * 100
 
-        elif command == "s":
+        # ==========================================
+        # SSR
+        # ==========================================
 
+        elif command == "SSR":
             ssr = validate_ssr(value)
-
             if ssr:
                 self.ssr = ssr
+
+        # ==========================================
+        # DIRECT
+        # ==========================================
+
+        elif command == "DIRECT":
+            self.route_points = [value]
+            self.nav_mode = self.NAV_ROUTE
+
+        # ==========================================
+        # ROUTE
+        # ==========================================
+
+        elif command == "ROUTE":
+            self.route_points = value
+            self.nav_mode = self.NAV_ROUTE
 
     def update_speed(self):
 
