@@ -12,6 +12,7 @@ from pages.radar.Infobox import Infobox
 from pages.radar.PerformanceData import PerformanceData
 from pages.radar.Qdm.Qdm import Qdm
 from pages.radar.Qdm.QdmAnchor import QdmAnchor
+from pages.radar.Todobox import TodoBox
 from pages.radar.data.command_helper import get_command
 from pages.radar.data.helper import world_to_screen_x, world_to_screen_y, get_wake_sep
 
@@ -78,6 +79,7 @@ class Main:
         self.drawer = Drawer(self.main_surface, self.root_directory)
         self.command_box = Command(self.main_surface)
         self.infobox = Infobox(self.main_surface, self.variables)
+        self.todo_box = TodoBox(self.main_surface)
         self.after_init()
 
     def init(self) -> None:
@@ -163,6 +165,7 @@ class Main:
         self.draw_qdm()
         self.command_box.draw()
         self.infobox.draw()
+        self.todo_box.draw()
 
     def draw_conflicts(self):
         for conflict in self.acft_conflict_list:
@@ -322,6 +325,8 @@ class Main:
             return
         if handle_mouse_result_ib:
             return
+        if self.todo_box.handle_mouse_click((mouse_x, mouse_y)):
+            return
         if event.button == 1:
             # Left click
             self.left_click_on = True
@@ -368,9 +373,15 @@ class Main:
                 self.command_box.set_selected_acft(
                     self.radar_selected
                 )
+                self.todo_box.set_selected_acft(
+                    self.radar_selected
+                )
             elif len(matches) == 1 and isinstance(matches[0][0], Acft):
                 self.radar_selected = matches[0][0]
                 self.command_box.set_selected_acft(
+                    self.radar_selected
+                )
+                self.todo_box.set_selected_acft(
                     self.radar_selected
                 )
                 matches[0][0].is_clicked = True
@@ -384,6 +395,9 @@ class Main:
                         match_dist = distance
                 self.radar_selected = found
                 self.command_box.set_selected_acft(
+                    self.radar_selected
+                )
+                self.todo_box.set_selected_acft(
                     self.radar_selected
                 )
                 found.is_clicked = True
@@ -427,6 +441,7 @@ class Main:
         self.left_click_on = False
         self.middle_click_on = False
         self.right_click_on = False
+        self.todo_box.handle_mouse_release()
         for acft in self.acft_list:
             acft.label.stop_drag()
 
@@ -543,6 +558,9 @@ class Main:
         mouse_x, mouse_y = pygame.mouse.get_pos()
 
         self.command_box.handle_mouse_motion(
+            (mouse_x, mouse_y)
+        )
+        self.todo_box.handle_mouse_motion(
             (mouse_x, mouse_y)
         )
 
