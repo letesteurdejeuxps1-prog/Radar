@@ -12,8 +12,8 @@ class TodoBox:
         self.x = 40
         self.y = 300
 
-        self.width = 320
-        self.height = 180
+        self.width = 360
+        self.height = 220
 
         self.dragging = False
 
@@ -28,14 +28,18 @@ class TodoBox:
 
         self.header_height = 24
 
+        # Stores clickable remove buttons
+        self.remove_buttons = []
+
     def set_selected_acft(self, acft):
         self.selected_acft = acft
 
     def draw(self):
 
-        # Only show when aircraft selected
         if self.selected_acft is None:
             return
+
+        self.remove_buttons = []
 
         rect = pygame.Rect(
             self.x,
@@ -44,14 +48,16 @@ class TodoBox:
             self.height
         )
 
-        # Background
+        # =========================
+        # BACKGROUND
+        # =========================
+
         pygame.draw.rect(
             self.surface,
             self.bg_color,
             rect
         )
 
-        # Border
         pygame.draw.rect(
             self.surface,
             self.border_color,
@@ -59,7 +65,10 @@ class TodoBox:
             1
         )
 
-        # Header
+        # =========================
+        # HEADER
+        # =========================
+
         header_rect = pygame.Rect(
             self.x,
             self.y,
@@ -86,7 +95,10 @@ class TodoBox:
             (self.x + 6, self.y + 4)
         )
 
-        # Draw todo items
+        # =========================
+        # TODO ITEMS
+        # =========================
+
         start_y = self.y + self.header_height + 8
 
         if len(self.selected_acft.todo_list) == 0:
@@ -104,7 +116,13 @@ class TodoBox:
             return
 
         for i, item in enumerate(self.selected_acft.todo_list):
+            row_y = start_y + i * 26
+
             text = self.format_item(item)
+
+            # =========================
+            # TODO TEXT
+            # =========================
 
             text_surface = self.font.render(
                 text,
@@ -114,7 +132,51 @@ class TodoBox:
 
             self.surface.blit(
                 text_surface,
-                (self.x + 8, start_y + i * 22)
+                (self.x + 8, row_y)
+            )
+
+            # =========================
+            # REMOVE BUTTON
+            # =========================
+
+            btn_size = 18
+
+            btn_x = self.x + self.width - btn_size - 8
+            btn_y = row_y
+
+            btn_rect = pygame.Rect(
+                btn_x,
+                btn_y,
+                btn_size,
+                btn_size
+            )
+
+            pygame.draw.rect(
+                self.surface,
+                (120, 30, 30),
+                btn_rect
+            )
+
+            pygame.draw.rect(
+                self.surface,
+                (220, 220, 220),
+                btn_rect,
+                1
+            )
+
+            x_surface = self.font.render(
+                "X",
+                True,
+                (255, 255, 255)
+            )
+
+            self.surface.blit(
+                x_surface,
+                (btn_x + 4, btn_y - 1)
+            )
+
+            self.remove_buttons.append(
+                (btn_rect, i)
             )
 
     def format_item(self, item):
@@ -148,6 +210,23 @@ class TodoBox:
             return False
 
         mouse_x, mouse_y = mouse_pos
+
+        # =========================
+        # REMOVE BUTTONS
+        # =========================
+
+        for btn_rect, index in self.remove_buttons:
+
+            if btn_rect.collidepoint(mouse_x, mouse_y):
+
+                if 0 <= index < len(self.selected_acft.todo_list):
+                    self.selected_acft.todo_list.pop(index)
+
+                return True
+
+        # =========================
+        # HEADER DRAGGING
+        # =========================
 
         header_rect = pygame.Rect(
             self.x,
