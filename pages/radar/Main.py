@@ -443,7 +443,9 @@ class Main:
         # AIRCRAFT COMMAND MODE
         # ==================================================
 
-        if self.radar_selected is not None:
+        command_mode = self.radar_selected is not None
+
+        if command_mode:
 
             # ENTER = execute command
             if key_pressed == pygame.K_RETURN or key_pressed == pygame.K_KP_ENTER:
@@ -493,7 +495,7 @@ class Main:
                 if event.unicode.isprintable():
                     self.command_box.input_text += event.unicode
 
-                return
+            return
 
         # ==================================================
         # NORMAL GAME MODE
@@ -509,6 +511,9 @@ class Main:
 
 
         elif key_pressed == pygame.K_a:
+
+            if self.in_command_mode():
+                return
 
             # Do not allow multiple active QDMs
             for qdm in self.qdm_list:
@@ -882,3 +887,6 @@ class Main:
         else:
             acft.msaw_warning = True
             self.infobox.add_msaw(acft.cs, acft.altitude_act)
+
+    def in_command_mode(self):
+        return self.radar_selected is not None
