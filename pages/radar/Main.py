@@ -472,6 +472,8 @@ class Main:
                     self.command_box.input_text += "↓"
                 elif event.key == pygame.K_LEFT or event.key == pygame.K_KP_4:
                     self.command_box.input_text += "←"
+                elif event.key == pygame.K_KP_5:
+                    self.command_box.input_text += "@"
                 elif event.key == pygame.K_RIGHT or event.key == pygame.K_KP_6:
                     self.command_box.input_text += "→"
                 elif event.key == pygame.K_KP_MULTIPLY:

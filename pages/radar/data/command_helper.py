@@ -49,6 +49,32 @@ def get_command(data: str, allow_debug_commands: bool = False) -> list[dict]:
             i += 1
             continue
 
+        if lower.startswith("@l") or lower.startswith("@f"):
+
+            try:
+                new_data = data.strip()
+                limiter, content = new_data.split(" ", 1)
+                limiter = limiter.replace("@", "").lower()
+                commands.append({
+                    "valid": True,
+                    "cmd": "AT_COMMAND",
+                    "value": {
+                        "limiter": limiter,
+                        "command": get_command(
+                            content,
+                            allow_debug_commands
+                        )
+                    }
+                })
+            except ValueError:
+                commands.append({
+                    "valid": False
+                })
+
+            i += 1
+
+            return commands
+
         if token.startswith("↑") or token.startswith("↓"):
             cmd = "CLIMB" if token.startswith("↑") else "DESCEND"
             content = token[1:]

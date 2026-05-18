@@ -77,6 +77,7 @@ class Acft:
     NAV_ROUTE: int = 1
 
     show_route: bool = False
+    todo_list = []
 
     def __init__(
             self,
@@ -225,6 +226,7 @@ class Acft:
 
     def move_logic(self, elapsed_sec: float):
 
+        self.check_todo_list()
         self.move_logic_heading(elapsed_sec)
         self.move_logic_speed(elapsed_sec)
         self.move_logic_alt(elapsed_sec)
@@ -544,6 +546,25 @@ class Acft:
                 self.route_points = value
                 self.nav_mode = self.NAV_ROUTE
 
+        # ==========================================
+        # AT COMMAND
+        # ==========================================
+
+        elif command == "AT_COMMAND":
+            try:
+                target_type = value["limiter"][:1]
+                target = str(value["limiter"]).replace(target_type, "")
+                content = value["command"]
+                self.todo_list.append({
+                    "target_type": target_type,
+                    "target": target,
+                    "command": content[0]
+                })
+            except ValueError:
+                pass
+
+
+
     def update_speed(self):
 
         self.act_speed_tas = (
@@ -616,6 +637,7 @@ class Acft:
         )
         if distance < capture_radius:
 
+            self.check_todo_list_point(self.route_points[0].abbreviation)
             self.route_points.pop(0)
 
             # Route finished
@@ -648,3 +670,31 @@ class Acft:
         else:
             self.turn_direction = -1
 
+    def check_todo_list(self):
+        remove_items = []
+        for item in self.todo_list:
+            try:
+                target_type = item["target_type"]
+                target = int(item["target"])
+                command = item["command"]
+
+                if target_type == 'l':
+                    if self.altitude_act // 100 == target:
+                        self.execute_command(command)
+                        remove_items.append(item)
+            except ValueError:
+                pass
+        for item in remove_items:
+            self.todo_list.remove(item)
+
+    def check_todo_list_point(self, abbr: str):
+        remove_items = []
+        for item in self.todo_list:
+            if item["target_type"] == "f":
+                target = str(item["target"]).upper()
+                if target == abbr.upper():
+                    self.execute_command(item["command"])
+                    remove_items.append(item)
+
+        for item in remove_items:
+            self.todo_list.remove(item)
