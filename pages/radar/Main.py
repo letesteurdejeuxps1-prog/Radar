@@ -374,7 +374,10 @@ class Main:
             for acft in self.acft_list:
 
                 if acft.label.is_mouse_over(mouse_x, mouse_y):
+                    self.select_aircraft(acft)
+                    # Start label drag
                     acft.label.start_drag(mouse_x, mouse_y)
+
                     return
 
                 screen_x = world_to_screen_x(acft.pos_x, self.cam_offset_x, self.zoom)
@@ -386,22 +389,9 @@ class Main:
                         matches.append((acft, screen_x, screen_y))
 
             if len(matches) == 0:
-                self.radar_selected = None
-                self.command_box.set_selected_acft(
-                    self.radar_selected
-                )
-                self.todo_box.set_selected_acft(
-                    self.radar_selected
-                )
+                self.select_aircraft(None)
             elif len(matches) == 1 and isinstance(matches[0][0], Acft):
-                self.radar_selected = matches[0][0]
-                self.command_box.set_selected_acft(
-                    self.radar_selected
-                )
-                self.todo_box.set_selected_acft(
-                    self.radar_selected
-                )
-                matches[0][0].is_clicked = True
+                self.select_aircraft(matches[0][0])
             elif len(matches) >= 2:
                 match_dist = self.acft_detect_buffer * 10
                 found = None
@@ -410,14 +400,7 @@ class Main:
                     if distance < match_dist:
                         found = acft[0]
                         match_dist = distance
-                self.radar_selected = found
-                self.command_box.set_selected_acft(
-                    self.radar_selected
-                )
-                self.todo_box.set_selected_acft(
-                    self.radar_selected
-                )
-                found.is_clicked = True
+                self.select_aircraft(found)
 
         if event.button == 2:
             # Middle click
@@ -453,6 +436,17 @@ class Main:
                 ):
                     acft.label.next_state()
                     return
+
+    def select_aircraft(self, acft):
+
+        for a in self.acft_list:
+            a.is_clicked = False
+
+        self.radar_selected = acft
+        self.command_box.set_selected_acft(acft)
+        self.todo_box.set_selected_acft(acft)
+        if acft is not None:
+            acft.is_clicked = True
 
     def handle_event_mouseclick_off(self):
         self.left_click_on = False

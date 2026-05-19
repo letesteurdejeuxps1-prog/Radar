@@ -50,7 +50,7 @@
     },
     {
       "identity": 2,
-      "cs": "SAS123",
+      "cs": "UAE123",
       "type": "A388",
       "coord_x": "57°25'00''N",
       "coord_y": "14°45'00''E",
@@ -64,7 +64,7 @@
       "req_speed_kts": 320,
       "act_speed_kts": 320,
       "speed_increment": 1,
-      "ssr": 1202,
+      "ssr": 7500,
       "route": "VET HRN STA",
       "color": 200,
       "color_selected_radius": 255,
