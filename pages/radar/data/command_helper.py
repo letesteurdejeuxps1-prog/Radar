@@ -29,6 +29,21 @@ def get_command(data: str, allow_debug_commands: bool = False) -> list[dict]:
             i += 1
             continue
 
+        if lower.startswith("/m"):
+            try:
+                mach = float(token[2:])
+                if mach > 10:
+                    mach /= 100
+                commands.append({
+                    "valid": True,
+                    "cmd": "MACH",
+                    "value": mach
+                })
+            except ValueError:
+                commands.append({"valid": False})
+            i += 1
+            continue
+
         if token.startswith("/"):
             content = token[1:]
             if content == "":

@@ -141,3 +141,52 @@ def get_wake_sep(leading_wtc: str, trailing_wtc: str, default_sep = 3):
         (leading_wtc, trailing_wtc),
         default_sep
     )
+
+ISA_T0 = 288.15
+ISA_P0 = 101325
+ISA_RHO0 = 1.225
+ISA_LAPSE = 0.0065
+G = 9.80665
+R = 287.05
+FT_TO_M = 0.3048
+SPEED_OF_SOUND_SL = 661.47
+
+def air_density(alt_ft):
+    h = alt_ft * FT_TO_M
+    t = ISA_T0 - ISA_LAPSE * h
+    p = ISA_P0 * (t / ISA_T0) ** (G / (R * ISA_LAPSE))
+    rho = p / (R * t)
+
+    return rho
+
+def altitude_ft_to_m(ft):
+    return ft * 0.3048
+
+
+def isa_temperature(alt_ft):
+    alt_m = altitude_ft_to_m(alt_ft)
+
+    # Troposphere only (good enough up to FL360)
+    temp = ISA_T0 - ISA_LAPSE * alt_m
+
+    return temp
+
+
+def speed_of_sound_knots(alt_ft):
+    temp = isa_temperature(alt_ft)
+    # a proportional sqrt(T)
+    return SPEED_OF_SOUND_SL * math.sqrt(temp / ISA_T0)
+
+
+def mach_to_tas(mach, alt_ft):
+    return mach * speed_of_sound_knots(alt_ft)
+
+def ias_to_tas(ias, alt_ft):
+    rho = air_density(alt_ft)
+    sigma = rho / ISA_RHO0
+    return ias / math.sqrt(sigma)
+
+def tas_to_ias(tas, alt_ft):
+    rho = air_density(alt_ft)
+    sigma = rho / ISA_RHO0
+    return tas * math.sqrt(sigma)

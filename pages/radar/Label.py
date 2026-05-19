@@ -18,13 +18,12 @@ class Label:
     color_border_msaw: tuple[int, int, int] = (255, 255, 0)
     color_txt_ssr = (255, 0, 0)
 
-    # =========================
-    # DISPLAY STATES
-    # =========================
-
     STATE_COLLAPSED = 0
     STATE_MEDIUM = 1
     STATE_FULL = 2
+
+    SPEED_MODE_IAS = 0
+    SPEED_MODE_MACH = 1
 
     # =========================
     # INIT
@@ -126,8 +125,11 @@ class Label:
             lines.append((f"SSR {vals['ssr']} | GS: {int(vals['act_speed_gs'])}", False))
             lines.append((f"HDG {int(vals['heading_act'])} / {int(vals['heading_req'])}", False))
             lines.append((f"ALT:{self.alt_to_label(vals['altitude_act'])} / {self.alt_to_label(vals['altitude_req'])}", False))
-            lines.append((f"RoC: {vals['rate_of_climb']} ft/sec", False))
-            lines.append((f"IAS:{int(vals['act_speed_ias'])} / {int(vals['req_speed_ias'])}", False))
+            lines.append((f"RoC: {vals['rate_of_climb']} ft/min", False))
+            if int(vals["speed_mode"]) == self.SPEED_MODE_MACH:
+                lines.append((f"M{vals['act_mach']:.2f} / {vals['req_mach']:.2f}", False))
+            else:
+                lines.append((f"KTS:{int(vals['act_speed_ias'])} / {int(vals['req_speed_ias'])}", False))
             points = vals['route_points']
             if len(points) > 0:
                 route_str = ""

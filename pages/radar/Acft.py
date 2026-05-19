@@ -10,7 +10,7 @@ from pages.radar.data.helper import (
     get_cos_angle,
     get_sin_angle,
     latlon_to_world,
-    validate_ssr
+    validate_ssr, ias_to_tas, speed_of_sound_knots, mach_to_tas
 )
 
 
@@ -76,6 +76,9 @@ class Acft:
     NAV_HEADING: int = 0
     NAV_ROUTE: int = 1
 
+    SPEED_MODE_IAS = 0
+    SPEED_MODE_MACH = 1
+
     show_route: bool = False
 
     def __init__(
@@ -112,10 +115,15 @@ class Acft:
             is_clicked: bool = False,
     ) -> None:
 
+        self.transition_speed_mach = 24000
         self.color_conflict = (255, 0, 0)
         self.is_roc_locked = False
         self.climb_dir = 1
         self.rate_of_turn = self.default_rate_of_turn
+
+        self.speed_mode = self.SPEED_MODE_IAS
+        self.req_mach = 0.0
+        self.act_mach = 0.0
 
         self.perf_data = perf_data
 
@@ -267,27 +275,51 @@ class Acft:
 
     def move_logic_speed(self, elapsed_sec: float):
 
-        if not self.is_speed_locked:
-            self.req_speed_ias = self.perf_data.get_speed(
-                self.icao_type,
-                self.altitude_act,
-                self.climb_dir
-            )
+        if self.altitude_act >= self.transition_speed_mach:
+            if self.speed_mode == self.SPEED_MODE_IAS:
+                self.req_mach = (
+                        self.act_speed_tas
+                        / speed_of_sound_knots(self.altitude_act)
+                )
+                self.act_mach = self.req_mach
+                self.speed_mode = self.SPEED_MODE_MACH
 
-        diff = self.req_speed_ias - self.act_speed_ias
+        else:
+            if self.speed_mode == self.SPEED_MODE_MACH:
+                self.req_speed_ias = self.act_speed_ias
+                self.speed_mode = self.SPEED_MODE_IAS
 
-        if diff != 0:
+        if self.speed_mode == self.SPEED_MODE_IAS:
 
-            step = self.speed_increment * elapsed_sec
+            diff = self.req_speed_ias - self.act_speed_ias
 
-            if abs(diff) < step:
-                step = abs(diff)
+            if diff != 0:
 
-            if diff > 0:
-                self.act_speed_ias += step
+                step = self.speed_increment * elapsed_sec
 
-            else:
-                self.act_speed_ias -= step
+                if abs(diff) < step:
+                    step = abs(diff)
+
+                if diff > 0:
+                    self.act_speed_ias += step
+                else:
+                    self.act_speed_ias -= step
+
+        else:
+
+            diff = self.req_mach - self.act_mach
+
+            if abs(diff) > 0.001:
+
+                step = 0.001 * elapsed_sec
+
+                if abs(diff) < step:
+                    step = abs(diff)
+
+                if diff > 0:
+                    self.act_mach += step
+                else:
+                    self.act_mach -= step
 
         self.update_speed()
 
@@ -416,6 +448,9 @@ class Acft:
                 "heading_req": self.heading_req,
                 "req_speed_ias": self.d_req_speed_ias,
                 "act_speed_ias": self.d_act_speed_ias,
+                "act_mach": self.act_mach,
+                "req_mach": self.req_mach,
+                "speed_mode": self.speed_mode,
                 "act_speed_gs": self.d_act_speed_gs,
                 "altitude_req": self.d_altitude_req,
                 "altitude_act": self.d_altitude_act,
@@ -563,21 +598,25 @@ class Acft:
             except ValueError:
                 pass
 
-
+        elif command == "MACH":
+            self.speed_mode = self.SPEED_MODE_MACH
+            self.req_mach = value
 
     def update_speed(self):
 
-        self.act_speed_tas = (
-                self.act_speed_ias
-                + (
-                        self.act_speed_ias
-                        * 0.02
-                        * self.altitude_act
-                        / 1000
-                )
-        )
+        if self.speed_mode == self.SPEED_MODE_IAS:
 
-        # TODO wind later
+            self.act_speed_tas = ias_to_tas(self.act_speed_ias, self.altitude_act)
+
+            self.act_mach = (self.act_speed_tas / speed_of_sound_knots(self.altitude_act))
+
+        else:
+
+            self.act_speed_tas = mach_to_tas(self.act_mach, self.altitude_act)
+
+            # Optional reverse conversion
+            self.act_speed_ias = ( self.act_speed_tas / (1 + 0.02 * self.altitude_act / 1000))
+
         self.act_speed_gs = self.act_speed_tas
 
     def update_data(self):
