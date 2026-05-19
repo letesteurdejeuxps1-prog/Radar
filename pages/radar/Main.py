@@ -8,6 +8,7 @@ from pages.radar.Acft import Acft
 from pages.radar.Airspace import Airspace
 from pages.radar.Command import Command
 from pages.radar.Drawer import Drawer
+from pages.radar.Historybox import Historybox
 from pages.radar.Infobox import Infobox
 from pages.radar.PerformanceData import PerformanceData
 from pages.radar.Qdm.Qdm import Qdm
@@ -86,6 +87,7 @@ class Main:
         self.drawer = Drawer(self.main_surface, self.root_directory)
         self.command_box = Command(self.main_surface)
         self.infobox = Infobox(self.main_surface, self.variables)
+        self.history_box = Historybox(self.main_surface, self.variables)
         self.todo_box = TodoBox(self.main_surface)
         self.after_init()
 
@@ -173,6 +175,7 @@ class Main:
         self.draw_qdm()
         self.command_box.draw()
         self.infobox.draw()
+        self.history_box.draw()
         self.todo_box.draw()
 
     def draw_conflicts(self):
@@ -476,7 +479,10 @@ class Main:
             # ENTER = execute command
             if key_pressed == pygame.K_RETURN or key_pressed == pygame.K_KP_ENTER:
 
-                self.execute_command()
+                command_str = self.execute_command()
+                for item in command_str:
+                    if isinstance(item, str) and item != '':
+                        self.history_box.add_content(item)
 
                 self.command_box.input_text = ""
                 return
@@ -600,8 +606,10 @@ class Main:
 
     def execute_command(self):
 
+        return_val = []
+
         if not isinstance(self.radar_selected, Acft):
-            return
+            return ''
         results = get_command(
             self.command_box.input_text,
             True
@@ -621,7 +629,7 @@ class Main:
                     point_name
                 )
                 if point is None:
-                    print(f"Unknown point: {point_name}")
+                    return_val.append(f"Unknown point: {point_name}")
                     continue
                 result["value"] = point
 
@@ -636,7 +644,7 @@ class Main:
                             point_name
                         )
                         if point is None:
-                            print(f"Unknown point: {point_name}")
+                            return_val.append(f"Unknown point: {point_name}")
                             resolved_points = []
                             break
                         resolved_points.append(point)
@@ -645,10 +653,10 @@ class Main:
 
                     result["value"] = resolved_points
 
-            self.radar_selected.execute_command(result)
+            return_val.append(self.radar_selected.execute_command(result))
+        return return_val
 
     def detect_conflicts(self):
-
 
         self.acft_conflict_list = []
         self.infobox.reset()

@@ -465,16 +465,24 @@ class Acft:
         command = data.get("cmd")
         value = data.get("value")
         special = data.get("special", 0)
+        return_str = ''
 
         # ==========================================
         # CLIMB / DESCEND
         # ==========================================
         if command in ["CLIMB", "DESCEND"]:
+            if command == 'CLIMB':
+                direction = 'climb'
+            else:
+                direction = 'descend'
             if special != 0:
                 self.rate_of_climb = special
                 self.is_roc_locked = True
+                return_str = "{} {} to {} at {}".format(self.cs, direction, value, self.rate_of_climb)
+
             else:
                 self.is_roc_locked = False
+                return_str = "{} {} to {}".format(self.cs, direction, value)
             self.altitude_req = value * 100
 
         # ==========================================
@@ -485,6 +493,8 @@ class Acft:
             self.heading_req = value
             self.turn_direction = -1
             self.nav_mode = self.NAV_HEADING
+            return_str = "{} turn left heading {}".format(self.cs, self.heading_req)
+
 
         # ==========================================
         # TURN RIGHT
@@ -495,6 +505,8 @@ class Acft:
             self.heading_req = value
             self.turn_direction = 1
             self.nav_mode = self.NAV_HEADING
+            return_str = "{} turn right heading {}".format(self.cs, self.heading_req)
+
 
         # ==========================================
         # HEADING
@@ -509,6 +521,8 @@ class Acft:
             else:
                 self.turn_direction = -1
             self.nav_mode = self.NAV_HEADING
+            return_str = "{} fly heading {}".format(self.cs, self.heading_req)
+
 
         # ==========================================
         # SPEED
@@ -518,6 +532,8 @@ class Acft:
             self.is_speed_locked = True
             new_speed = self.get_realistic_speed(value)
             self.req_speed_ias = new_speed
+            return_str = "{} speed {} knots".format(self.cs, new_speed)
+
 
         # ==========================================
         # UNLOCK SPEED
@@ -525,6 +541,8 @@ class Acft:
 
         elif command == "UNLOCK_SPEED":
             self.is_speed_locked = False
+            return_str = "{} resume own speed".format(self.cs)
+
 
         # ==========================================
         # MAKE SPEED
@@ -535,6 +553,8 @@ class Acft:
             new_speed = self.get_realistic_speed(value)
             self.act_speed_ias = new_speed
             self.req_speed_ias = new_speed
+            return_str = "{} make speed {}".format(self.cs, self.req_speed_ias)
+
 
         # ==========================================
         # MAKE HEADING
@@ -544,6 +564,8 @@ class Acft:
             self.heading_req = value
             self.heading_act = value
             self.nav_mode = self.NAV_HEADING
+            return_str = "{} make speed {}".format(self.cs, self.req_speed_ias)
+
 
         # ==========================================
         # MAKE LEVEL
@@ -552,6 +574,8 @@ class Acft:
         elif command == "MAKE_LEVEL":
             self.altitude_req = value * 100
             self.altitude_act = value * 100
+            return_str = "{} make level {}".format(self.cs, value)
+
 
         # ==========================================
         # SSR
@@ -561,6 +585,8 @@ class Acft:
             ssr = validate_ssr(value)
             if ssr:
                 self.ssr = ssr
+                return_str = "{} SQUAWK {}".format(self.cs, self.ssr)
+
 
         # ==========================================
         # DIRECT
@@ -569,6 +595,7 @@ class Acft:
         elif command == "DIRECT":
             self.route_points = [value]
             self.nav_mode = self.NAV_ROUTE
+            return_str = "{} proceed direct {}".format(self.cs, value.abbreviation)
 
         # ==========================================
         # ROUTE
@@ -577,9 +604,17 @@ class Acft:
         elif command == "ROUTE":
             if value == 0:
                 self.nav_mode = self.NAV_ROUTE
+                return_str = "{} resume own navigation direct {}".format(self.cs, self.route_points[0])
+
             else:
                 self.route_points = value
                 self.nav_mode = self.NAV_ROUTE
+                if isinstance(self.route_points, list):
+                    route = ''
+                    for point in self.route_points:
+                        route += point.abbreviation + ' '
+                    return_str = "{} proceed {}".format(self.cs, route)
+
 
         # ==========================================
         # AT COMMAND
@@ -596,11 +631,14 @@ class Acft:
                     "command": content[0]
                 })
             except ValueError:
-                pass
+                return_str = "Unknown command : {} {}".format(command, value)
 
         elif command == "MACH":
             self.speed_mode = self.SPEED_MODE_MACH
             self.req_mach = value
+            return_str = "{} speed Mach {}".format(self.cs, value)
+
+        return return_str
 
     def update_speed(self):
 
