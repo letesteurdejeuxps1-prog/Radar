@@ -41,10 +41,10 @@ class Main:
 
     path_airspace_file: str = 'horn.json'
     path_airspace_folder: str = 'airspaces'
+    path_sounds_folder: str = 'pages\\radar\\sounds'
     path_root: str = ''
 
     qdm_list: list[Qdm] = []
-
     radar_color_bg: tuple[int, int, int] = (0, 0, 0)
     radar_center_lon: int | float = 0
     radar_center_lat: int | float = 0
@@ -63,8 +63,15 @@ class Main:
     cam_offset_increment: int = 10
 
     def __init__(self, v: Variables, working_dir: str) -> None:
+        self.should_play_conflict_sound = False
+        self.conflict_sound_file = "conflict_sound.wav"
         pygame.init()
+        pygame.mixer.init()
         self.root_directory = working_dir
+        self.conflict_sound = "{}\\{}\\{}".format(
+            self.root_directory, self.path_sounds_folder, self.conflict_sound_file
+        )
+        self.conflict_notification = pygame.mixer.Sound(self.conflict_sound)
         self.main_running = True
         self.main_counter = 0
         self.variables = v
@@ -94,6 +101,7 @@ class Main:
         self.variables.display_width_half = self.variables.display_width // 2
         self.variables.display_height_half = self.variables.display_height // 2
         self.font = pygame.font.SysFont("consolas", 14)
+        self.conflict_notification.set_volume(1)
         self.test_init()
 
     def after_init(self):
@@ -295,6 +303,15 @@ class Main:
                 for acft in self.acft_list:
                     acft.radar_refresh()
                 self.last_acft_update_time = ct
+
+                if pygame.mixer.get_busy():
+                    pygame.mixer.music.queue(self.conflict_sound_file)
+                else:
+                    if self.should_play_conflict_sound:
+                        self.conflict_notification.play()
+                    else:
+                        self.conflict_notification.stop()
+
             self.draw()
             pygame.display.flip()
             self.main_clock.tick(self.variables.display_fps)
@@ -688,6 +705,10 @@ class Main:
                         dist,
                         vert_dist
                     ))
+        if len(self.acft_conflict_list) > 0:
+            self.should_play_conflict_sound = True
+        else:
+            self.should_play_conflict_sound = False
 
     def get_anchor_from_mouse(
             self,
