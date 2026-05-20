@@ -64,6 +64,7 @@ class Main:
     cam_offset_increment: int = 10
 
     def __init__(self, v: Variables, working_dir: str) -> None:
+        self.volume = 0.1
         self.should_play_conflict_sound = False
         self.conflict_sound_file = "conflict_sound.wav"
         pygame.init()
@@ -103,7 +104,7 @@ class Main:
         self.variables.display_width_half = self.variables.display_width // 2
         self.variables.display_height_half = self.variables.display_height // 2
         self.font = pygame.font.SysFont("consolas", 14)
-        self.conflict_notification.set_volume(1)
+        self.conflict_notification.set_volume(self.volume)
         self.test_init()
 
     def after_init(self):
