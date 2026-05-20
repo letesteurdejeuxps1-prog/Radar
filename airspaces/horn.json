@@ -3,7 +3,7 @@
   "center": "Horn",
   "default_zoom": 10,
   "points": {
-    "Horn":   {"ABBR":"HRN",    "TYPE": "VORDME",    "coord": "57°52'24''N|15°56'03''E"},
+    "Horn":   {"ABBR":"HRN",    "TYPE": "VORDME",      "coord": "57°52'24''N|15°56'03''E"},
     "Stabbi": {"ABBR":"STA",    "TYPE": "GNSS",       "coord": "58°28'34''N|15°31'06''E"},
     "Crona":  {"ABBR":"CRONA",  "TYPE": "GNSS",       "coord": "58°31'55''N|15°46'04''E"},
     "Marco":  {"ABBR":"MARCO",  "TYPE": "GNSS",       "coord": "58°34'46''N|15°58'45''E"},
@@ -12,7 +12,7 @@
     "Stege":  {"ABBR":"STEGE",  "TYPE": "GNSS",       "coord": "58°25'18''N|16°32'26''E"},
     "Roxen":  {"ABBR":"ROX",    "TYPE": "GNSS",       "coord": "58°26'13''N|16°00'56''E"},
     "Idun":   {"ABBR":"IDN",    "TYPE": "GNSS",       "coord": "58°09'19''N|16°16'59''E"},
-    "Malma":  {"ABBR":"MAL",    "TYPE": "VORDME",    "coord": "58°03'39''N|15°36'19''E"},
+    "Malma":  {"ABBR":"MAL",    "TYPE": "VORDME",     "coord": "58°03'39''N|15°36'19''E"},
     "Tompa":  {"ABBR":"TOMPA",  "TYPE": "GNSS",       "coord": "58°02'00''N|15°57'59''E"},
     "Torro":  {"ABBR":"TOR",    "TYPE": "GNSS",       "coord": "57°48'51''N|16°40'53''E"},
     "Ester":  {"ABBR":"ESTER",  "TYPE": "GNSS",       "coord": "57°45'00''N|17°21'38''E"},
@@ -27,7 +27,14 @@
     "Paddi":  {"ABBR":"PADDI",  "TYPE": "GNSS",       "coord": "57°18'13''N|15°01'03''E"},
     "Skiro":  {"ABBR":"SKI",    "TYPE": "GNSS",       "coord": "57°14'12''N|15°24'09''E"},
     "Pelle":  {"ABBR":"PELLE",  "TYPE": "GNSS",       "coord": "57°12'10''N|15°57'24''E"},
-    "Virum":  {"ABBR":"VRM",    "TYPE": "VORDME",    "coord": "57°28'43''N|16°26'02''E"}
+    "Virum":  {"ABBR":"VRM",    "TYPE": "SPAWN",      "coord": "57°28'43''N|16°26'02''E"},
+    "S1_1":   {"ABBR":"S11",    "TYPE": "SPAWN",      "coord": "59°00'00''N|15°00'00''E"},
+    "S2_1":   {"ABBR":"S21",    "TYPE": "SPAWN",      "coord": "57°55'00''N|13°50'00''E"},
+    "S2_2":   {"ABBR":"S22",    "TYPE": "SPAWN",      "coord": "57°15'00''N|13°50'00''E"},
+    "S3_1":   {"ABBR":"S31",    "TYPE": "SPAWN",      "coord": "56°45'00''N|15°30'00''E"},
+    "S3_2":   {"ABBR":"S32",    "TYPE": "SPAWN",      "coord": "56°40'00''N|16°30'00''E"},
+    "S4_1":   {"ABBR":"S41",    "TYPE": "SPAWN",      "coord": "57°35'30''N|18°00'00''E"},
+    "S5_1":   {"ABBR":"S51",    "TYPE": "SPAWN",      "coord": "58°55'00''N|17°30'00''E"}
   },
   "areas": {
     "area_1": {
