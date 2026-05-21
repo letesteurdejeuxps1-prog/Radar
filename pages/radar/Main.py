@@ -125,7 +125,7 @@ class Main:
         self.reset_camera()
 
     def test_init(self):
-        file = "{}\\airspaces\\test_acft_loader_2.json".format(self.root_directory)
+        file = "{}\\airspaces\\test_acft_loader.json".format(self.root_directory)
         with open(file, 'r') as raw_data:
             data = json.load(raw_data)
             for acft in data["acft"]:
@@ -163,7 +163,8 @@ class Main:
                             new_acft.route_points.append(pt)
                     self.acft_list.append(new_acft)
                 else:
-                    acft.nav_mode = acft.NAV_HEADING
+                    new_acft.nav_mode = new_acft.NAV_HEADING
+                    self.acft_list.append(new_acft)
 
 
     def test(self):
