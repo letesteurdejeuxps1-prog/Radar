@@ -191,36 +191,7 @@ class Main:
 
     def draw_airspace(self):
         for area in self.airspace.areas:
-            old_coord = ()
-            new_coord = ()
-            origin = ()
-            for coord in area.coordinates_converted:
-                if len(old_coord) == 0:
-                    origin = coord
-                    old_coord = coord
-                else:
-                    new_coord = coord
-                    self.drawer.draw_line(
-                        old_coord[0],
-                        old_coord[1],
-                        new_coord[0],
-                        new_coord[1],
-                        (155, 155, 155),
-                        self.cam_offset_x,
-                        self.cam_offset_y,
-                        self.zoom
-                    )
-                    old_coord = new_coord
-            self.drawer.draw_line(
-                origin[0],
-                origin[1],
-                new_coord[0],
-                new_coord[1],
-                (155, 155, 155),
-                self.cam_offset_x,
-                self.cam_offset_y,
-                self.zoom
-            )
+            self.drawer.draw_area(area.coordinates_converted, self.cam_offset_x, self.cam_offset_y, self.zoom)
 
         for point in self.airspace.points:
             self.drawer.draw_icon(
@@ -240,7 +211,9 @@ class Main:
 
     def draw_aerodromes(self):
         for ad in self.airspace.aerodrome:
-            for rwy in ad.rwy:
+            self.drawer.draw_area(ad.ctr_coordinates, self.cam_offset_x, self.cam_offset_y, self.zoom)
+            runways = ad.rwy
+            for rwy in runways:
                 self.drawer.draw_rwy(
                     rwy.threshold_1_pt,
                     rwy.threshold_2_pt,

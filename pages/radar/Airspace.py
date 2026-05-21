@@ -125,6 +125,9 @@ class Airspace:
                     aerodrome.get('name'),
                     aerodrome.get('ICAO'),
                     aerodrome.get('rwy'),
+                    aerodrome.get("ctr"),
+                    aerodrome.get("limit_low"),
+                    aerodrome.get("limit_high",),
                     self.airspace_center_x,
                     self.airspace_center_y
                 )

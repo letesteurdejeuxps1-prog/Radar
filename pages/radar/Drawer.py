@@ -521,3 +521,35 @@ class Drawer:
                 zoom,
                 2
             )
+
+    def draw_area(self, coords, cam_offset_x, cam_offset_y, zoom):
+        old_coord = ()
+        new_coord = ()
+        origin = ()
+        for coord in coords:
+            if len(old_coord) == 0:
+                origin = coord
+                old_coord = coord
+            else:
+                new_coord = coord
+                self.draw_line(
+                    old_coord[0],
+                    old_coord[1],
+                    new_coord[0],
+                    new_coord[1],
+                    (155, 155, 155),
+                    cam_offset_x,
+                    cam_offset_y,
+                    zoom
+                )
+                old_coord = new_coord
+        self.draw_line(
+            origin[0],
+            origin[1],
+            new_coord[0],
+            new_coord[1],
+            (155, 155, 155),
+            cam_offset_x,
+            cam_offset_y,
+            zoom
+        )
