@@ -1,3 +1,4 @@
+import math
 import pygame
 
 from pages.radar.Acft import Acft
@@ -28,8 +29,10 @@ class Drawer:
 
     def __init__(self, surface: pygame.Surface, root_directory: str) -> None:
         self.route_width = 1
+        self.rwy_width = 5
         self.route_color: tuple[int, int, int] = (200, 200, 200)
         self.conflict_color: tuple[int, int, int] = (255, 0, 0)
+        self.rwy_color: tuple[int, int, int] = (175, 175, 175)
         self.surface = surface
         self.root_directory = root_directory
         self.font = pygame.font.SysFont("consolas", self.font_size)
@@ -425,3 +428,96 @@ class Drawer:
 
             prev_x = point.pos_x
             prev_y = point.pos_y
+
+    def draw_rwy(self, threshold_1_pt: Point, threshold_2_pt: Point, cam_offset_x, cam_offset_y, zoom):
+        self.draw_line(
+            threshold_1_pt.pos_x,
+            threshold_1_pt.pos_y,
+            threshold_2_pt.pos_x,
+            threshold_2_pt.pos_y,
+            self.rwy_color,
+            cam_offset_x,
+            cam_offset_y,
+            zoom,
+            self.rwy_width
+        )
+
+    def draw_rwy_centerline(
+            self,
+            rwy,
+            cam_offset_x,
+            cam_offset_y,
+            zoom
+    ):
+
+        threshold = rwy.get_active_threshold()
+
+        start_x = threshold.pos_x
+        start_y = threshold.pos_y
+
+        dx, dy = rwy.get_heading_vector()
+
+        dash_length = 1
+        gap_length = 1
+        step = dash_length + gap_length
+
+        max_distance = 18
+
+        # =========================
+        # DRAW DASHED CENTERLINE
+        # =========================
+
+        current = 0
+
+        while current < max_distance:
+            x1 = start_x + dx * current
+            y1 = start_y + dy * current
+
+            x2 = start_x + dx * (current + dash_length)
+            y2 = start_y + dy * (current + dash_length)
+
+            self.draw_line(
+                x1,
+                y1,
+                x2,
+                y2,
+                self.rwy_color,
+                cam_offset_x,
+                cam_offset_y,
+                zoom,
+                2
+            )
+
+            current += step
+
+        # =========================
+        # PERPENDICULAR MARKERS
+        # =========================
+
+        for marker_nm in (10, 15):
+            mx = start_x + dx * marker_nm
+            my = start_y + dy * marker_nm
+
+            # perpendicular vector
+            perp_dx = -dy
+            perp_dy = dx
+
+            marker_half_width = 0.4
+
+            mx1 = mx + perp_dx * marker_half_width
+            my1 = my + perp_dy * marker_half_width
+
+            mx2 = mx - perp_dx * marker_half_width
+            my2 = my - perp_dy * marker_half_width
+
+            self.draw_line(
+                mx1,
+                my1,
+                mx2,
+                my2,
+                self.rwy_color,
+                cam_offset_x,
+                cam_offset_y,
+                zoom,
+                2
+            )

@@ -171,6 +171,7 @@ class Main:
 
     def draw(self):
         self.draw_airspace()
+        self.draw_aerodromes()
         self.draw_conflicts()
         self.draw_acft()
         self.draw_qdm()
@@ -237,6 +238,26 @@ class Main:
                     self.font
                 )
 
+    def draw_aerodromes(self):
+        for ad in self.airspace.aerodrome:
+            for rwy in ad.rwy:
+                self.drawer.draw_rwy(
+                    rwy.threshold_1_pt,
+                    rwy.threshold_2_pt,
+                    self.cam_offset_x,
+                    self.cam_offset_y,
+                    self.zoom
+                )
+
+                self.drawer.draw_rwy_centerline(
+                    rwy,
+                    self.cam_offset_x,
+                    self.cam_offset_y,
+                    self.zoom
+                )
+
+
+
     def draw_acft(self):
         for acft in self.acft_list:
 
@@ -276,10 +297,7 @@ class Main:
             )
 
     def test_draw(self):
-        for ad in self.airspace.aerodrome:
-            for rwy in ad.rwy:
-                self.drawer.draw_icon(rwy.threshold_1_pt, self.cam_offset_x, self.cam_offset_y, self.zoom)
-                self.drawer.draw_icon(rwy.threshold_2_pt, self.cam_offset_x, self.cam_offset_y, self.zoom)
+        pass
 
     def run(self) -> None:
         while self.main_running:
