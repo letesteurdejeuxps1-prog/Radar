@@ -118,6 +118,20 @@ class Airspace:
 
             self.areas = areas
 
+            aerodromes = []
+
+            for aerodrome in data['aerodromes']:
+                ad = Aerodrome(
+                    aerodrome.get('name'),
+                    aerodrome.get('ICAO'),
+                    aerodrome.get('rwy'),
+                    self.airspace_center_x,
+                    self.airspace_center_y
+                )
+                aerodromes.append(ad)
+
+            self.aerodrome = aerodromes
+
             return center_lon, center_lat
 
         except KeyError as e:

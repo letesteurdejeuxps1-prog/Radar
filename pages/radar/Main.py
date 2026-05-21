@@ -276,7 +276,10 @@ class Main:
             )
 
     def test_draw(self):
-        pass
+        for ad in self.airspace.aerodrome:
+            for rwy in ad.rwy:
+                self.drawer.draw_icon(rwy.threshold_1_pt, self.cam_offset_x, self.cam_offset_y, self.zoom)
+                self.drawer.draw_icon(rwy.threshold_2_pt, self.cam_offset_x, self.cam_offset_y, self.zoom)
 
     def run(self) -> None:
         while self.main_running:

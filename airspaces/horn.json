@@ -128,6 +128,23 @@
       "lowest_alt": "5000",
       "highest_alt": "20000"
     }
-  }
+  },
+  "aerodromes": [
+    {
+      "name": "Horn",
+      "ICAO": "ESHH",
+      "rwy": [
+        {
+          "id": 1,
+          "name_1": "09",
+          "name_2": "27",
+          "threshold_1": "57°52'10''N|15°56'08''E",
+          "threshold_2": "57°52'10''N|15°59'14''E",
+          "magnetic_heading_1": "090",
+          "magnetic_heading_2": "270"
+        }
+      ]
+    }
+  ]
 }
 
