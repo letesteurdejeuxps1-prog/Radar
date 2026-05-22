@@ -455,7 +455,7 @@ class Drawer:
         start_x = threshold.pos_x
         start_y = threshold.pos_y
 
-        dx, dy = rwy.get_heading_vector()
+        dx, dy = rwy.get_vector_for_drawer()
 
         dash_length = 1
         gap_length = 1

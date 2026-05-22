@@ -61,8 +61,8 @@ class Rwy:
 
     def get_active_threshold(self):
         if self.active == self.name_1:
-            return self.threshold_2_pt
-        return self.threshold_1_pt
+            return self.threshold_1_pt
+        return self.threshold_2_pt
 
 
     def get_active_heading(self):
@@ -70,9 +70,14 @@ class Rwy:
             return self.magnetic_heading_1
         return self.magnetic_heading_2
 
-    def get_heading_vector(self):
-        heading = self.get_active_heading()
+    def get_vector_for_drawer(self):
+        heading = self.get_rwy_heading_for_centerline()
         rad = math.radians(heading)
         dx = math.sin(rad)
         dy = math.cos(rad)
         return dx, dy
+
+    def get_rwy_heading_for_centerline(self):
+        if self.active == self.name_1:
+            return self.magnetic_heading_2
+        return self.magnetic_heading_1

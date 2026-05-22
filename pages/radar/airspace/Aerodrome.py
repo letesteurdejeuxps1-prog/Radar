@@ -22,7 +22,7 @@ class Aerodrome:
         self.limit_high = limit_high
 
         self.ctr_coordinates = []
-        self.rwy = []
+        self.rwy: list[Rwy] = []
 
         self.set_coordinates(
             as_center_x,

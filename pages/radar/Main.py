@@ -170,6 +170,15 @@ class Main:
     def test(self):
         pass
 
+    def test_action(self):
+        for ad in self.airspace.aerodrome:
+            for rwy in ad.rwy:
+                if rwy.active == rwy.name_1:
+                    rwy.active = rwy.name_2
+                elif rwy.active == rwy.name_2:
+                    rwy.active = rwy.name_1
+
+
     def draw(self):
         self.draw_airspace()
         self.draw_aerodromes()
@@ -512,6 +521,8 @@ class Main:
                     self.command_box.input_text += "/"
                 elif event.key == pygame.K_KP_3:
                     self.command_box.input_text += "I"
+                elif event.key == pygame.K_p:
+                    self.test_action()
                 else:
                     if event.unicode.isprintable():
                         self.command_box.input_text += event.unicode
