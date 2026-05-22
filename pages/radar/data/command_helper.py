@@ -201,7 +201,7 @@ def get_command(data: str, allow_debug_commands: bool = False) -> list[dict]:
                 is_new_command = (
                         next_token.startswith(("↑", "↓", "←", "→", "*", "/"))
                         or
-                        next_token.lower() in ("d", "rte")
+                        next_token.lower() in ("d", "rte", "i")
                         or
                         next_token.lower().startswith(("ms", "mh", "ml"))
                 )
@@ -242,6 +242,8 @@ def get_command(data: str, allow_debug_commands: bool = False) -> list[dict]:
                         or
                         lower_next == "rte"
                         or
+                        lower_next == "i"
+                        or
                         lower_next.startswith(("ms", "mh", "ml"))
                 )
                 if is_new_command:
@@ -268,6 +270,15 @@ def get_command(data: str, allow_debug_commands: bool = False) -> list[dict]:
                     "reason": "ROUTE requires at least 2 points"
                 })
             i = j
+            continue
+
+        if lower == "i":
+            commands.append({
+                "valid": True,
+                "cmd": "ILS"
+            })
+
+            i += 1
             continue
 
         commands.append({

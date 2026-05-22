@@ -75,6 +75,7 @@ class Acft:
 
     NAV_HEADING: int = 0
     NAV_ROUTE: int = 1
+    NAV_ILS: int = 2
 
     SPEED_MODE_IAS = 0
     SPEED_MODE_MACH = 1
@@ -208,6 +209,8 @@ class Acft:
 
         if self.nav_mode == self.NAV_ROUTE:
             self.update_route_navigation()
+        elif self.nav_mode == self.NAV_ILS:
+            self.update_ils_navigation()
 
         self.check_heading()
 
@@ -746,6 +749,9 @@ class Acft:
             self.turn_direction = 1
         else:
             self.turn_direction = -1
+
+    def update_ils_navigation(self):
+        pass
 
     def check_todo_list(self, previous_alt):
         remove_items = []

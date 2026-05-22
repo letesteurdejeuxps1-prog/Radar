@@ -510,6 +510,8 @@ class Main:
                     self.command_box.input_text += "*"
                 elif event.key == pygame.K_KP_DIVIDE:
                     self.command_box.input_text += "/"
+                elif event.key == pygame.K_KP_3:
+                    self.command_box.input_text += "I"
                 else:
                     if event.unicode.isprintable():
                         self.command_box.input_text += event.unicode
