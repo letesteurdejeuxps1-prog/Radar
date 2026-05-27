@@ -148,6 +148,8 @@ class Main:
                     acft['speed_increment'],
                     acft['ssr'],
                     acft['route'],
+                    acft['destination_icao'],
+                    acft['expected_rwy'],
                     (acft['color'], acft['color'], acft['color']),
                     (acft['color_selected_radius'], acft['color_selected_radius'], acft['color_selected_radius']),
                     acft['color_wake_radius'],

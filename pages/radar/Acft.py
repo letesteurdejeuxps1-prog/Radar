@@ -107,6 +107,8 @@ class Acft:
 
             ssr: str = '7000',
             route: str = '',
+            destination_icao: str = '',
+            expected_rwy: str = '',
 
             color: tuple[int, int, int] = (255, 255, 255),
             color_selected_radius: tuple[int, int, int] = (255, 50, 50),
@@ -148,6 +150,8 @@ class Acft:
 
         self.ssr = ssr
         self.route = route
+        self.destination_icao = destination_icao
+        self.expected_rwy = expected_rwy
         self.route_points = []
 
         self.color = color
@@ -640,6 +644,10 @@ class Acft:
             self.speed_mode = self.SPEED_MODE_MACH
             self.req_mach = value
             return_str = "{} speed Mach {}".format(self.cs, value)
+
+        elif command == "ILS":
+            self.nav_mode = self.NAV_ILS
+            return_str = "{} is cleared for ILS {}".format(self.cs, self.expected_rwy)
 
         return return_str
 
