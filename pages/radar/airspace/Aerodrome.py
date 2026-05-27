@@ -62,3 +62,9 @@ class Aerodrome:
             )
             self.ctr_coordinates.append((x, y))
 
+    def get_active_rwy(self) -> Rwy | None:
+        for rwy in self.rwy:
+            if rwy.active:
+                return rwy
+        return None
+

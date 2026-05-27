@@ -154,3 +154,9 @@ class Airspace:
             if point.abbreviation.upper() == name.upper():
                 return point
         return None
+
+    def get_aerodrome_by_icao(self, destination_icao) -> Aerodrome | None:
+        for aerodrome in self.aerodrome:
+            if aerodrome.icao == destination_icao:
+                return aerodrome
+        return None

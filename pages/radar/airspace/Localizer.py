@@ -4,16 +4,15 @@ from pages.radar.airspace.Point import Point
 
 
 class Localizer:
-
     def __init__(
             self,
             runway_name: str,
             threshold: Point,
             runway_heading: int,
-            short_intercept_angle: int = 45,
+            short_intercept_angle: int = 30,
+            short_localizer_capture_distance_nm: int = 15,
             long_intercept_angle: int = 10,
-            short_localizer_capture_distance_nm: int = 17,
-            long_localizer_capture_distance_nm: int = 25
+            long_localizer_capture_distance_nm: int = 30
     ):
 
         self.runway_name = runway_name
@@ -39,6 +38,7 @@ class Localizer:
 
         self.intercept_area_short = (self.create_intercept_area(self.short_intercept_angle, self.short_localizer_capture_distance_nm))
         self.intercept_area_long = (self.create_intercept_area(self.long_intercept_angle, self.long_localizer_capture_distance_nm))
+
 
     # ==================================================
     # VECTOR HELPERS
@@ -124,44 +124,25 @@ class Localizer:
     # POINT INSIDE INTERCEPT AREA
     # ==================================================
 
-    def is_inside_intercept_area_short(
+    def is_inside_intercept_area(
             self,
             px,
             py
     ):
+        results = []
+        for area in [self.intercept_area_short, self.intercept_area_long]:
+            (x1, y1), (x2, y2), (x3, y3) = area
+            denominator = ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
 
-        triangle = self.intercept_area_short
-        (x1, y1), (x2, y2), (x3, y3) = triangle
-        denominator = ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
+            if denominator == 0:
+                return False
 
-        if denominator == 0:
-            return False
+            a = ((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3)) / denominator
 
-        a = ((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3)) / denominator
+            b = ((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3)) / denominator
 
-        b = ((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3)) / denominator
+            c = 1 - a - b
 
-        c = 1 - a - b
+            results.append(0 <= a <= 1 and 0 <= b <= 1 and 0 <= c <= 1)
 
-        return 0 <= a <= 1 and 0 <= b <= 1 and 0 <= c <= 1
-
-    def is_inside_intercept_area_long(
-            self,
-            px,
-            py
-    ):
-
-        triangle = self.intercept_area_long
-        (x1, y1), (x2, y2), (x3, y3) = triangle
-        denominator = ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
-
-        if denominator == 0:
-            return False
-
-        a = ((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3)) / denominator
-
-        b = ((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3)) / denominator
-
-        c = 1 - a - b
-
-        return 0 <= a <= 1 and 0 <= b <= 1 and 0 <= c <= 1
+        return any(results)
