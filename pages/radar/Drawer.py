@@ -557,5 +557,4 @@ class Drawer:
 
     def debug_draw(self, rwy: Rwy, cam_offset_x, cam_offset_y, zoom):
         loc = rwy.get_active_localizer()
-        self.draw_area(loc.intercept_area_long, cam_offset_x, cam_offset_y, zoom)
-        self.draw_area(loc.intercept_area_short, cam_offset_x, cam_offset_y, zoom)
+        self.draw_area(loc.intercept_area, cam_offset_x, cam_offset_y, zoom)

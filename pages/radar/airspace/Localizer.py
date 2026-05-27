@@ -9,10 +9,8 @@ class Localizer:
             runway_name: str,
             threshold: Point,
             runway_heading: int,
-            short_intercept_angle: int = 30,
-            short_localizer_capture_distance_nm: int = 15,
-            long_intercept_angle: int = 10,
-            long_localizer_capture_distance_nm: int = 30
+            intercept_angle: int = 30,
+            localizer_capture_distance_nm: int = 30
     ):
 
         self.runway_name = runway_name
@@ -26,18 +24,12 @@ class Localizer:
             runway_heading + 180
         ) % 360
 
-        self.short_intercept_angle = short_intercept_angle
-        self.short_localizer_capture_distance_nm = short_localizer_capture_distance_nm
-        self.long_intercept_angle = long_intercept_angle
-        self.long_localizer_capture_distance_nm = long_localizer_capture_distance_nm
+        self.intercept_angle = intercept_angle
+        self.localizer_capture_distance_nm = localizer_capture_distance_nm
 
         # Geometry
-        self.centerline_fixes = (
-            self.create_centerline_fixes()
-        )
-
-        self.intercept_area_short = (self.create_intercept_area(self.short_intercept_angle, self.short_localizer_capture_distance_nm))
-        self.intercept_area_long = (self.create_intercept_area(self.long_intercept_angle, self.long_localizer_capture_distance_nm))
+        self.centerline_fixes = (self.create_centerline_fixes())
+        self.intercept_area = (self.create_intercept_area())
 
 
     # ==================================================
@@ -84,13 +76,13 @@ class Localizer:
     def get_intercept_hypotenuse_length(intercept_angle, intercept_range_nm):
         return intercept_range_nm / math.cos(math.radians(intercept_angle))
 
-    def create_intercept_area(self, intercept_angle, intercept_range_nm):
+    def create_intercept_area(self):
 
-        left_heading = (self.approach_heading - intercept_angle) % 360
-        right_heading = (self.approach_heading + intercept_angle) % 360
+        left_heading = (self.approach_heading - self.intercept_angle) % 360
+        right_heading = (self.approach_heading + self.intercept_angle) % 360
         dx_left, dy_left = self.heading_to_vector(left_heading)
         dx_right, dy_right = self.heading_to_vector(right_heading)
-        hypotenuse = self.get_intercept_hypotenuse_length(intercept_angle, intercept_range_nm)
+        hypotenuse = self.get_intercept_hypotenuse_length(self.intercept_angle, self.localizer_capture_distance_nm)
         left_x = self.threshold.pos_x + dx_left * hypotenuse
         left_y = self.threshold.pos_y + dy_left * hypotenuse
         right_x = self.threshold.pos_x + dx_right * hypotenuse
@@ -129,20 +121,15 @@ class Localizer:
             px,
             py
     ):
-        results = []
-        for area in [self.intercept_area_short, self.intercept_area_long]:
-            (x1, y1), (x2, y2), (x3, y3) = area
-            denominator = ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
 
-            if denominator == 0:
-                return False
+        (x1, y1), (x2, y2), (x3, y3) = self.intercept_area
+        denominator = ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
 
-            a = ((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3)) / denominator
+        if denominator == 0:
+            return False
 
-            b = ((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3)) / denominator
+        a = ((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3)) / denominator
+        b = ((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3)) / denominator
+        c = 1 - a - b
 
-            c = 1 - a - b
-
-            results.append(0 <= a <= 1 and 0 <= b <= 1 and 0 <= c <= 1)
-
-        return any(results)
+        return 0 <= a <= 1 and 0 <= b <= 1 and 0 <= c <= 1
