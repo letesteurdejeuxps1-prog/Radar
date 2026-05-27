@@ -239,6 +239,14 @@ class Main:
                     self.zoom
                 )
 
+                # TODO : remove debug
+                self.drawer.debug_draw(
+                    rwy,
+                    self.cam_offset_x,
+                    self.cam_offset_y,
+                    self.zoom
+                )
+
 
 
     def draw_acft(self):

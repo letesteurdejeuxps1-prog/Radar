@@ -4,6 +4,7 @@ import pygame
 from pages.radar.Acft import Acft
 from pages.radar.Qdm.Qdm import Qdm
 from pages.radar.airspace.Point import Point
+from pages.radar.airspace.Rwy import Rwy
 from pages.radar.data.helper import world_to_screen_x, world_to_screen_y
 
 
@@ -444,7 +445,7 @@ class Drawer:
 
     def draw_rwy_centerline(
             self,
-            rwy,
+            rwy: Rwy,
             cam_offset_x,
             cam_offset_y,
             zoom
@@ -553,3 +554,7 @@ class Drawer:
             cam_offset_y,
             zoom
         )
+
+    def debug_draw(self, rwy: Rwy, cam_offset_x, cam_offset_y, zoom):
+        loc = rwy.get_active_localizer()
+        self.draw_area(loc.intercept_area, cam_offset_x, cam_offset_y, zoom)
