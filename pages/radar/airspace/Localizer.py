@@ -10,8 +10,10 @@ class Localizer:
             runway_name: str,
             threshold: Point,
             runway_heading: int,
-            intercept_angle: int = 45,
-            localizer_capture_distance_nm: int = 20
+            short_intercept_angle: int = 45,
+            long_intercept_angle: int = 10,
+            short_localizer_capture_distance_nm: int = 17,
+            long_localizer_capture_distance_nm: int = 25
     ):
 
         self.runway_name = runway_name
@@ -25,17 +27,18 @@ class Localizer:
             runway_heading + 180
         ) % 360
 
-        self.intercept_angle = intercept_angle
-        self.intercept_range_nm = localizer_capture_distance_nm
+        self.short_intercept_angle = short_intercept_angle
+        self.short_localizer_capture_distance_nm = short_localizer_capture_distance_nm
+        self.long_intercept_angle = long_intercept_angle
+        self.long_localizer_capture_distance_nm = long_localizer_capture_distance_nm
 
         # Geometry
         self.centerline_fixes = (
             self.create_centerline_fixes()
         )
 
-        self.intercept_area = (
-            self.create_intercept_area()
-        )
+        self.intercept_area_short = (self.create_intercept_area(self.short_intercept_angle, self.short_localizer_capture_distance_nm))
+        self.intercept_area_long = (self.create_intercept_area(self.long_intercept_angle, self.long_localizer_capture_distance_nm))
 
     # ==================================================
     # VECTOR HELPERS
@@ -45,10 +48,8 @@ class Localizer:
     def heading_to_vector(heading):
 
         rad = math.radians(90 - heading)
-
         dx = math.cos(rad)
         dy = math.sin(rad)
-
         return dx, dy
 
     # ==================================================
@@ -57,9 +58,7 @@ class Localizer:
 
     def create_centerline_fixes(self):
 
-        dx, dy = self.heading_to_vector(
-            self.approach_heading
-        )
+        dx, dy = self.heading_to_vector(self.approach_heading)
 
         fixes = {}
 
@@ -75,43 +74,26 @@ class Localizer:
                 x,
                 y
             )
-
         return fixes
 
     # ==================================================
     # INTERCEPT AREA
     # ==================================================
 
-    def get_intercept_hypotenuse_length(self):
+    @staticmethod
+    def get_intercept_hypotenuse_length(intercept_angle, intercept_range_nm):
+        return intercept_range_nm / math.cos(math.radians(intercept_angle))
 
-        return (
-                self.intercept_range_nm
-                /
-                math.cos(
-                    math.radians(
-                        self.intercept_angle
-                    )
-                )
-        )
+    def create_intercept_area(self, intercept_angle, intercept_range_nm):
 
-    def create_intercept_area(self):
-
-        left_heading = (self.approach_heading - self.intercept_angle) % 360
-
-        right_heading = (self.approach_heading + self.intercept_angle) % 360
-
+        left_heading = (self.approach_heading - intercept_angle) % 360
+        right_heading = (self.approach_heading + intercept_angle) % 360
         dx_left, dy_left = self.heading_to_vector(left_heading)
-
         dx_right, dy_right = self.heading_to_vector(right_heading)
-
-        hypotenuse = self.get_intercept_hypotenuse_length()
-
+        hypotenuse = self.get_intercept_hypotenuse_length(intercept_angle, intercept_range_nm)
         left_x = self.threshold.pos_x + dx_left * hypotenuse
-
         left_y = self.threshold.pos_y + dy_left * hypotenuse
-
         right_x = self.threshold.pos_x + dx_right * hypotenuse
-
         right_y = self.threshold.pos_y + dy_right * hypotenuse
 
         return [
@@ -134,7 +116,6 @@ class Localizer:
     # ==================================================
 
     def get_centerline_vector(self):
-
         return self.heading_to_vector(
             self.approach_heading
         )
@@ -143,40 +124,44 @@ class Localizer:
     # POINT INSIDE INTERCEPT AREA
     # ==================================================
 
-    def is_inside_intercept_area(
+    def is_inside_intercept_area_short(
             self,
             px,
             py
     ):
 
-        triangle = self.intercept_area
-
+        triangle = self.intercept_area_short
         (x1, y1), (x2, y2), (x3, y3) = triangle
-
-        denominator = (
-                (y2 - y3) * (x1 - x3)
-                + (x3 - x2) * (y1 - y3)
-        )
+        denominator = ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
 
         if denominator == 0:
             return False
 
-        a = (
-                    (y2 - y3) * (px - x3)
-                    + (x3 - x2) * (py - y3)
-            ) / denominator
+        a = ((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3)) / denominator
 
-        b = (
-                    (y3 - y1) * (px - x3)
-                    + (x1 - x3) * (py - y3)
-            ) / denominator
+        b = ((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3)) / denominator
 
         c = 1 - a - b
 
-        return (
-                0 <= a <= 1
-                and
-                0 <= b <= 1
-                and
-                0 <= c <= 1
-        )
+        return 0 <= a <= 1 and 0 <= b <= 1 and 0 <= c <= 1
+
+    def is_inside_intercept_area_long(
+            self,
+            px,
+            py
+    ):
+
+        triangle = self.intercept_area_long
+        (x1, y1), (x2, y2), (x3, y3) = triangle
+        denominator = ((y2 - y3) * (x1 - x3) + (x3 - x2) * (y1 - y3))
+
+        if denominator == 0:
+            return False
+
+        a = ((y2 - y3) * (px - x3) + (x3 - x2) * (py - y3)) / denominator
+
+        b = ((y3 - y1) * (px - x3) + (x1 - x3) * (py - y3)) / denominator
+
+        c = 1 - a - b
+
+        return 0 <= a <= 1 and 0 <= b <= 1 and 0 <= c <= 1
