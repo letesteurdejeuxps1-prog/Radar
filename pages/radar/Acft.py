@@ -1,4 +1,5 @@
 import math
+import random
 
 import pygame
 
@@ -85,6 +86,9 @@ class Acft:
     ILS_TRACK = 1
 
     show_route: bool = False
+
+    roc_acceleration = 600
+    roc_deceleration = 900
 
     def __init__(
             self,
@@ -179,6 +183,10 @@ class Acft:
 
         self.todo_list = []
 
+        self.weight_factor = random.uniform(0.7, 1.0)
+        self.target_rate_of_climb = 0
+        self.locked_roc = 0
+
     def after_load(self):
 
         lon, lat = convert_lat_and_long_to_radar(
@@ -242,6 +250,7 @@ class Acft:
 
         self.move_logic_heading(elapsed_sec)
         self.move_logic_speed(elapsed_sec)
+        self.move_logic_roc(elapsed_sec)
         self.move_logic_alt(elapsed_sec)
         self.move_acft(elapsed_sec)
 
@@ -336,41 +345,69 @@ class Acft:
 
         self.update_speed()
 
+    def move_logic_roc(self, elapsed_sec):
+        diff = self.target_rate_of_climb - self.rate_of_climb
+        if abs(diff) < 1:
+            self.rate_of_climb = self.target_rate_of_climb
+            return
+        if abs(self.target_rate_of_climb) > abs(self.rate_of_climb):
+            accel = self.roc_acceleration
+        else:
+            accel = self.roc_deceleration
+        step = accel * elapsed_sec
+        if abs(diff) < step:
+            self.rate_of_climb = self.target_rate_of_climb
+        else:
+            self.rate_of_climb += step if diff > 0 else -step
+
     def move_logic_alt(self, elapsed_time):
 
         previous_alt = self.altitude_act
-        if self.altitude_act == self.altitude_req:
-            self.rate_of_climb = 0
+
+        # Level off
+        if abs(self.altitude_req - self.altitude_act) < 10:
+            self.altitude_act = self.altitude_req
+            self.target_rate_of_climb = 0
+
+            self.check_todo_list(previous_alt)
             return
 
+        # Determine direction
         if self.altitude_req > self.altitude_act:
             self.climb_dir = 1
         else:
             self.climb_dir = -1
 
+        # Calculate target ROC
         if self.is_roc_locked:
-            roc = abs(self.rate_of_climb)
+            target_roc = self.locked_roc
         else:
-            roc = self.perf_data.get_rate_of_climb(
+            target_roc = self.perf_data.get_rate_of_climb(
                 self.icao_type,
                 self.altitude_act,
                 self.climb_dir
             )
 
-        self.rate_of_climb = roc * self.climb_dir
+            target_roc *= self.weight_factor
 
-        climb_step = (roc / 60) * elapsed_time
+        self.target_rate_of_climb = (target_roc * self.climb_dir)
 
-        self.altitude_act += climb_step * self.climb_dir
+        # Move altitude using ACTUAL ROC
+        self.altitude_act += (self.rate_of_climb / 60) * elapsed_time
 
         # Prevent overshoot
-        if self.climb_dir == 1 and self.altitude_act > self.altitude_req:
-            self.altitude_act = self.altitude_req
-            self.rate_of_climb = 0
+        if self.climb_dir == 1 and self.altitude_act >= self.altitude_req:
 
-        elif self.climb_dir == -1 and self.altitude_act < self.altitude_req:
             self.altitude_act = self.altitude_req
-            self.rate_of_climb = 0
+            self.target_rate_of_climb = 0
+
+        elif self.climb_dir == -1 and self.altitude_act <= self.altitude_req:
+
+            self.altitude_act = self.altitude_req
+            self.target_rate_of_climb = 0
+
+        self.target_rate_of_climb = int(self.target_rate_of_climb)
+        self.rate_of_climb = int(self.rate_of_climb)
 
         self.check_todo_list(previous_alt)
 
@@ -489,7 +526,7 @@ class Acft:
             else:
                 direction = 'descend'
             if special != 0:
-                self.rate_of_climb = special
+                self.locked_roc = abs(special)
                 self.is_roc_locked = True
                 return_str = "{} {} to {} at {}".format(self.cs, direction, value, self.rate_of_climb)
 

@@ -66,14 +66,28 @@ class PerformanceData:
         if not perf:
             return self.roc_default
 
-        if climb_direction == 1:
-            lookout_table = perf["climb"]
-        else:
-            lookout_table = perf["descent"]
+        table = perf["climb"] if climb_direction == 1 else perf["descent"]
 
-        for item in lookout_table:
+        for item in table:
+
             if item["min"] <= altitude <= item["max"]:
-                return item["roc"]
+
+                roc = item["roc"]
+
+                if climb_direction == 1:
+
+                    ceiling = perf["ceiling"]
+
+                    ratio = altitude / ceiling
+
+                    if ratio > 0.7:
+                        factor = max(
+                            0.15,
+                            1 - ((ratio - 0.7) / 0.3)
+                        )
+                        roc *= factor
+
+                return roc
 
         return self.roc_default
 
