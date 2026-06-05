@@ -87,8 +87,8 @@ class Acft:
 
     show_route: bool = False
 
-    roc_acceleration = 600
-    roc_deceleration = 900
+    roc_acceleration = 200
+    roc_deceleration = 300
 
     def __init__(
             self,
@@ -218,6 +218,15 @@ class Acft:
         for i in range(self.old_radar_blip_amount):
             self.old_pos.append((self.pos_x, self.pos_y))
         self.update_radar_data()
+
+        try:
+
+            self_data = self.perf_data.get_perf_by_icao(self.icao_type)
+            self.roc_acceleration = self_data['roc_acceleration']
+            self.roc_deceleration = self_data['roc_deceleration']
+        except KeyError:
+            self.roc_acceleration = 200
+            self.roc_deceleration = 300
 
     def tick(self, identity: int | None, elapsed_sec: float, airspace: Airspace):
 

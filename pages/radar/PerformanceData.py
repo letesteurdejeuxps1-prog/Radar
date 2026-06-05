@@ -24,6 +24,8 @@ class PerformanceData:
                 cur["WTC"] = item["WTC"]
                 cur["ceiling"] = item["ceiling"]
                 cur["max_speed"] = item["max_speed"]
+                cur["roc_acceleration"] = item["roc_acceleration"]
+                cur["roc_deceleration"] = item["roc_deceleration"]
                 cur["climb"] = []
                 cur["descent"] = []
                 for rule in item["alt_vars"]:

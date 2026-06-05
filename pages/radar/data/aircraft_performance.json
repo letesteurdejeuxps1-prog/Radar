@@ -4,6 +4,8 @@
     "WTC": "M",
     "ceiling": 39000,
     "max_speed": 0.82,
+    "roc_acceleration": 300,
+    "roc_deceleration": 450,
     "alt_vars":[
       {"min":  0,       "max": 5000,  "cr": 1,  "roc": 2000, "speed": 175},
       {"min":  5001,    "max": 10000, "cr": 1,  "roc": 2000, "speed": 250},
@@ -20,6 +22,8 @@
     "WTC": "J",
     "ceiling": 43000,
     "max_speed": 0.89,
+    "roc_acceleration": 200,
+    "roc_deceleration": 300,
     "alt_vars":[
       {"min":  0,       "max": 5000,  "cr": 1,  "roc": 1500, "speed": 190},
       {"min":  5001,    "max": 10000, "cr": 1,  "roc": 2500, "speed": 250},
@@ -36,6 +40,8 @@
     "WTC": "M",
     "ceiling": 50000,
     "max_speed": 2.0,
+    "roc_acceleration": 5000,
+    "roc_deceleration": 7500,
     "alt_vars":[
       {"min":  0,       "max": 5000,  "cr": 1,  "roc": 55000,   "speed": 175},
       {"min":  5001,    "max": 10000, "cr": 1,  "roc": 40000,   "speed": 250},
