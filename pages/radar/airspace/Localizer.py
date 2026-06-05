@@ -27,8 +27,6 @@ class Localizer:
         self.intercept_angle = intercept_angle
         self.localizer_capture_distance_nm = localizer_capture_distance_nm
 
-        # Geometry
-        self.centerline_fixes = (self.create_centerline_fixes())
         self.intercept_area = (self.create_intercept_area())
 
 
@@ -43,30 +41,6 @@ class Localizer:
         dx = math.cos(rad)
         dy = math.sin(rad)
         return dx, dy
-
-    # ==================================================
-    # CENTERLINE FIXES
-    # ==================================================
-
-    def create_centerline_fixes(self):
-
-        dx, dy = self.heading_to_vector(self.approach_heading)
-
-        fixes = {}
-
-        for dist in [10, 8, 6, 4, 2]:
-
-            x = self.threshold.pos_x + dx * dist
-            y = self.threshold.pos_y + dy * dist
-
-            fixes[dist] = Point(
-                f"{self.runway_name}_{dist}NM",
-                f"{dist}NM",
-                "ILS_FIX",
-                x,
-                y
-            )
-        return fixes
 
     # ==================================================
     # INTERCEPT AREA

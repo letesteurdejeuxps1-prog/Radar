@@ -589,17 +589,6 @@ class Main:
         else:
             identity = None
         for acft in self.acft_list:
-            if acft.nav_mode == acft.NAV_ILS:
-                ad = self.airspace.get_aerodrome_by_icao(acft.destination_icao)
-                if ad:
-                    rwy = ad.get_active_rwy()
-                    if rwy:
-                        loc = rwy.get_active_localizer()
-                        if loc:
-                            if loc.is_inside_intercept_area(acft.pos_x, acft.pos_y):
-                                acft.color = (255, 0, 150)
-                            else:
-                                acft.color = (255, 255, 255)
             acft.tick(identity, elapsed_sec, self.airspace)
 
     def handle_mouse_motion(self, event):

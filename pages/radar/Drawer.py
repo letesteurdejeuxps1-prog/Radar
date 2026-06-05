@@ -556,10 +556,4 @@ class Drawer:
         )
 
     def debug_draw(self, rwy: Rwy, cam_offset_x, cam_offset_y, zoom):
-        # draw rwy
-        loc = rwy.get_active_localizer()
-        self.draw_area(loc.intercept_area, cam_offset_x, cam_offset_y, zoom)
-
-        # Draw final fix
-        for point in loc.centerline_fixes:
-            self.draw_icon(loc.centerline_fixes[point], cam_offset_x, cam_offset_y, zoom)
+        pass
