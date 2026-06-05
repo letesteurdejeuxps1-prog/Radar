@@ -229,21 +229,14 @@ class Acft:
 
     def check_heading(self):
 
-        if self.heading_act <= 0:
-            self.heading_act += 360
-            self.check_heading()
+        self.heading_act %= 360
+        self.heading_req %= 360
 
-        elif self.heading_act > 360:
-            self.heading_act -= 360
-            self.check_heading()
+        if self.heading_act == 0:
+            self.heading_act = 360
 
-        elif self.heading_req <= 0:
-            self.heading_req += 360
-            self.check_heading()
-
-        elif self.heading_req > 360:
-            self.heading_req -= 360
-            self.check_heading()
+        if self.heading_req == 0:
+            self.heading_req = 360
 
     def move_logic(self, elapsed_sec: float):
 
@@ -268,22 +261,30 @@ class Acft:
 
     def move_logic_heading(self, elapsed_sec: float):
 
-        if self.turn_direction == 1 or self.turn_direction == -1:
+        step = self.rate_of_turn * elapsed_sec
+        diff = ((self.heading_req - self.heading_act + 180) % 360) - 180
 
-            if abs(self.heading_act - self.heading_req) > 0.1:
+        if abs(diff) <= step:
+            self.heading_act = self.heading_req
 
-                step = self.rate_of_turn * elapsed_sec
-
-                next_move_p = self.heading_act + step
-                next_move_m = self.heading_act - step
-
-                if next_move_m <= self.heading_req <= next_move_p:
-                    self.heading_act = self.heading_req
-
-                else:
-                    self.heading_act += self.turn_direction * step
-            elif self.rate_of_turn != self.default_rate_of_turn:
+            if self.rate_of_turn != self.default_rate_of_turn:
                 self.rate_of_turn = self.default_rate_of_turn
+
+            return
+
+        # Turn towards target
+        if diff > 0:
+            self.heading_act += step
+        else:
+            self.heading_act -= step
+
+        # Normalize heading to 0-360
+        self.heading_act %= 360
+
+        # Optional:
+        # keep north displayed as 360 instead of 0
+        if self.heading_act == 0:
+            self.heading_act = 360
 
     def move_logic_speed(self, elapsed_sec: float):
 
