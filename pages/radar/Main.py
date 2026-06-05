@@ -600,7 +600,7 @@ class Main:
                                 acft.color = (255, 0, 150)
                             else:
                                 acft.color = (255, 255, 255)
-            acft.tick(identity, elapsed_sec)
+            acft.tick(identity, elapsed_sec, self.airspace)
 
     def handle_mouse_motion(self, event):
         mouse_x, mouse_y = pygame.mouse.get_pos()

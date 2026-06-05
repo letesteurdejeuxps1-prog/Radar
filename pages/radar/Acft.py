@@ -2,6 +2,7 @@ import math
 
 import pygame
 
+from pages.radar.Airspace import Airspace
 from pages.radar.Label import Label
 from pages.radar.PerformanceData import PerformanceData
 from pages.radar.data.helper import (
@@ -79,6 +80,9 @@ class Acft:
 
     SPEED_MODE_IAS = 0
     SPEED_MODE_MACH = 1
+
+    ILS_INTERCEPT = 0
+    ILS_TRACK = 1
 
     show_route: bool = False
 
@@ -171,6 +175,7 @@ class Acft:
         self.update_data()
         self.after_load()
         self.nav_mode = self.NAV_HEADING
+        self.ils_mode = self.ILS_INTERCEPT
 
         self.todo_list = []
 
@@ -206,7 +211,7 @@ class Acft:
             self.old_pos.append((self.pos_x, self.pos_y))
         self.update_radar_data()
 
-    def tick(self, identity: int | None, elapsed_sec: float):
+    def tick(self, identity: int | None, elapsed_sec: float, airspace: Airspace):
 
         if self.identity != identity:
             self.is_clicked = False
@@ -214,7 +219,7 @@ class Acft:
         if self.nav_mode == self.NAV_ROUTE:
             self.update_route_navigation()
         elif self.nav_mode == self.NAV_ILS:
-            self.update_ils_navigation()
+            self.update_ils_navigation(airspace)
 
         self.check_heading()
 
@@ -647,6 +652,7 @@ class Acft:
 
         elif command == "ILS":
             self.nav_mode = self.NAV_ILS
+            self.ils_mode = self.ILS_INTERCEPT
             return_str = "{} is cleared for ILS {}".format(self.cs, self.expected_rwy)
 
         return return_str
@@ -758,8 +764,62 @@ class Acft:
         else:
             self.turn_direction = -1
 
-    def update_ils_navigation(self):
-        pass
+    def update_ils_navigation(self, airspace: Airspace):
+
+        ad = airspace.get_aerodrome_by_icao(
+            self.destination_icao
+        )
+
+        if not ad:
+            return
+
+        rwy = ad.get_active_rwy()
+
+        if not rwy:
+            return
+
+        loc = rwy.get_active_localizer()
+
+        if not loc:
+            return
+
+        error = loc.get_cross_track_error(
+            self.real_x,
+            self.real_y
+        )
+
+        # =================================
+        # INTERCEPT PHASE
+        # =================================
+
+        if self.ils_mode == self.ILS_INTERCEPT:
+
+            if abs(error) < 0.3:
+                self.ils_mode = self.ILS_TRACK
+
+            return
+
+        # =================================
+        # TRACK PHASE
+        # =================================
+
+        gain = 5
+
+        desired_heading = (
+                loc.runway_heading
+                - error * gain
+        )
+
+        self.heading_req = desired_heading % 360
+
+        diff = (
+                       self.heading_req
+                       - self.heading_act
+               ) % 360
+
+        self.turn_direction = (
+            1 if diff <= 180 else -1
+        )
 
     def check_todo_list(self, previous_alt):
         remove_items = []

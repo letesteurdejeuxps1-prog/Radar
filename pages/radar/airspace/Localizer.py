@@ -133,3 +133,11 @@ class Localizer:
         c = 1 - a - b
 
         return 0 <= a <= 1 and 0 <= b <= 1 and 0 <= c <= 1
+
+    def get_cross_track_error(self, px, py):
+
+        dx, dy = self.heading_to_vector(self.approach_heading)
+        rel_x = px - self.threshold.pos_x
+        rel_y = py - self.threshold.pos_y
+        # signed lateral distance
+        return rel_x * (-dy) + rel_y * dx
